@@ -1,0 +1,32 @@
+.Menu {
+  padding: 30px 20px;
+}
+
+.menu-links-container {
+  position: relative;
+}
+
+.menu-links {
+  display: block;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 15px;
+  color: white;
+  outline: 1px solid var(--tae-orange-faded);
+}
+
+.menu-links-container .active {
+  background: var(--tae-orange);
+  outline: 1px solid var(--tae-orange);
+  transition: all 0.2s ease;
+}
+
+.menu-links-container .active::before {
+  content: "";
+  border-left: 5px solid whitesmoke;
+  height: 15px;
+  position: absolute;
+  left: -3px;
+  border-radius: 5px;
+  margin-top: 3px;
+}

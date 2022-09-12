@@ -1,0 +1,45 @@
+import "../../Styles/DashboardMerchant.css";
+import Salutation from "../../Components/Salutation";
+
+import Orders from "../../Components/Merchant/Tables/Orders";
+import Quotations from "../../Components/Merchant/Tables/Quotations";
+
+const Dashboard = () => {
+    return (
+        <div className="Merchant-Dashboard">
+            <div>
+                <Salutation name={'Merchant'} />
+            </div>
+
+            <div className="merchant-dashboard-body-container">
+                <div>
+                    <div className="dash-items-title-container">
+                        <div>Orders</div>
+                        <div>Converted quotations</div>
+                    </div>
+                    <div>
+                        <Orders />
+                    </div>
+                </div>
+                <div>
+                    <div className="dash-items-title-container">
+                        <div>Quotations</div>
+                        <div>Responses to buyer requests</div>
+                    </div>
+                    <div>
+                        <Quotations />
+                    </div>
+                </div>
+                <div>
+                    <div className="dash-items-title-container">
+                        <div>Request Timeline</div>
+                        <div>Timeline of all eligible requests from buyer</div>
+                    </div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default Dashboard;
