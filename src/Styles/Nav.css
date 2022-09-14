@@ -1,11 +1,33 @@
 .Nav {
   height: 100px;
-  background: white;
   display: flex;
   justify-content: space-between;
-  padding: 0 50px;
+  padding: 0 20px;
   align-items: center;
   border-bottom: 2px solid var(--tae-orange);
+}
+
+.Nav-logo-tae-container {
+  display: flex;
+  align-items: flex-end;
+}
+
+.Nav-logo-tae-container > div:nth-child(1) {
+  display: flex;
+  height: 50px;
+  overflow: hidden;
+}
+
+.Nav-logo-tae-container > div:nth-child(1) img {
+  height: 100%;
+  width: 100%;
+}
+
+.Nav-logo-tae-container > div:nth-child(2) {
+  font-weight: 700;
+  font-size: large;
+  letter-spacing: 3px;
+  margin-left: 10px;
 }
 
 .logo-container {
@@ -38,5 +60,13 @@
   .Nav {
     height: 70px;
     padding: 10px;
+  }
+
+  .Nav-logo-tae-container {
+    margin-left: 5px;
+  }
+
+  .Nav-logo-tae-container > div:nth-child(1) {
+    height: 40px;
   }
 }

@@ -7,7 +7,6 @@
 .app-menu-container {
   position: sticky;
   width: 300px;
-  background: var(--tae-blue-dark);
 }
 
 .app-body-container {

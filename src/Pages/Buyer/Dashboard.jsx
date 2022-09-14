@@ -1,6 +1,5 @@
 import "../../Styles/DashboardBuyer.css";
 import Salutation from "../../Components/Salutation";
-
 import Orders from "../../Components/Buyer/Tables/Orders";
 import Requests from "../../Components/Buyer/Tables/Requests";
 

@@ -3,18 +3,17 @@ import { Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const Categories = () => {
-    const labels = ['Teak Square Logs', 'Teak Round Logs'];
+const Categories = ({ labels, values }) => {
     const datasets = [
         {
-            data: [12, 3],
+            data: values,
             backgroundColor: [
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
+                '#ee9b0090',
+                '#efefef',
             ],
             borderColor: [
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
+                '#ee9b00',
+                '#c5c5c5',
             ],
             borderWidth: 2,
         },

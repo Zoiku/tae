@@ -15,9 +15,9 @@ const SessionTimeout = ({ session }) => {
     }
 
     const timeout = () => {
+        setTimeoutReminder(false);
         clearInterval(timeoutRef.current);
         timeoutRef.current = null;
-        setTimeoutReminder(false);
         handleLogout();
     }
 
@@ -34,12 +34,11 @@ const SessionTimeout = ({ session }) => {
                         timeout();
                     } else if (current >= reminder) {
                         setTimeoutReminder(true);
-                    } else {
-                        console.log(current);
                     }
                 }, 1000);
             }
         } else {
+            setTimeoutReminder(false);
             clearInterval(timeoutRef.current);
             timeoutRef.current = null;
         }

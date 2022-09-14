@@ -3,48 +3,42 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Toolbar from "../../../Material/Toolbar";
 import { SmallPrimary } from "../../../Material/Button";
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Box from '@mui/material/Box';
 import { Puller } from "../../../Material/Drawer";
-
+import BuyerService from "../../../Services/Buyer";
 
 const Orders = () => {
+    const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const [rows, setRows] = useState([]);
+    const [rowsLoading, setRowsLoading] = useState(false);
+    const [selectedOrderId, setSelectedOrderId] = useState(null);
+    const selectOrder = (id) => setSelectedOrderId(id);
+    const selectedOrder = rows && rows.find(row => row.id === selectedOrderId);
     const [openDrawer, setOpenDrawer] = useState(false);
     const toggleDrawer = (open) => (_event) => {
         setOpenDrawer(open);
     };
 
     const columns = [
-        { field: "id", headerName: "Request #", width: 100 },
+        { field: "index", headerName: "Order #", width: 100 },
         { field: "product", headerName: "Product", width: 200 },
         { field: "terms", headerName: "Terms", width: 70 },
-        { field: "destination", headerName: "Destination", width: 100 },
         { field: "quantity", headerName: "Quantity", width: 90 },
-        { field: "actions", headerName: "Actions", width: 90, renderCell: () => <SmallPrimary onClick={toggleDrawer(true)}>View</SmallPrimary> },
-    ];
-
-    const rows = [
-        { id: 1, product: "Teak Round Log", terms: "CIF", destination: "India", quantity: 10 },
-        { id: 2, product: "Teak Square", terms: "FOB", destination: "India", quantity: 30 },
-        { id: 3, product: "Teak Square", terms: "FOB", destination: "India", quantity: 30 },
-        { id: 4, product: "Teak Square", terms: "FOB", destination: "India", quantity: 30 },
-        { id: 5, product: "Teak Square", terms: "FOB", destination: "India", quantity: 30 },
-        { id: 6, product: "Teak Square", terms: "FOB", destination: "India", quantity: 30 },
-        { id: 7, product: "Teak Square", terms: "FOB", destination: "India", quantity: 30 },
-        { id: 8, product: "Teak Square", terms: "FOB", destination: "India", quantity: 30 },
-        { id: 9, product: "Teak Square", terms: "FOB", destination: "India", quantity: 30 },
-        { id: 10, product: "Teak Square", terms: "FOB", destination: "India", quantity: 30 },
+        { field: "timeLeft", headerName: "Time Left", width: 100, renderCell: () => <div>10hr 10m</div> },
+        { field: "status", headerName: "Status", width: 100 },
+        { field: "action", headerName: "", width: 90, renderCell: ({ row }) => <SmallPrimary onClick={() => selectOrder(row.id)}>View</SmallPrimary> },
     ];
 
     const list = () => (
+        selectedOrder &&
         <Box
             sx={{ width: "auto", height: "700px" }}
             role="presentation"
             className="drawer-container"
         >
             <div className="drawer-title-container">
-                <div>Request 1</div>
-                <div className="requests-time-remaining">10hrs 00m</div>
+                <div>Request {selectedOrder.id}</div>
                 <Puller />
             </div>
             <div className="drawer-body">
@@ -58,7 +52,7 @@ const Orders = () => {
                             <div className="request-section-body">
                                 <div>
                                     <span>Product:</span>
-                                    <span>Teak Round Logs</span>
+                                    <span>{selectedOrder.product}</span>
                                 </div>
                                 <div>
                                     <span>Species:</span>
@@ -70,7 +64,7 @@ const Orders = () => {
                                 </div>
                                 <div>
                                     <span>Origin:</span>
-                                    <span>India</span>
+                                    <span>{selectedOrder.destination}</span>
                                 </div>
                                 <div>
                                     <span>Container size:</span>
@@ -110,11 +104,11 @@ const Orders = () => {
                             <div className="request-section-body">
                                 <div>
                                     <span>Incoterm:</span>
-                                    <span>CIF</span>
+                                    <span>{selectedOrder.terms}</span>
                                 </div>
                                 <div>
                                     <span>Destination:</span>
-                                    <span>India</span>
+                                    <span>{selectedOrder.destination}</span>
                                 </div>
                                 <div>
                                     <span>Destination Port:</span>
@@ -138,6 +132,35 @@ const Orders = () => {
         </Box>
     );
 
+    useEffect(() => {
+        const abortController = new AbortController();
+        const fetchData = async () => {
+            setRowsLoading(true);
+            const buyerService = new BuyerService();
+            try {
+                const { data, errors } = await buyerService.getOrders(abortController.signal);
+                if (errors.length === 0) {
+                    const filteredData = data.data.data;
+                    filteredData.map((order, index) => {
+                        order.index = index + 1;
+                        order.id = order._id;
+                        order.product = order.request.quotationProducts[0].product.name;
+                        order.terms = order.request.buyerQuotationIncoterm.label;
+                        order.quantity = order.request.quotationProducts[0].specification.quantity;
+                        return 1;
+                    });
+                    setRows(filteredData);
+                }
+            } catch (error) {
+                //
+            }
+            setRowsLoading(false);
+        }
+
+        fetchData();
+        return () => abortController.abort();
+    }, []);
+
     return (
         <div className="Orders-Table">
             <div>
@@ -148,6 +171,7 @@ const Orders = () => {
                     open={openDrawer}
                     onOpen={toggleDrawer(true)}
                     onClose={toggleDrawer(false)}
+                    disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
                     {list()}
                 </SwipeableDrawer>
@@ -158,11 +182,13 @@ const Orders = () => {
                 className="standard-table"
                 checkboxSelection
                 disableSelectionOnClick
+                pageSize={10}
                 rows={rows}
                 columns={columns}
                 pagination
                 density="compact"
-                rowsPerPageOptions={[8, 16, 24, 32, 4]}
+                rowsPerPageOptions={[10, 20, 30, 40, 50]}
+                loading={rowsLoading}
             />
         </div>
     )

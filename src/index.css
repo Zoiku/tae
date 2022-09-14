@@ -1,9 +1,13 @@
 :root {
   --tae-orange: #ee9b00;
   --tae-orange-light: #ee9b00c6;
-  --tae-blue-dark: #24252a;
+  --tae-orange-lighter: #ee9b0090;
   --tae-orange-faded: #f9c09f26;
-  --tae-gray: #efefef;
+  --tae-blue-dark: #24252a;
+  --tae-blue-faded: #24252a56;
+  --tae-gray: #999;
+  --tae-gray-light: #c5c5c5;
+  --tae-gray-faded: #efefef;
   --tae-black: #000;
 }
 
@@ -16,10 +20,13 @@
     "Segoe UI Symbol";
 }
 
-.MuiBottomNavigationAction-label {
+.MuiTab-root {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol" !important;
+}
+
+.MuiBottomNavigationAction-label {
   font-weight: bold !important;
   font-size: 10px !important;
 }
@@ -31,8 +38,23 @@
   -webkit-backdrop-filter: blur(12.3px) !important;
 }
 
+.Mui-selected {
+  color: var(--tae-orange) !important;
+  font-weight: 500;
+}
+
+.MuiTabs-indicator {
+  background: var(--tae-orange) !important;
+}
+
 .hide {
   display: none;
+}
+
+.simple-center-div {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .app-bar-container {
@@ -40,10 +62,6 @@
   backdrop-filter: blur(12.3px) !important;
   -webkit-backdrop-filter: blur(12.3px) !important;
   border-radius: 20px 20px 0 0 !important;
-}
-
-.Mui-selected {
-  color: var(--tae-orange) !important;
 }
 
 .close-icon {

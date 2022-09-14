@@ -1,19 +1,133 @@
 import "../../Styles/DashboardAdmin.css";
-
 import SalesChart from "../../Components/Admin/Charts/Sales";
 import CategoriesChart from "../../Components/Admin/Charts/Categories";
-
 import OrdersTable from "../../Components/Admin/Tables/Orders";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper";
-
 import Salutation from "../../Components/Salutation";
+import { useEffect } from "react";
+import AdminService from "../../Services/Admin";
+import CircularProgress from '@mui/material/CircularProgress';
+import { formReducer, INITIAL_STATE } from "../../Reducers/FormReducer";
+import { useReducer } from "react";
+import { SEND_REQUEST, REQUEST_FAILED, REQUEST_SUCCESSFUL } from "../../Reducers/Actions";
 
 const AdminDashboard = () => {
-    const data = {
-        labels: ['Jan', 'Feb', 'March', 'April', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        values: [42, 31, 31, 53, 31, 41, 32, 51, 24, 55, 76, 12]
-    }
+    const [salesChartData, dispatchSales] = useReducer(formReducer, INITIAL_STATE);
+    const [categoriesChartData, dispatchCategories] = useReducer(formReducer, INITIAL_STATE);
+    const [unactivatedUsers, dispatchUnactivatedUsers] = useReducer(formReducer, INITIAL_STATE);
+    const [pendingOrders, dispatchPendingOrders] = useReducer(formReducer, INITIAL_STATE);
+    const [deliveredOrders, dispatchDeliveredOrders] = useReducer(formReducer, INITIAL_STATE);
+
+    useEffect(() => {
+        dispatchSales({ type: SEND_REQUEST });
+        const abortController = new AbortController();
+        const fecthData = async () => {
+            const adminService = new AdminService();
+            try {
+                const { errors, data } = await adminService.getRequestsSalesData(abortController.signal);
+                if (errors.length === 0) {
+                    dispatchSales({ type: REQUEST_SUCCESSFUL, payload: data });
+                } else {
+                    dispatchSales({ type: REQUEST_FAILED, error: errors });
+                }
+            } catch (error) {
+                dispatchSales({ type: REQUEST_FAILED, error: error });
+            }
+        };
+
+        fecthData();
+        return () => abortController.abort();
+        // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
+        dispatchCategories({ type: SEND_REQUEST });
+        const abortController = new AbortController();
+        const fecthData = async () => {
+            const adminService = new AdminService();
+            try {
+                const { errors, data } = await adminService.getRequestsCategories(abortController.signal);
+                if (errors.length === 0) {
+                    dispatchCategories({ type: REQUEST_SUCCESSFUL, payload: data });
+                } else {
+                    dispatchCategories({ type: REQUEST_FAILED, error: errors });
+                }
+            } catch (error) {
+                dispatchCategories({ type: REQUEST_FAILED, error: error });
+            }
+        };
+
+        fecthData();
+        return () => abortController.abort();
+        // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
+        dispatchUnactivatedUsers({ type: SEND_REQUEST });
+        const abortController = new AbortController();
+        const fecthData = async () => {
+            const adminService = new AdminService();
+            try {
+                const { errors, data } = await adminService.getUnactivatedUsers(abortController.signal);
+                if (errors.length === 0) {
+                    dispatchUnactivatedUsers({ type: REQUEST_SUCCESSFUL, payload: data.data.totalCount });
+                } else {
+                    dispatchUnactivatedUsers({ type: REQUEST_FAILED, error: errors[0] });
+                }
+            } catch (error) {
+                dispatchUnactivatedUsers({ type: REQUEST_FAILED, error: error });
+            }
+        };
+
+        fecthData();
+        return () => abortController.abort();
+        // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
+        dispatchDeliveredOrders({ type: SEND_REQUEST });
+        const abortController = new AbortController();
+        const fecthData = async () => {
+            const adminService = new AdminService();
+            try {
+                const { errors, data } = await adminService.getDeliveredOrders(abortController.signal);
+                if (errors.length === 0) {
+                    dispatchDeliveredOrders({ type: REQUEST_SUCCESSFUL, payload: data.data.totalCount });
+                } else {
+                    dispatchDeliveredOrders({ type: REQUEST_FAILED, error: errors[0] });
+                }
+            } catch (error) {
+                dispatchDeliveredOrders({ type: REQUEST_FAILED, error: error });
+            }
+        };
+
+        fecthData();
+        return () => abortController.abort();
+        // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
+        dispatchPendingOrders({ type: SEND_REQUEST });
+        const abortController = new AbortController();
+        const fecthData = async () => {
+            const adminService = new AdminService();
+            try {
+                const { errors, data } = await adminService.getPendingOrders(abortController.signal);
+                if (errors.length === 0) {
+                    dispatchPendingOrders({ type: REQUEST_SUCCESSFUL, payload: data.data.totalCount });
+                } else {
+                    dispatchPendingOrders({ type: REQUEST_FAILED, error: errors[0] });
+                }
+            } catch (error) {
+                dispatchPendingOrders({ type: REQUEST_FAILED, error: error });
+            }
+        };
+
+        fecthData();
+        return () => abortController.abort();
+        // eslint-disable-next-line
+    }, []);
 
     return (
         <div className="Admin-DashBoard">
@@ -48,7 +162,14 @@ const AdminDashboard = () => {
                             <div>Check the users tab to activate registered accounts</div>
                         </div>
                         <div className="dash-item-value-container">
-                            <div>40</div>
+                            <div>
+                                0
+                                {
+                                    // unactivatedUsers.requestState.error === null ?
+                                    //     unactivatedUsers.requestState.loading ? <CircularProgress size="small" color="inherit" /> : unactivatedUsers.requestState.data
+                                    //     : <div className="dash-item-no-data-container">...</div>
+                                }
+                            </div>
                         </div>
                     </SwiperSlide>
                     <SwiperSlide>
@@ -57,7 +178,14 @@ const AdminDashboard = () => {
                             <div>Check the orders tab to approve orders</div>
                         </div>
                         <div className="dash-item-value-container">
-                            <div>20</div>
+                            <div>
+                                0
+                                {
+                                    // pendingOrders.requestState.error === null ?
+                                    //     pendingOrders.requestState.loading ? <CircularProgress size="small" color="inherit" /> : pendingOrders.requestState.data
+                                    //     : <div className="dash-item-no-data-container">...</div>
+                                }
+                            </div>
                         </div>
                     </SwiperSlide>
                     <SwiperSlide>
@@ -66,7 +194,14 @@ const AdminDashboard = () => {
                             <div>Orders that have been delivered to buyers</div>
                         </div>
                         <div className="dash-item-value-container">
-                            <div>20</div>
+                            <div>
+                                0
+                                {
+                                    // deliveredOrders.requestState.error === null ?
+                                    //     deliveredOrders.requestState.loading ? <CircularProgress size="small" color="inherit" /> : deliveredOrders.requestState.data
+                                    //     : <div className="dash-item-no-data-container">...</div>
+                                }
+                            </div>
                         </div>
                     </SwiperSlide>
                 </Swiper>
@@ -77,7 +212,11 @@ const AdminDashboard = () => {
                         <div>Requests per product categories</div>
                     </div>
                     <div className="dash-item-category-chart-container">
-                        <CategoriesChart />
+                        {
+                            categoriesChartData.requestState.error === null ?
+                                categoriesChartData.requestState.loading ? <div className="dash-item-loading-container"><CircularProgress color="inherit" /></div> : <CategoriesChart labels={Object.keys(categoriesChartData.requestState.data)} values={Object.values(categoriesChartData.requestState.data)} />
+                                : <div className="dash-item-no-data-container">No data</div>
+                        }
                     </div>
                 </div>
 
@@ -87,7 +226,11 @@ const AdminDashboard = () => {
                         <div>Total Requests from sales per month</div>
                     </div>
                     <div>
-                        <SalesChart labels={data.labels} values={data.values} />
+                        {
+                            salesChartData.requestState.error === null ?
+                                salesChartData.requestState.loading ? <div className="dash-item-loading-container"><CircularProgress color="inherit" /></div> : <SalesChart labels={Object.keys(salesChartData.requestState.data)} values={Object.values(salesChartData.requestState.data)} />
+                                : <div className="dash-item-no-data-container">No data</div>
+                        }
                     </div>
                 </div>
                 <div>
@@ -96,7 +239,7 @@ const AdminDashboard = () => {
                         <div>Products coming soon</div>
                     </div>
                     <div>
-                        <div style={{ fontSize: "small", color: "gray" }}>No products</div>
+                        <div className="dash-item-no-data-container">No data</div>
                     </div>
                 </div>
                 <div>

@@ -1,4 +1,4 @@
-import OrdersTable from "../../Components/Buyer/Tables/Orders";
+import OrdersTable from "../../Components/Admin/Tables/Orders";
 import "../../Styles/Tables.css";
 
 const Orders = () => {

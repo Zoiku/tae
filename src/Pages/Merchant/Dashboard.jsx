@@ -3,6 +3,7 @@ import Salutation from "../../Components/Salutation";
 
 import Orders from "../../Components/Merchant/Tables/Orders";
 import Quotations from "../../Components/Merchant/Tables/Quotations";
+import Requests from "../../Components/Merchant/Tables/Requests";
 
 const Dashboard = () => {
     return (
@@ -35,7 +36,9 @@ const Dashboard = () => {
                         <div>Request Timeline</div>
                         <div>Timeline of all eligible requests from buyer</div>
                     </div>
-                    <div></div>
+                    <div>
+                        <Requests />
+                    </div>
                 </div>
             </div>
         </div>

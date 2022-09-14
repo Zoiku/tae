@@ -1,4 +1,4 @@
-import OrdersTable from "../../Components/Buyer/Tables/Orders";
+import RequestsTable from "../../Components/Buyer/Tables/Requests";
 import "../../Styles/Tables.css";
 
 const Requests = () => {
@@ -10,7 +10,7 @@ const Requests = () => {
                     <div>Timeline of all eligible requests from buyer</div>
                 </div>
                 <div>
-                    <OrdersTable />
+                    <RequestsTable />
                 </div>
             </div>
         </div>

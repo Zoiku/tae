@@ -23,6 +23,7 @@ ChartJS.register(
 const Sales = ({ labels, values }) => {
     const options = {
         responsive: true,
+        maintainAspectRatio: false,
         scales: {
             yAxes: {
                 grid: {
@@ -69,12 +70,11 @@ const Sales = ({ labels, values }) => {
                 backgroundColor: '#ee9b00',
                 color: "#999",
                 lineTension: .2,
-
             }
         ],
     };
     return (
-        <Line height={130} options={options} data={data} />
+        <Line height={300} options={options} data={data} />
     );
 }
 

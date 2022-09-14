@@ -65,10 +65,6 @@ const Login = () => {
     }
 
     useEffect(() => {
-        document.title = "Register to be a buyer"
-    }, []);
-
-    useEffect(() => {
         if (session.isLogged && Object.keys(session.user).length > 0) {
             const role = session.user.role;
             navigate(ROLES[role]);
