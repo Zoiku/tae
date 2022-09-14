@@ -1,10 +1,23 @@
 .Nav {
   height: 100px;
+  padding: 0 20px;
+  border-bottom: 2px solid var(--tae-orange);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.Nav .Default {
+  display: block;
   display: flex;
   justify-content: space-between;
-  padding: 0 20px;
   align-items: center;
-  border-bottom: 2px solid var(--tae-orange);
+  width: 100%;
+}
+
+.Mobile-Nav {
+  display: none;
 }
 
 .Nav-logo-tae-container {
@@ -53,13 +66,20 @@
 }
 
 @media screen and (max-width: 1000px) {
-  .Default-Nav {
-    display: none;
-  }
-
   .Nav {
     height: 70px;
     padding: 10px;
+  }
+
+  .Nav .Default {
+    display: none;
+  }
+
+  .Mobile-Nav {
+    display: flex;
+    justify-content: space-between !important;
+    align-items: center;
+    width: 100%;
   }
 
   .Nav-logo-tae-container {
@@ -68,5 +88,50 @@
 
   .Nav-logo-tae-container > div:nth-child(1) {
     height: 40px;
+  }
+
+  .menu-icons-close {
+    position: absolute;
+    height: 70px;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 20px;
+    color: #efefefd6;
+  }
+
+  .menu-hamburger {
+    color: var(--tae-orange);
+  }
+
+  .menu-icons {
+    font-size: xx-large;
+  }
+
+  .menu-links-container-moblile {
+    height: 100%;
+    margin: 140px 0 0 20px;
+  }
+
+  .menu-links-mobile {
+    display: flex;
+    align-items: center;
+  }
+
+  .menu-links-mobile > span {
+    padding: 20px 10px;
+    color: #efefefd6;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .menu-links-mobile > span:nth-child(1) {
+    font-size: 33px;
+  }
+
+  .menu-links-mobile > span:nth-child(2) {
+    font-size: 23px;
   }
 }

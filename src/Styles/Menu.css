@@ -1,7 +1,6 @@
 .Menu {
   padding: 30px 20px;
   height: 100%;
-  border-right: 2px solid var(--tae-orange);
 }
 
 .menu-links-container {
@@ -18,17 +17,16 @@
 
 .menu-links-container .active {
   background: var(--tae-orange);
-  outline: 1px solid var(--tae-orange);
   transition: all 0.2s ease;
   color: white;
 }
 
 .menu-links-container .active::before {
   content: "";
-  border-left: 5px solid #fff;
+  border-left: 5px solid #2ECA45;
   height: 15px;
   position: absolute;
-  left: -3px;
+  left: -2px;
   border-radius: 5px;
   margin-top: 3px;
 }

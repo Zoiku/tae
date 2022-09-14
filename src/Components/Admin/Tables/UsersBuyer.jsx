@@ -1,7 +1,6 @@
 import { DataGrid } from "@mui/x-data-grid";
 import LinearProgress from '@mui/material/LinearProgress';
 import Toolbar from "../../../Material/Toolbar";
-import { SmallPrimary } from "../../../Material/Button";
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { useState, useEffect } from "react";
 import Box from '@mui/material/Box';
@@ -13,6 +12,9 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
+import TextField from '@mui/material/TextField';
+import Avatar from '@mui/material/Avatar';
+import { StyledBadge } from "../../../Material/Avatar";
 
 const UsersBuyer = () => {
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -27,19 +29,20 @@ const UsersBuyer = () => {
     const toggleDrawer = (open) => (_event) => {
         setOpenDrawer(open);
     };
-    const handleClick = (event) => {
+    const handleClick = (event, id) => {
         setAnchorEl(event.currentTarget);
+        selectUser(id);
     };
     const handleClose = () => {
         setAnchorEl(null);
     };
 
-    const More = () => (
+    const More = ({ id }) => (
         <div>
             <Box sx={{ display: "flex", alignItems: "center", textAlign: "center", position: "relative" }}>
                 <Tooltip title="More">
                     <IconButton
-                        onClick={handleClick}
+                        onClick={event => handleClick(event, id)}
                         size="small"
                         aria-controls={open ? "account-menu" : undefined}
                         aria-haspopup="true"
@@ -56,10 +59,10 @@ const UsersBuyer = () => {
         { field: "index", headerName: "Number", width: 100 },
         { field: "fullName", headerName: "Full Name", width: 200 },
         { field: "email", headerName: "Email", width: 70 },
-        { field: "joinedSince", headerName: "Joined Since", width: 100 },
+        { field: "businessType", headerName: "Business Type", width: 70 },
         { field: "status", headerName: "Status", width: 90, renderCell: ({ row }) => row.status ? "Verified" : "Unverified" },
         { field: "activated", headerName: "Activated", width: 90, renderCell: ({ row }) => <IOSSwitch checked={row.activated} /> },
-        { field: "more", headerName: "", width: 30, renderCell: () => <div className="simple-center-div"><More /></div> },
+        { field: "more", headerName: "", width: 30, renderCell: ({ row }) => <div className="simple-center-div"><More id={row.id} /></div> },
     ];
 
     const list = () => (
@@ -70,94 +73,58 @@ const UsersBuyer = () => {
             className="drawer-container"
         >
             <div className="drawer-title-container">
-                <div>Request {selectedUser.id}</div>
+                <div>User Information</div>
                 <Puller />
             </div>
             <div className="drawer-body">
-                <div className="requests-sections-body">
-                    <div className="requests-title-container">
-                        <div>Date: 22 January, 2022</div>
+                <div className="users-sections-body">
+                    <div className="users-title-container">
+                        <div></div>
                     </div>
-                    <div className="requests-sections-container">
-                        <section>
-                            <div className="requests-section-title">Product Info</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Product:</span>
-                                    <span>{selectedUser.product}</span>
-                                </div>
-                                <div>
-                                    <span>Species:</span>
-                                    <span>Teak</span>
-                                </div>
-                                <div>
-                                    <span>Types of species:</span>
-                                    <span>Teak</span>
-                                </div>
-                                <div>
-                                    <span>Origin:</span>
-                                    <span>{selectedUser.destination}</span>
-                                </div>
-                                <div>
-                                    <span>Container size:</span>
-                                    <span>1000 20ft</span>
-                                </div>
-                                <div>
-                                    <span>Volume per container:</span>
-                                    <span>13.5 Cubic meters</span>
-                                </div>
+                    <div className="users-sections-container">
+                        <div className="user-profile-container">
+                            <StyledBadge
+                                overlap="circular"
+                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                variant="dot"
+                            >
+                                <Avatar className="user-avatar" alt="User" src="/" />
+                            </StyledBadge>
+                            <div className="user-short-desc-container">
+                                <div>{selectedUser.fullName}</div>
+                                <div>{selectedUser.email}</div>
                             </div>
-                        </section>
+                        </div>
 
-                        <section>
-                            <div className="requests-section-title">Product Specification</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Length:</span>
-                                    <span>20cm</span>
-                                </div>
-                                <div>
-                                    <span>Thickness:</span>
-                                    <span>2cm</span>
-                                </div>
-                                <div>
-                                    <span>Diameter:</span>
-                                    <span>20cm</span>
-                                </div>
-                                <div>
-                                    <span>Quantity:</span>
-                                    <span>20cm</span>
-                                </div>
-                            </div>
-                        </section>
+                        <div className="user-profile-sections-container Admin-Settings-Page">
+                            <Box
+                                component="form"
+                                sx={{
+                                    '& > :not(style)': { width: '100%', margin: "50px 0" },
+                                }}
+                                autoComplete="off"
+                            >
+                                <section>
+                                    <div className="user-profile-section-title">Personal Details</div>
+                                    <div className="form-controller-input-duo form-controller">
+                                        <TextField disabled value={selectedUser.firstName} fullWidth label="Full Name" variant="standard" />
+                                        <TextField disabled value={selectedUser.lastName} fullWidth label="Full Name" variant="standard" />
+                                    </div>
+                                    <div className="form-controller-input form-controller">
+                                        <TextField disabled value={selectedUser.email} fullWidth label="Email" variant="standard" />
+                                    </div>
+                                </section>
 
-                        <section>
-                            <div className="requests-section-title">Product Delivery Information</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Incoterm:</span>
-                                    <span>{selectedUser.terms}</span>
-                                </div>
-                                <div>
-                                    <span>Destination:</span>
-                                    <span>{selectedUser.destination}</span>
-                                </div>
-                                <div>
-                                    <span>Destination Port:</span>
-                                    <span>Nharva Sheva</span>
-                                </div>
-                            </div>
-                        </section>
+                                <section>
+                                    <div className="user-profile-section-title">Company Details</div>
 
-                        <section>
-                            <div className="requests-section-title">Request Settings</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Validity:</span>
-                                    <span>7 days</span>
-                                </div>
-                            </div>
-                        </section>
+                                    <div className="form-controller-input form-controller">
+                                        <TextField disabled value={selectedUser.companyName} fullWidth label="Company Name" variant="standard" />
+                                    </div>
+
+                                </section>
+                            </Box>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -205,7 +172,7 @@ const UsersBuyer = () => {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
-                    <MenuItem>
+                    <MenuItem onClick={toggleDrawer(true)}>
                         View
                     </MenuItem>
                     <MenuItem>

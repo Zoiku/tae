@@ -8,6 +8,11 @@ import Box from '@mui/material/Box';
 import { Puller } from "../../../Material/Drawer";
 import AdminService from "../../../Services/Admin";
 
+const PRODUCTS = {
+    TEAK_SQUARE_LOGS: "Teak Square Logs",
+    TEAK_ROUND_LOGS: "Teak Round Logs",
+}
+
 const Requests = () => {
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
     const [rows, setRows] = useState([]);
@@ -15,7 +20,6 @@ const Requests = () => {
     const [selectedRequestId, setSelectedRequestId] = useState(null);
     const selectRequest = (id) => setSelectedRequestId(id);
     const selectedRequest = rows && rows.find(row => row.id === selectedRequestId);
-
     const [openDrawer, setOpenDrawer] = useState(false);
     const toggleDrawer = (open) => (_event) => {
         setOpenDrawer(open);
@@ -30,6 +34,11 @@ const Requests = () => {
         { field: "action", headerName: "", width: 90, renderCell: ({ row }) => <SmallPrimary onClick={() => selectRequest(row.id)}>View</SmallPrimary> },
     ];
 
+    useEffect(() => {
+        selectedRequest && setOpenDrawer(true);
+        console.log(selectedRequest);
+    }, [selectedRequest]);
+
     const list = () => (
         selectedRequest &&
         <Box
@@ -38,13 +47,13 @@ const Requests = () => {
             className="drawer-container"
         >
             <div className="drawer-title-container">
-                <div>Request {selectedRequest.id}</div>
+                <div>Request Details</div>
                 <Puller />
             </div>
             <div className="drawer-body">
                 <div className="requests-sections-body">
                     <div className="requests-title-container">
-                        <div>Date: 22 January, 2022</div>
+                        <div>Request {selectedRequest.requestNo}</div>
                     </div>
                     <div className="requests-sections-container">
                         <section>
@@ -56,23 +65,23 @@ const Requests = () => {
                                 </div>
                                 <div>
                                     <span>Species:</span>
-                                    <span>Teak</span>
+                                    <span>{selectedRequest.species}</span>
                                 </div>
                                 <div>
                                     <span>Types of species:</span>
-                                    <span>Teak</span>
+                                    <span>{selectedRequest.speciesType}</span>
                                 </div>
                                 <div>
                                     <span>Origin:</span>
-                                    <span>{selectedRequest.destination}</span>
+                                    <span>{selectedRequest.origin}</span>
                                 </div>
                                 <div>
                                     <span>Container size:</span>
-                                    <span>1000 20ft</span>
+                                    <span>{selectedRequest.containerSize}</span>
                                 </div>
                                 <div>
                                     <span>Volume per container:</span>
-                                    <span>13.5 Cubic meters</span>
+                                    <span>{selectedRequest.volume} {selectedRequest.volumeUnit}</span>
                                 </div>
                             </div>
                         </section>
@@ -82,19 +91,37 @@ const Requests = () => {
                             <div className="request-section-body">
                                 <div>
                                     <span>Length:</span>
-                                    <span>20cm</span>
+                                    <span>{selectedRequest.length} {selectedRequest.lengthUnit}</span>
                                 </div>
-                                <div>
-                                    <span>Thickness:</span>
-                                    <span>2cm</span>
-                                </div>
-                                <div>
-                                    <span>Diameter:</span>
-                                    <span>20cm</span>
-                                </div>
+                                {
+                                    selectedRequest.product === PRODUCTS.TEAK_SQUARE_LOGS &&
+                                    <>
+                                        <div>
+                                            <span>Thickness:</span>
+                                            <span>{selectedRequest.thickness} {selectedRequest.thicknessUnit}</span>
+                                        </div>
+                                        <div>
+                                            <span>Width:</span>
+                                            <span>{selectedRequest.width} {selectedRequest.widthUnit}</span>
+                                        </div>
+                                        <div>
+                                            <span>Drying:</span>
+                                            <span>{selectedRequest.drying}</span>
+                                        </div>
+                                    </>
+                                }
+                                {
+                                    selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS &&
+                                    <>
+                                        <div>
+                                            <span>Diameter:</span>
+                                            <span>{selectedRequest.diameter} {selectedRequest.diameterUnit}</span>
+                                        </div>
+                                    </>
+                                }
                                 <div>
                                     <span>Quantity:</span>
-                                    <span>20cm</span>
+                                    <span>{selectedRequest.quantity} {selectedRequest.containerSize}</span>
                                 </div>
                             </div>
                         </section>
@@ -112,7 +139,7 @@ const Requests = () => {
                                 </div>
                                 <div>
                                     <span>Destination Port:</span>
-                                    <span>Nharva Sheva</span>
+                                    <span>{selectedRequest.port}</span>
                                 </div>
                             </div>
                         </section>
@@ -122,7 +149,7 @@ const Requests = () => {
                             <div className="request-section-body">
                                 <div>
                                     <span>Validity:</span>
-                                    <span>7 days</span>
+                                    <span>{selectedRequest.validity} days</span>
                                 </div>
                             </div>
                         </section>
@@ -147,6 +174,21 @@ const Requests = () => {
                         request.product = request.quotationProducts[0].product.name;
                         request.terms = request.buyerQuotationIncoterm.label;
                         request.quantity = request.quotationProducts[0].specification.quantity;
+                        request.diameter = request.quotationProducts[0].specification.diameter;
+                        request.diameterUnit = request.quotationProducts[0].specification.diameterUnit;
+                        request.drying = request?.quotationProducts[0]?.specification?.drying?.label;
+                        request.length = request.quotationProducts[0].specification.length;
+                        request.thickness = request.quotationProducts[0].specification.thickness;
+                        request.width = request.quotationProducts[0].specification.width;
+                        request.lengthUnit = request.quotationProducts[0].specification.lengthUnit;
+                        request.thicknessUnit = request.quotationProducts[0].specification.thicknessUnit;
+                        request.widthUnit = request.quotationProducts[0].specification.widthUnit;
+                        request.species = request.quotationProducts[0].product.species.label;
+                        request.speciesType = request.quotationProducts[0].product.species.type.label;
+                        request.origin = request.quotationProducts[0].product.origin.country;
+                        request.containerSize = request.quotationProducts[0].product.supportedShippingContainers[0].label;
+                        request.volume = request.quotationProducts[0].product.volume.value;
+                        request.volumeUnit = request.quotationProducts[0].product.volume.unit;
                         return 1;
                     })
                     setRows(filteredData);

@@ -53,6 +53,15 @@
   width: 49%;
 }
 
+.Admin-Settings-Page .form-controller-input-duo > div {
+  width: 49%;
+}
+
+.Admin-Settings-Page .form-controller-input-duo {
+  display: flex;
+  justify-content: space-between;
+}
+
 .settings-button-controller-container {
   display: flex;
 }

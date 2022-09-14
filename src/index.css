@@ -171,6 +171,7 @@
     font-weight: 600;
     display: flex;
     align-items: center;
+    margin-bottom: 5px;
   }
 
   .drawer .requests-section-title::before {
@@ -184,9 +185,14 @@
   }
 
   .drawer .request-section-body > div {
-    margin: 10px 0;
+    padding: 10px 0;
     display: flex;
     justify-content: space-between;
+    border-bottom: 1px solid var(--tae-gray-faded);
+  }
+
+  .drawer .request-section-body > div:nth-last-child(1) {
+    border-bottom: none;
   }
 
   .drawer .request-section-body > div > span {

@@ -1,11 +1,8 @@
 import "../../Styles/Settings.css";
-
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-
 import Avatar from '@mui/material/Avatar';
 import { StyledBadge } from "../../Material/Avatar";
-
 import { SettingsPageUpdateButton, SettingsPageCancelButton, SettingsPageUpdateButtonSecondary } from "../../Material/Button";
 import { useState } from "react";
 
