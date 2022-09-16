@@ -1,19 +1,14 @@
 import "../../Styles/Register.css";
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-
 import { PrimaryButton } from "../../Material/Button";
 import { useEffect, useReducer, useState } from "react";
-
 import { INITIAL_STATE, formReducer } from "../../Reducers/FormReducer";
 import { INPUTING, SEND_REQUEST, REQUEST_SUCCESSFUL, REQUEST_FAILED } from "../../Reducers/Actions";
-
 import AuthService from "../../Services/Auth";
-
 import { useDispatch } from "react-redux";
 import { setAlert } from "../../Redux/Features/Alert.js"
 import axios from "axios";
-
 import InputLabel from '@mui/material/InputLabel';
 import Select from "@mui/material/Select";
 import FormHelperText from "@mui/material/FormHelperText";
@@ -24,12 +19,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Drawer from '@mui/material/Drawer';
 import CloseIcon from '@mui/icons-material/Close';
-
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
 import background from "../../Assets/background-2.png";
 
 const Register = () => {

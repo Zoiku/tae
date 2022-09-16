@@ -39,7 +39,7 @@ const Register = () => {
     const toggleShowPassword = () => {
         setShowPassword(prev => !prev);
     }
-    const [openDrawer, setOpenDrawer] = useState(true);
+    const [openDrawer, setOpenDrawer] = useState(false);
     const toggleDrawer = (open) => (_event) => {
         setOpenDrawer(open);
     };
