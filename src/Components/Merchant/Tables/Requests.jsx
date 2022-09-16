@@ -8,6 +8,13 @@ import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import Box from '@mui/material/Box';
 import { Puller } from "../../../Material/Drawer";
 import { SmallSecondary } from "../../../Material/Button";
+import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
+import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded';
+import { INITIAL_STATE, formReducer } from "../../../Reducers/FormReducer.js";
+import { REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST } from "../../../Reducers/Actions";
+import { useReducer } from "react";
+import { setAlert } from "../../../Redux/Features/Alert.js"
+import { useDispatch } from "react-redux";
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
@@ -19,9 +26,48 @@ const TYPE = {
     DECREASE: "decrease"
 }
 
+const NOTE_CIF = () => {
+    return (
+        <div>
+            <div>Total Price: Price per container x Quantity</div>
+            <div>Insurance: 1.5% of Cargo value (Total Price)</div>
+            <div>Freight: Freight rate x Quantity</div>
+            <div>Total Amount: Total Price + Insurance + Freight</div>
+        </div>
+    )
+}
+
+const NOTE_FOB = () => {
+    return (
+        <div>
+            <div>Total Price: Price per container * Quantity</div>
+            <div>Total Amount: Total price</div>
+        </div>
+    )
+}
+
+const NOTE_CFR = () => {
+    return (
+        <div>
+            <div>Total Price: Price per container x Quantity</div>
+            <div>Freight: Freight rate x Quantity</div>
+            <div>Total Amount: Total Price + Freight</div>
+        </div>
+    )
+}
+
+const INCOTERM_NOTES = {
+    CIF: <NOTE_CIF />,
+    FOB: <NOTE_FOB />,
+    CFR: <NOTE_CFR />,
+}
+
 const Requests = () => {
+    const [refreshTable, setRefreshTable] = useState(false);
+    const rootDispatch = useDispatch();
+    const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
     const incotermRef = useRef([]);
-    const [state, setState] = useState([]);
+    const [incotermSettings, setIncotermSettings] = useState([]);
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
     const [rows, setRows] = useState(null);
     const [rowsLoading, setRowsLoading] = useState(false);
@@ -38,13 +84,15 @@ const Requests = () => {
 
     const handleCloseDrawer = () => {
         setOpenDrawer(false);
+        setIncotermRows(1);
+        incotermRef.current = [];
+        setIncotermSettings([]);
         setSelectedRequestId(null);
     }
 
     const handlePaginationChange = (_event, value) => {
         setPage(value);
         window.scroll(0, 0);
-        console.log(`Start from: ${((page * 5) / 5) - 1}`);
     };
 
     const handleIncotermSize = (type) => {
@@ -55,17 +103,92 @@ const Requests = () => {
         }
     };
 
-    const handleChange = (e, index, _terms) => {
+    const handleChange = (e, index, terms) => {
         incotermRef.current[index] = {
             ...incotermRef.current[index],
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
+        };
+
+        if (terms === "FOB") {
+            if (e.target.name === "price") {
+                incotermRef.current[index] = {
+                    ...incotermRef.current[index],
+                    totalPrice: e.target.value * selectedRequest.quantity,
+                    totalAmount: e.target.value * selectedRequest.quantity
+                }
+            }
+        } else if (terms === "CFR") {
+            if (e.target.name === "price") {
+                incotermRef.current[index] = {
+                    ...incotermRef.current[index],
+                    totalPrice: e.target.value * selectedRequest.quantity,
+                    totalAmount: incotermSettings[index]?.freight ? (e.target.value * selectedRequest.quantity) + incotermSettings[index]?.freight : 0
+                }
+            } else if (e.target.name === "freightRate") {
+                incotermRef.current[index] = {
+                    ...incotermRef.current[index],
+                    freight: e.target.value * selectedRequest.quantity,
+                    totalAmount: incotermSettings[index]?.totalPrice ? e.target.value * selectedRequest.quantity + incotermSettings[index].totalPrice : 0
+                }
+            }
+        } else if (terms === "CIF") {
+            if (e.target.name === "price") {
+                incotermRef.current[index] = {
+                    ...incotermRef.current[index],
+                    totalPrice: e.target.value * selectedRequest.quantity,
+                    insurance: ((0.015) * (e.target.value * selectedRequest.quantity)),
+                    totalAmount: (incotermSettings[index]?.freight && incotermSettings[index]?.insurance) ? ((0.015) * (e.target.value * selectedRequest.quantity)) + incotermSettings[index]?.freight + (e.target.value * selectedRequest.quantity) : 0
+                }
+            } else if (e.target.name === "freightRate") {
+                incotermRef.current[index] = {
+                    ...incotermRef.current[index],
+                    freight: e.target.value * selectedRequest.quantity,
+                    totalAmount: incotermSettings[index]?.totalPrice ? (e.target.value * selectedRequest.quantity) + incotermSettings[index].insurance + incotermSettings[index].totalPrice : 0
+                }
+            }
         }
-        setState([...incotermRef.current]);
+
+        setIncotermSettings([...incotermRef.current]);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(state);
+        dispatch({ type: SEND_REQUEST });
+        const merchantService = new MerchantService();
+        try {
+            const payload = { incotermArray: incotermSettings, requestId: selectedRequestId }
+            const { errors } = await merchantService.postOffer(payload);
+            if (errors.length === 0) {
+                dispatch({ type: REQUEST_SUCCESSFUL });
+                handleCloseDrawer();
+                handleSuccessfulRequest("Offer posted successfully", 3000);
+                setRefreshTable(prev => !prev);
+            } else {
+                dispatch({ type: REQUEST_FAILED });
+                handleFailedRequest("Problem completing request", 3000);
+            }
+        } catch (error) {
+            dispatch({ type: REQUEST_FAILED });
+            handleFailedRequest("Problem completing request", 3000);
+        }
+    };
+
+    const handleSuccessfulRequest = (message, timeOut) => {
+        const payload = {
+            severity: "success",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
+    }
+
+    const handleFailedRequest = (message, timeOut) => {
+        const payload = {
+            severity: "error",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
     }
 
     useEffect(() => {
@@ -198,9 +321,13 @@ const Requests = () => {
                                         <thead>
                                             <tr className="incoterm-setting-heading-container">
                                                 <th>Number</th>
+                                                {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <th>Diameter (cm)</th>}
                                                 <th>#</th>
                                                 <th>Price per container</th>
                                                 <th>Total price</th>
+                                                {selectedRequest.terms === "CIF" && <th>Insurance</th>}
+                                                {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <th>Freight Rate</th>}
+                                                {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <th>Freight</th>}
                                                 <th>Total amount</th>
                                             </tr>
                                         </thead>
@@ -208,33 +335,51 @@ const Requests = () => {
                                             {
                                                 Array.from(Array(incotermRows)).map((_row, index) =>
                                                     <tr key={index + 1}>
-                                                        <td><input required type="number" onChange={(e) => handleChange(e, index, selectRequest.terms)} name="number" value={index + 1} disabled /></td>
-                                                        <td><input required type="number" onChange={(e) => handleChange(e, index, selectRequest.terms)} name="piecesPerContainer" /></td>
-                                                        <td><input required type="number" onChange={(e) => handleChange(e, index, selectRequest.terms)} name="pricePerContainer" /></td>
-                                                        <td><input required type="number" disabled /></td>
-                                                        <td><input required type="number" disabled /></td>
+                                                        <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="number" value={index + 1} disabled /></td>
+                                                        {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="diameter" /></td>}
+                                                        <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="noOfPieces" /></td>
+                                                        <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="price" /></td>
+                                                        <td><input required type="number" disabled onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="totalPrice" value={incotermSettings[index]?.totalPrice ? incotermSettings[index]?.totalPrice : 0} /></td>
+                                                        {selectedRequest.terms === "CIF" && <td><input required type="number" disabled onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="insurance" value={incotermSettings[index]?.insurance ? incotermSettings[index]?.insurance : 0} /></td>}
+                                                        {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="freightRate" /></td>}
+                                                        {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <td><input required type="number" disabled value={incotermSettings[index]?.freight ? incotermSettings[index]?.freight : 0} onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="freight" /></td>}
+                                                        <td><input required type="number" disabled value={incotermSettings[index]?.totalAmount ? incotermSettings[index]?.totalAmount : 0} /></td>
                                                     </tr>
                                                 )
                                             }
                                         </tbody>
                                     </table>
                                 </div>
+                                <div className="incoterm-settings-table-note-container">Kindly note that all prices are quoted in ($)</div>
                             </div>
                         </section>
 
                         <section>
-                            <div className="handle-incoterm-size-container">
-                                <div onClick={() => handleIncotermSize(TYPE.INCREASE)}>add new field</div>
+                            <div className="incoterm-settings-size-container">
+                                <div onClick={() => handleIncotermSize(TYPE.INCREASE)}>
+                                    <span><AddCircleOutlineRoundedIcon /></span>
+                                    <span>add new field</span>
+                                </div>
                                 {
                                     incotermRows > 1 &&
-                                    <div onClick={() => handleIncotermSize(TYPE.DECREASE)}>remove last field</div>
+                                    <div onClick={() => handleIncotermSize(TYPE.DECREASE)}>
+                                        <span><RemoveCircleOutlineRoundedIcon /></span>
+                                        <span>remove last field</span>
+                                    </div>
                                 }
                             </div>
                         </section>
 
                         <section>
+                            <div className="incoterm-settings-note-container">
+                                <div>Additional Notes for {selectedRequest.terms} </div>
+                                {INCOTERM_NOTES[selectedRequest.terms]}
+                            </div>
+                        </section>
+
+                        <section>
                             <div>
-                                <div className="button-controller"><SmallSecondary type="submit" >Post Quote</SmallSecondary></div>
+                                <div className="button-controller"><SmallSecondary loading={state.requestState.loading} type="submit" variant="contained" >Post Quote</SmallSecondary></div>
                             </div>
                         </section>
                     </div>
@@ -290,7 +435,7 @@ const Requests = () => {
 
         fetchData();
         return () => abortController.abort();
-    }, []);
+    }, [refreshTable]);
 
     return (
         <div className="Requests-Tables">
@@ -313,7 +458,7 @@ const Requests = () => {
                         rows ?
                             <div className="requests-section-container">
                                 {
-                                    rows.slice((((5 * page) / 5) - 1), (((page * 5) - 1))).map((row, index) =>
+                                    rows.slice(((5 * page) - 5), ((page * 5) - 1)).map((row, index) =>
                                         <section onClick={() => selectRequest(row.id)} key={index}>
                                             <div>Request Number {row.requestNo}</div>
                                             <div>{row.expiryDate}</div>

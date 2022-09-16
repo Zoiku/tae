@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Box from '@mui/material/Box';
 import { Puller } from "../../../Material/Drawer";
 import AdminService from "../../../Services/Admin";
+import Countdown from "../../Countdown";
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
@@ -36,6 +37,7 @@ const Requests = () => {
         { field: "terms", headerName: "Terms", width: 70 },
         { field: "destination", headerName: "Destination", width: 100 },
         { field: "quantity", headerName: "Quantity", width: 90 },
+        { field: "timeLeft", headerName: "Time Left", width: 100, renderCell: ({ row }) => <div className="countdown-table-container"> <Countdown endDate={row.expiryDate} /> </div> },
         { field: "action", headerName: "", width: 90, renderCell: ({ row }) => <SmallPrimary onClick={() => selectRequest(row.id)}>View</SmallPrimary> },
     ];
 

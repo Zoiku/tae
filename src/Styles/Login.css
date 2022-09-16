@@ -7,7 +7,7 @@
 
 .login-form-container {
   outline: 1px solid rgb(203, 203, 203);
-  min-height: 70vh;
+  min-height: 60vh;
   border-radius: 5px;
   width: 1000px;
   display: flex;

@@ -51,4 +51,19 @@ export default class MerchantService {
       data
     };
   }
+
+  async postOffer(payload) {
+    let errors = [];
+    const url = "/merchant/quotation/offer";
+
+    try {
+      await AxiosInstance().post(url, payload);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
 }
