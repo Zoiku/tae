@@ -107,6 +107,7 @@ const Register = () => {
             sx={{ width: "auto", minHeight: "500px" }}
             role="presentation"
             className="drawer-container"
+            autoComplete="off"
         >
             <div className="drawer-title-container">
                 <div>Verify Account</div>

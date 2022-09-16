@@ -21,6 +21,7 @@
   border-radius: 5px;
   padding: 20px;
   position: relative;
+  background: white;
 }
 
 .dashboard-body-container > div:nth-child(1) {

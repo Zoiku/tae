@@ -201,4 +201,19 @@ export default class AdminService {
       data
     };
   }
+
+  async toggleActivate(email, status) {
+    let errors = [];
+    const url = `/user/${email}/${!status}`;
+
+    try {
+      await AxiosInstance().patch(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
 }

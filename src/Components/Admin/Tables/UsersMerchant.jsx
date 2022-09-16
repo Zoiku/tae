@@ -15,8 +15,15 @@ import Tooltip from "@mui/material/Tooltip";
 import TextField from '@mui/material/TextField';
 import Avatar from '@mui/material/Avatar';
 import { StyledBadge } from "../../../Material/Avatar";
+import { setAlert, clearAlerts } from "../../../Redux/Features/Alert.js"
+import { useDispatch } from "react-redux";
+import { useReducer } from "react";
+import { formReducer, INITIAL_STATE } from "../../../Reducers/FormReducer";
+import { SEND_REQUEST, REQUEST_FAILED } from "../../../Reducers/Actions";
 
 const UsersMerchant = () => {
+    const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
+    const rootDispatch = useDispatch();
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -35,6 +42,32 @@ const UsersMerchant = () => {
     };
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleToggleActivate = async (email, status) => {
+        dispatch({ type: SEND_REQUEST });
+        const adminService = new AdminService();
+        try {
+            const { errors } = await adminService.toggleActivate(email, status);
+            if (errors.length > 0) {
+                dispatch({ type: REQUEST_FAILED });
+                handleFailedToggleActivate("Could not process request, please try again", 3000);
+            } else {
+                rootDispatch(clearAlerts());
+            }
+        } catch (error) {
+            dispatch({ type: REQUEST_FAILED });
+            handleFailedToggleActivate("Could not process request, please try again", 3000);
+        }
+    }
+
+    const handleFailedToggleActivate = (message, timeOut) => {
+        const payload = {
+            severity: "error",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
     };
 
     const More = ({ id }) => (
@@ -61,7 +94,7 @@ const UsersMerchant = () => {
         { field: "email", headerName: "Email", width: 70 },
         { field: "businessType", headerName: "Business Type", width: 70 },
         { field: "status", headerName: "Status", width: 90, renderCell: ({ row }) => row.status ? "Verified" : "Unverified" },
-        { field: "activated", headerName: "Activated", width: 90, renderCell: ({ row }) => <IOSSwitch checked={row.activated} /> },
+        { field: "activated", headerName: "Activated", width: 90, renderCell: ({ row }) => <IOSSwitch disabled={state.requestState.loading} onChange={() => handleToggleActivate(row.email, row.activated)} checked={row.activated} /> },
         { field: "more", headerName: "", width: 30, renderCell: ({ row }) => <div className="simple-center-div"><More id={row.id} /></div> },
     ];
 

@@ -8,6 +8,11 @@ import Box from '@mui/material/Box';
 import { Puller } from "../../../Material/Drawer";
 import MerchantService from "../../../Services/Merchant";
 
+const PRODUCTS = {
+    TEAK_SQUARE_LOGS: "Teak Square Logs",
+    TEAK_ROUND_LOGS: "Teak Round Logs",
+}
+
 const Quotations = () => {
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
     const [rows, setRows] = useState([]);
@@ -20,6 +25,11 @@ const Quotations = () => {
         setOpenDrawer(open);
     };
 
+    const handleCloseDrawer = () => {
+        setOpenDrawer(false);
+        setselectedQuoteId(null);
+    }
+
     const columns = [
         { field: "index", headerName: "Request #", width: 100 },
         { field: "product", headerName: "Product", width: 200 },
@@ -30,6 +40,10 @@ const Quotations = () => {
         { field: "action", headerName: "", width: 90, renderCell: ({ row }) => <SmallPrimary onClick={() => selectQuote(row.id)}>View</SmallPrimary> },
     ];
 
+    useEffect(() => {
+        selectedQuote && setOpenDrawer(true);
+    }, [selectedQuote]);
+
     const list = () => (
         selectedQuote &&
         <Box
@@ -38,13 +52,13 @@ const Quotations = () => {
             className="drawer-container"
         >
             <div className="drawer-title-container">
-                <div>Request {selectedQuote.id}</div>
+                <div>Request Details</div>
                 <Puller />
             </div>
             <div className="drawer-body">
                 <div className="requests-sections-body">
                     <div className="requests-title-container">
-                        <div>Date: 22 January, 2022</div>
+                        <div>Request {selectedQuote.requestNo}</div>
                     </div>
                     <div className="requests-sections-container">
                         <section>
@@ -56,23 +70,23 @@ const Quotations = () => {
                                 </div>
                                 <div>
                                     <span>Species:</span>
-                                    <span>Teak</span>
+                                    <span>{selectedQuote.species}</span>
                                 </div>
                                 <div>
                                     <span>Types of species:</span>
-                                    <span>Teak</span>
+                                    <span>{selectedQuote.speciesType}</span>
                                 </div>
                                 <div>
                                     <span>Origin:</span>
-                                    <span>{selectedQuote.destination}</span>
+                                    <span>{selectedQuote.origin}</span>
                                 </div>
                                 <div>
                                     <span>Container size:</span>
-                                    <span>1000 20ft</span>
+                                    <span>{selectedQuote.containerSize}</span>
                                 </div>
                                 <div>
                                     <span>Volume per container:</span>
-                                    <span>13.5 Cubic meters</span>
+                                    <span>{selectedQuote.volume} {selectedQuote.volumeUnit}</span>
                                 </div>
                             </div>
                         </section>
@@ -82,19 +96,37 @@ const Quotations = () => {
                             <div className="request-section-body">
                                 <div>
                                     <span>Length:</span>
-                                    <span>20cm</span>
+                                    <span>{selectedQuote.length} {selectedQuote.lengthUnit}</span>
                                 </div>
-                                <div>
-                                    <span>Thickness:</span>
-                                    <span>2cm</span>
-                                </div>
-                                <div>
-                                    <span>Diameter:</span>
-                                    <span>20cm</span>
-                                </div>
+                                {
+                                    selectedQuote.product === PRODUCTS.TEAK_SQUARE_LOGS &&
+                                    <>
+                                        <div>
+                                            <span>Thickness:</span>
+                                            <span>{selectedQuote.thickness} {selectedQuote.thicknessUnit}</span>
+                                        </div>
+                                        <div>
+                                            <span>Width:</span>
+                                            <span>{selectedQuote.width} {selectedQuote.widthUnit}</span>
+                                        </div>
+                                        <div>
+                                            <span>Drying:</span>
+                                            <span>{selectedQuote.drying}</span>
+                                        </div>
+                                    </>
+                                }
+                                {
+                                    selectedQuote.product === PRODUCTS.TEAK_ROUND_LOGS &&
+                                    <>
+                                        <div>
+                                            <span>Diameter:</span>
+                                            <span>{selectedQuote.diameter} {selectedQuote.diameterUnit}</span>
+                                        </div>
+                                    </>
+                                }
                                 <div>
                                     <span>Quantity:</span>
-                                    <span>20cm</span>
+                                    <span>{selectedQuote.quantity} {selectedQuote.containerSize}</span>
                                 </div>
                             </div>
                         </section>
@@ -112,7 +144,7 @@ const Quotations = () => {
                                 </div>
                                 <div>
                                     <span>Destination Port:</span>
-                                    <span>Nharva Sheva</span>
+                                    <span>{selectedQuote.port}</span>
                                 </div>
                             </div>
                         </section>
@@ -122,7 +154,7 @@ const Quotations = () => {
                             <div className="request-section-body">
                                 <div>
                                     <span>Validity:</span>
-                                    <span>7 days</span>
+                                    <span>{selectedQuote.validity} days</span>
                                 </div>
                             </div>
                         </section>
@@ -144,10 +176,29 @@ const Quotations = () => {
                     filteredData.map((quote, index) => {
                         quote.index = index + 1;
                         quote.id = quote._id;
+                        quote.requestNo = quote.request.requestNo;
+                        quote.expiryDate = new Date(quote.request.expiryDate).toUTCString().slice(0, 25);
                         quote.product = quote.request.quotationProducts[0].product.name;
                         quote.terms = quote.request.buyerQuotationIncoterm.label;
                         quote.quantity = quote.request.quotationProducts[0].specification.quantity;
-                        quote.expiryDate = quote.request.expiryDate;
+                        quote.diameter = quote.request.quotationProducts[0].specification.diameter;
+                        quote.diameterUnit = quote.request.quotationProducts[0].specification.diameterUnit;
+                        quote.drying = quote?.request?.quotationProducts[0]?.specification?.drying?.label;
+                        quote.length = quote?.request?.quotationProducts[0]?.specification.length;
+                        quote.thickness = quote?.request?.quotationProducts[0]?.specification?.thickness;
+                        quote.width = quote?.request?.quotationProducts[0]?.specification?.width;
+                        quote.lengthUnit = quote?.request?.quotationProducts[0]?.specification.lengthUnit;
+                        quote.thicknessUnit = quote?.request?.quotationProducts[0]?.specification.thicknessUnit;
+                        quote.widthUnit = quote?.request.quotationProducts[0]?.specification?.widthUnit;
+                        quote.species = quote.request.quotationProducts[0].product.species.label;
+                        quote.speciesType = quote.request.quotationProducts[0].product.species.type.label;
+                        quote.origin = quote.request.quotationProducts[0].product.origin.country;
+                        quote.containerSize = quote.request.quotationProducts[0].product.supportedShippingContainers[0].label;
+                        quote.volume = quote.request.quotationProducts[0].product.volume.value;
+                        quote.volumeUnit = quote.request.quotationProducts[0].product.volume.unit;
+                        quote.destination = quote.request.destination;
+                        quote.port = quote.request.port;
+                        quote.validity = quote.request.validity;
                         return 1;
                     });
                     setRows(filteredData);
@@ -171,7 +222,7 @@ const Quotations = () => {
                     anchor="bottom"
                     open={openDrawer}
                     onOpen={toggleDrawer(true)}
-                    onClose={toggleDrawer(false)}
+                    onClose={handleCloseDrawer}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
                     {list()}

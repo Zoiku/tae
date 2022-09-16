@@ -1,109 +1,91 @@
 import "../Styles/Nav.css";
+import "../Styles/Hamburger.css";
 import logo from "../Assets/logo.png";
 import { NavLink, useNavigate } from "react-router-dom";
+import { stack as Menu } from 'react-burger-menu';
 import { useState } from "react";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import Button from "@mui/material/Button";
+import { LoginIcon, MerchantRegistationIcon, HomeIcon, RegisterIcon, LogoutIcon, DashboardIcon } from "./Icons";
+import { useDispatch } from "react-redux";
+import { endSession } from "../Redux/Features/Session";
 
-const Nav = () => {
-    const [state, setState] = useState(false);
+const ROLE_PATH = {
+    ADMIN: "/admin/dashboard",
+    MERCHANT: "/merchant/dashboard",
+    BUYER: "/buyer/dashboard",
+}
+
+const Nav = ({ session }) => {
+    const rootDispatch = useDispatch();
+    const [openMenu, setOpenMenu] = useState(false);
     const navigate = useNavigate();
     const defaultNavStyle = {
         textDecoration: "none",
-        color: "inherit"
-    }
+        color: "inherit",
+    };
     const handleRedirect = () => {
         navigate("/");
-    }
-    const toggleDrawer = (open) => (_event) => {
-        setState(open);
     };
-
-    const list = () => (
-        <Box
-            sx={{
-                overflow: "clip",
-                width: "100%",
-                background: "#ee9b00",
-                height: "100vh",
-                position: "relative",
-            }}
-            role="presentation"
-            onClick={toggleDrawer(false)}
-        >
-            <div>
-                <div className="menu-icons-close">
-                    <span
-                        onClick={toggleDrawer(false)}
-                        className="material-symbols-rounded menu-icons"
-                    >
-                        close
-                    </span>
-                </div>
-            </div>
-
-            <div className="menu-links-container-moblile">
-                <div className="menu-links-mobile" onClick={() => navigate('/')}>
-                    <span className="material-symbols-rounded">
-                        home
-                    </span>
-                    <span>Home</span>
-                </div>
-                <div className="menu-links-mobile" onClick={() => navigate('/login')}>
-                    <span className="material-symbols-rounded">
-                        login
-                    </span>
-                    <span>Login</span>
-                </div>
-                <div className="menu-links-mobile" onClick={() => navigate('/buyer/register')}>
-                    <span className="material-symbols-rounded">
-                        account_circle
-                    </span>
-                    <span>Create an Account</span>
-                </div>
-                <div className="menu-links-mobile" onClick={() => navigate('/merchant/register')}>
-                    <span className="material-symbols-rounded">
-                        admin_panel_settings
-                    </span>
-                    <span>Become a Merchant</span>
-                </div>
-            </div>
-            <div style={{ position: "fixed", bottom: -30, fontWeight: 700, left: -15, fontSize: 100, opacity: .2, color: "black" }}>menu</div>
-        </Box>
-    );
+    const toggleMenu = () => (open) => {
+        setOpenMenu(open);
+    };
+    const handleLogout = () => (open) => {
+        setOpenMenu(open);
+        rootDispatch(endSession());
+    };
 
     return (
         <div className="Nav">
             <div className="Mobile-Nav">
-                <div>
-                    <div className="Nav-logo-tae-container">
-                        <div>
-                            <img src={logo} alt="" />
-                        </div>
-                    </div>
-
-                    <Drawer
-                        className="drawer"
-                        anchor={"top"}
-                        open={state}
-                    >
-                        {list()}
-                    </Drawer>
+                <div className="Nav-logo-tae-container">
+                    <img onClick={handleRedirect} src={logo} alt="" />
                 </div>
 
-                <Button onClick={toggleDrawer(true)}>
-                    {!state &&
-                        <div>
-                            <span
-                                onClick={toggleDrawer(true)}
-                                className="material-symbols-rounded menu-icons menu-hamburger"
-                            >
-                                menu
-                            </span>
-                        </div>
+                <Menu isOpen={openMenu} width={"100%"}>
+                    {
+                        session.isLogged ?
+                            <>
+                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/">
+                                    <HomeIcon />
+                                    <span>Home</span>
+                                </NavLink>
+
+                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to={ROLE_PATH[session.user.role]}>
+                                    <DashboardIcon />
+                                    <span>Dashboard</span>
+                                </NavLink>
+
+                                <div onClick={handleLogout(false)} className="hamburger-menu-links">
+                                    <LogoutIcon />
+                                    <span>Exit Application</span>
+                                </div>
+                            </> :
+                            <>
+                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/">
+                                    <HomeIcon />
+                                    <span>Home</span>
+                                </NavLink>
+
+                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/login">
+                                    <LoginIcon />
+                                    <span>Login</span>
+                                </NavLink>
+
+                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/buyer/register">
+                                    <RegisterIcon />
+                                    <span>Create Account</span>
+                                </NavLink>
+
+                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/merchant/register">
+                                    <MerchantRegistationIcon />
+                                    <span>Become A Merchant</span>
+                                </NavLink>
+                            </>
                     }
-                </Button>
+
+                    <div className="hamburger-menu-logo-container">
+                        <span>menu</span>
+                    </div>
+                </Menu>
             </div>
 
             <div className="Default">

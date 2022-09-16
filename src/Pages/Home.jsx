@@ -2,22 +2,13 @@ import "../Styles/Home.css";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-
 import log from "../Assets/log.jpg";
-
 import { PrimaryButton } from "../Material/Button";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
 import Marquee from "react-fast-marquee";
 
-import { useEffect } from "react";
-
-
 const Home = () => {
-    useEffect(() => {
-        document.title = "TAE"
-    }, []);
-
     return (
         <div className="Home">
             <div className="tae-home-banner-container">

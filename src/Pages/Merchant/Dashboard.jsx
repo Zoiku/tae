@@ -36,7 +36,7 @@ const Dashboard = () => {
                         <div>Request Timeline</div>
                         <div>Timeline of all eligible requests from buyer</div>
                     </div>
-                    <div>
+                    <div className="dashboard-requests-table-container">
                         <Requests />
                     </div>
                 </div>

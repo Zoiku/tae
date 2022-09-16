@@ -1,7 +1,6 @@
 import { DataGrid } from "@mui/x-data-grid";
 import LinearProgress from '@mui/material/LinearProgress';
 import Toolbar from "../../../Material/Toolbar";
-import { SmallPrimary } from "../../../Material/Button";
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { useState, useEffect } from "react";
 import Box from '@mui/material/Box';
@@ -26,19 +25,20 @@ const Orders = () => {
     const toggleDrawer = (open) => (_event) => {
         setOpenDrawer(open);
     };
-    const handleClick = (event) => {
+    const handleClick = (event, id) => {
         setAnchorEl(event.currentTarget);
+        selectOrder(id)
     };
     const handleClose = () => {
         setAnchorEl(null);
     };
 
-    const More = () => (
+    const More = ({ id }) => (
         <div>
             <Box sx={{ display: "flex", alignItems: "center", textAlign: "center", position: "relative" }}>
                 <Tooltip title="More">
                     <IconButton
-                        onClick={handleClick}
+                        onClick={event => handleClick(event, id)}
                         size="small"
                         aria-controls={open ? "account-menu" : undefined}
                         aria-haspopup="true"
@@ -57,7 +57,7 @@ const Orders = () => {
         { field: "terms", headerName: "Terms", width: 70 },
         { field: "destination", headerName: "Destination", width: 100 },
         { field: "quantity", headerName: "Quantity", width: 90 },
-        { field: "more", headerName: "", width: 30, renderCell: () => <div className="simple-center-div"><More /></div> },
+        { field: "more", headerName: "", width: 30, renderCell: ({ row }) => <div className="simple-center-div"><More id={row.id} /></div> },
     ];
 
     const list = () => (

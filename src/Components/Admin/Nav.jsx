@@ -10,7 +10,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Logout from "@mui/icons-material/Logout";
 import { endSession } from "../../Redux/Features/Session";
 import { useDispatch } from "react-redux";
-import logo from "../../Assets/tae-logo-2.webp";
+import logo from "../../Assets/tae-logo-1.png";
 
 const AdminNav = () => {
     const rootDispatch = useDispatch();
@@ -28,9 +28,8 @@ const AdminNav = () => {
 
     return (
         <div className="Nav">
-            <div className="Nav-logo-tae-container">
-                <div> <img src={logo} alt="tae tae" /></div>
-                <div></div>
+            <div className="Nav-logo-tae-container logged-mobile-nav-logo-container">
+                <div><img src={logo} alt="tae tae" /></div>
             </div>
             <div>
                 <Box

@@ -2,10 +2,10 @@ import { Outlet } from "react-router-dom";
 import Nav from "../Components/Nav";
 import Footer from "../Components/Footer";
 
-const Default = () => {
+const Default = ({ session }) => {
     return (
         <div className="Default-Layout">
-            <Nav />
+            <Nav session={session} />
             <Outlet />
             <Footer />
         </div>

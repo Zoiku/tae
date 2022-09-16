@@ -11,6 +11,10 @@
   --tae-black: #000;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -160,7 +164,7 @@
   }
 
   .drawer .requests-sections-container > section {
-    margin: 0 0 50px 0;
+    margin: 0 0 40px 0;
   }
 
   .drawer .requests-sections-container > section:nth-last-child(1) {
@@ -189,10 +193,6 @@
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid var(--tae-gray-faded);
-  }
-
-  .drawer .request-section-body > div:nth-last-child(1) {
-    border-bottom: none;
   }
 
   .drawer .request-section-body > div > span {

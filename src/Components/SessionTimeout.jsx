@@ -1,7 +1,6 @@
 import "../Styles/SessionTimeout.css";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { SmallPrimary } from "../Material/Button"
-
 import { useDispatch } from "react-redux";
 import { endSession } from "../Redux/Features/Session";
 import { useEffect, useRef, useState } from "react";

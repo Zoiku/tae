@@ -1,7 +1,7 @@
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Paper from '@mui/material/Paper';
-import { DashboardIcon, OrderIcon, RequestIcon, QuotationIcon, SettingsIcon, HomeIcon } from "../Icons";
+import { DashboardIcon, OrderIcon, RequestIcon, QuotationIcon, SettingsIcon } from "../Icons";
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 

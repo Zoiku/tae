@@ -44,4 +44,34 @@ export default class AuthService {
       data
     };
   }
+
+  async verifyCode(otp, email, role) {
+    let errors = [];
+    const url = `/opt/verify/${otp}?email=${email}&role=${role}`;
+
+    try {
+      await AxiosInstance().patch(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
+
+  async resendVerificationCode(email) {
+    let errors = [];
+    const url = `/opt/resend/${email}`;
+
+    try {
+      await AxiosInstance().post(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
 }

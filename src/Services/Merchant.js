@@ -4,7 +4,7 @@ export default class MerchantService {
   async getRequests(signal) {
     let errors = [];
     let data = null;
-    const url = "/buyer/quotation/merchants/requests/true";
+    const url = `/buyer/quotation/merchants/requests/true`;
 
     try {
       data = await AxiosInstance().get(url, { signal });

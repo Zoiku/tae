@@ -1,0 +1,92 @@
+.Requests-Page-Merchant .tables-container {
+  height: 800px;
+}
+
+.requests-section-container {
+  margin-top: 30px;
+}
+
+.requests-section-container section {
+  outline: 1px solid #c5c5c5;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  cursor: pointer;
+}
+
+.requests-section-container section:hover {
+  outline: 2px solid #000;
+}
+
+.requests-section-container section > div {
+  padding: 15px;
+  width: 100%;
+}
+
+.dashboard-requests-table-container {
+  font-size: small;
+  font-weight: 500;
+}
+
+.incoterm-settings-table-container {
+  overflow: scroll;
+  border: 1px solid #c5c5c5;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.incoterm-settings-table-container th {
+  position: relative;
+}
+
+.incoterm-settings-table-container th::after {
+  content: "";
+  border-right: 2px solid #c5c5c5;
+  height: 14px;
+  position: absolute;
+  right: 0px;
+  top: 30%;
+}
+
+.incoterm-setting-heading-container {
+  background: white !important;
+}
+
+.incoterm-settings-table-container tr:nth-child(odd) {
+  background: #efefef;
+}
+
+.incoterm-settings-table-container td,
+.incoterm-settings-table-container table,
+.incoterm-settings-table-container th {
+  padding: 5px;
+  border-collapse: collapse;
+}
+
+.incoterm-settings-table-container table input {
+  border: none;
+  outline: none;
+  background: inherit;
+  text-align: center;
+}
+
+.incoterm-settings-table-container table {
+  border: none;
+}
+
+.handle-incoterm-size-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.handle-incoterm-size-container > div {
+  padding: 5px 0;
+  width: 140px;
+}
+
+@media screen and (max-width: 1000px) {
+  .Requests-Page-Merchant .tables-container {
+    height: 1110px;
+  }
+}

@@ -17,21 +17,16 @@ import MerchantRequests from "./Pages/Merchant/Requests";
 import MerchantOrders from "./Pages/Merchant/Orders";
 import MerchantQuotations from "./Pages/Merchant/Quotations";
 import MerchantSettings from "./Pages/Merchant/Settings";
-
 import SessionTimeout from "./Components/SessionTimeout";
-
 import DefaultLayout from "./Layouts/Default";
 import AdminLayout from "./Layouts/Admin";
 import BuyerLayout from "./Layouts/Buyer";
 import MerchantLayout from "./Layouts/Merchant";
-
 import ProtectedAdminRoutes from "./Protected/AdminRoutes";
 import ProtectedBuyerRoutes from "./Protected/BuyerRoutes";
 import ProtectedMerchantRoutes from "./Protected/MerchantRoutes";
-
 import { useDispatch, useSelector } from "react-redux";
 import { clearAlerts } from "./Redux/Features/Alert";
-
 import { MaterialAlert } from "./Material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 
@@ -39,7 +34,6 @@ const App = () => {
   const rootDispatch = useDispatch();
   const { session } = useSelector((state) => state);
   const { alert } = useSelector((state) => state);
-
   const [openSnackBar, setOpenSnackBar] = useState(alert.active);
   const handleOpenSnackBar = () => setOpenSnackBar(true);
   const handleCloseSnackBar = (_event, reason) => {
@@ -75,7 +69,7 @@ const App = () => {
       )}
 
       <Routes>
-        <Route element={<DefaultLayout />}>
+        <Route element={<DefaultLayout session={session} />}>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/buyer/register" element={<BuyerRegistration />} />

@@ -65,6 +65,13 @@
   margin: 0 10px 0 0;
 }
 
+.registration-resend-container {
+  text-align: right;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  color: var(--tae-gray);
+}
+
 @media screen and (max-width: 1000px) {
   .register-form-container {
     width: 100%;

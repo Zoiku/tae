@@ -155,3 +155,34 @@ export const SmallPrimary = styled(LoadingButton)({
   },
   "&:focus": {}
 });
+
+export const SmallSecondary = styled(LoadingButton)({
+  boxShadow: "none",
+  textTransform: "none",
+  background: "black",
+  transition: "all 0.2s ease",
+  fontSize: "small",
+  color: "#fff",
+  lineHeight: 1.5,
+  fontFamily: [
+    "-apple-system",
+    "BlinkMacSystemFont",
+    '"Segoe UI"',
+    "Roboto",
+    '"Helvetica Neue"',
+    "Arial",
+    "sans-serif",
+    '"Apple Color Emoji"',
+    '"Segoe UI Emoji"',
+    '"Segoe UI Symbol"'
+  ].join(","),
+  "&:hover": {
+    boxShadow: "none",
+    background: "black",
+    color: "#fff"
+  },
+  "&:active": {
+    boxShadow: "none"
+  },
+  "&:focus": {}
+});

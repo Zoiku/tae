@@ -25,6 +25,11 @@ const Requests = () => {
         setOpenDrawer(open);
     };
 
+    const handleCloseDrawer = () => {
+        setOpenDrawer(false);
+        setSelectedRequestId(null);
+    }
+
     const columns = [
         { field: "index", headerName: "Request #", width: 100 },
         { field: "product", headerName: "Product", width: 200 },
@@ -36,7 +41,6 @@ const Requests = () => {
 
     useEffect(() => {
         selectedRequest && setOpenDrawer(true);
-        console.log(selectedRequest);
     }, [selectedRequest]);
 
     const list = () => (
@@ -212,7 +216,7 @@ const Requests = () => {
                     anchor="bottom"
                     open={openDrawer}
                     onOpen={toggleDrawer(true)}
-                    onClose={toggleDrawer(false)}
+                    onClose={handleCloseDrawer}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
                     {list()}

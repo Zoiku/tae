@@ -8,11 +8,11 @@ const Categories = ({ labels, values }) => {
         {
             data: values,
             backgroundColor: [
-                '#ee9b0090',
+                '#efefef',
                 '#2eca455c',
             ],
             borderColor: [
-                '#ee9b00',
+                '#999',
                 '#2ECA45',
             ],
             borderWidth: 2,
