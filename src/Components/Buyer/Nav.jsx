@@ -29,7 +29,7 @@ const BuyerNav = () => {
     return (
         <div className="Nav">
             <div className="Nav-logo-tae-container logged-mobile-nav-logo-container">
-                <div><img src={logo} alt="tae tae" /></div>
+                <img src={logo} alt="tae tae" />
             </div>
             <div>
                 <Box

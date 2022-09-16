@@ -40,52 +40,55 @@ const Nav = ({ session }) => {
                     <img onClick={handleRedirect} src={logo} alt="" />
                 </div>
 
-                <Menu isOpen={openMenu} width={"100%"}>
-                    {
-                        session.isLogged ?
-                            <>
-                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/">
-                                    <HomeIcon />
-                                    <span>Home</span>
-                                </NavLink>
+                {
+                    session.isLogged ?
+                        <Menu isOpen={openMenu} width={"100%"}>
+                            <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/">
+                                <HomeIcon />
+                                <span>Home</span>
+                            </NavLink>
 
-                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to={ROLE_PATH[session.user.role]}>
-                                    <DashboardIcon />
-                                    <span>Dashboard</span>
-                                </NavLink>
+                            <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to={ROLE_PATH[session.user.role]}>
+                                <DashboardIcon />
+                                <span>Dashboard</span>
+                            </NavLink>
 
-                                <div onClick={handleLogout(false)} className="hamburger-menu-links">
-                                    <LogoutIcon />
-                                    <span>Exit Application</span>
-                                </div>
-                            </> :
-                            <>
-                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/">
-                                    <HomeIcon />
-                                    <span>Home</span>
-                                </NavLink>
+                            <div onClick={handleLogout(false)} className="hamburger-menu-links">
+                                <LogoutIcon />
+                                <span>Exit Application</span>
+                            </div>
 
-                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/login">
-                                    <LoginIcon />
-                                    <span>Login</span>
-                                </NavLink>
+                            <div className="hamburger-menu-logo-container">
+                                <span>menu</span>
+                            </div>
+                        </Menu>
+                        :
+                        <Menu isOpen={openMenu} width={"100%"}>
+                            <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/">
+                                <HomeIcon />
+                                <span>Home</span>
+                            </NavLink>
 
-                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/buyer/register">
-                                    <RegisterIcon />
-                                    <span>Create Account</span>
-                                </NavLink>
+                            <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/login">
+                                <LoginIcon />
+                                <span>Login</span>
+                            </NavLink>
 
-                                <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/merchant/register">
-                                    <MerchantRegistationIcon />
-                                    <span>Become A Merchant</span>
-                                </NavLink>
-                            </>
-                    }
+                            <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/buyer/register">
+                                <RegisterIcon />
+                                <span>Create Account</span>
+                            </NavLink>
 
-                    <div className="hamburger-menu-logo-container">
-                        <span>menu</span>
-                    </div>
-                </Menu>
+                            <NavLink onClick={toggleMenu(false)} className="hamburger-menu-links" style={defaultNavStyle} to="/merchant/register">
+                                <MerchantRegistationIcon />
+                                <span>Become A Merchant</span>
+                            </NavLink>
+
+                            <div className="hamburger-menu-logo-container">
+                                <span>menu</span>
+                            </div>
+                        </Menu>
+                }
             </div>
 
             <div className="Default">
@@ -98,7 +101,7 @@ const Nav = ({ session }) => {
                     <li className="nav-links"><NavLink style={defaultNavStyle} to="/login">Login</NavLink></li>
                 </ul>
             </div>
-        </div>
+        </div >
     )
 }
 

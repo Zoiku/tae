@@ -322,8 +322,8 @@ const Requests = () => {
                                             <tr className="incoterm-setting-heading-container">
                                                 <th>Number</th>
                                                 {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <th>Diameter (cm)</th>}
-                                                <th>#</th>
-                                                <th>Price per container</th>
+                                                <th>Pieces/container</th>
+                                                <th>Price/container</th>
                                                 <th>Total price</th>
                                                 {selectedRequest.terms === "CIF" && <th>Insurance</th>}
                                                 {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <th>Freight Rate</th>}

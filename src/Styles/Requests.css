@@ -29,6 +29,10 @@
   font-weight: 500;
 }
 
+.dashboard-requests-table-container .pagination-container {
+  display: none;
+}
+
 .incoterm-settings-table-container {
   overflow: scroll;
   border: 1px solid #c5c5c5;
@@ -69,6 +73,7 @@
   outline: none;
   background: inherit;
   text-align: center;
+  padding: 5px;
 }
 
 .incoterm-settings-table-container table {
