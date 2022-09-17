@@ -159,6 +159,57 @@ const Quotations = () => {
                                 </div>
                             </div>
                         </section>
+
+                        <section>
+                            <div className="requests-section-title">Incoterm Settings</div>
+                            <div>
+                                <div className="incoterm-settings-table-container">
+                                    <table>
+                                        <thead>
+                                            <tr className="incoterm-setting-heading-container">
+                                                <th>Number</th>
+                                                {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <th>Diameter (cm)</th>}
+                                                <th>Pieces/container</th>
+                                                <th>Price/container</th>
+                                                <th>Total price</th>
+                                                {selectedQuote.terms === "CIF" && <th>Insurance</th>}
+                                                {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <th>Freight</th>}
+                                                <th>Total amount</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {
+                                                selectedQuote.incotermRows.length > 0 ?
+                                                    selectedQuote?.incotermRows.map((incoterm, index) =>
+                                                        <tr key={index + 1}>
+                                                            <td><input disabled value={index + 1} /></td>
+                                                            {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input name="diameter" value={incoterm.diameter} /></td>}
+                                                            <td><input name="noOfPieces" value={incoterm.noOfPieces} /></td>
+                                                            <td><input name="price" value={incoterm.price} /></td>
+                                                            <td><input name="totalPrice" value={incoterm.totalPrice} /></td>
+                                                            {selectedQuote.terms === "CIF" && <td><input disabled name="insurance" /></td>}
+                                                            {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input disabled name="freight" value={incoterm.costOfFreight} /></td>}
+                                                            <td><input type="number" disabled value={incoterm.totalAmount} /></td>
+                                                        </tr>
+                                                    ) :
+                                                    <tr>
+                                                        <td><input disabled value="--" /></td>
+                                                        {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input disabled name="diameter" value="--" /></td>}
+                                                        <td><input disabled name="noOfPieces" value="--" /></td>
+                                                        <td><input disabled name="price" value="--" /></td>
+                                                        <td><input disabled name="totalPrice" value="--" /></td>
+                                                        {selectedQuote.terms === "CIF" && <td><input disabled name="insurance" value="--" /></td>}
+                                                        {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input disabled name="freight" value="--" /></td>}
+                                                        <td><input disabled value="--" /></td>
+                                                    </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className="incoterm-settings-table-note-container">Kindly note that all prices are quoted in ($)</div>
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
@@ -200,8 +251,10 @@ const Quotations = () => {
                         quote.destination = quote.request.destination;
                         quote.port = quote.request.port;
                         quote.validity = quote.request.validity;
+                        quote.incotermRows = quote.buyerQuotationRequestIncoterm;
                         return 1;
                     });
+
                     setRows(filteredData);
                 }
             } catch (error) {

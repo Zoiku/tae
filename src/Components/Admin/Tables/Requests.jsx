@@ -15,6 +15,18 @@ const PRODUCTS = {
 }
 
 const Requests = () => {
+    const [paging, setPaging] = useState({
+        page: 1,
+        size: 10,
+        totalCount: 0
+    });
+    const handlePageChange = (page) => {
+        setPaging({ ...paging, page: page + 1 })
+    };
+    const handlePageSizeChange = (size) => {
+        setPaging({ ...paging, size: size })
+    };
+
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
     const [rows, setRows] = useState([]);
     const [rowsLoading, setRowsLoading] = useState(false);
@@ -171,11 +183,13 @@ const Requests = () => {
             setRowsLoading(true);
             const adminService = new AdminService();
             try {
-                const { data, errors } = await adminService.getRequests(abortController.signal);
+                const { page, size } = paging;
+                const { data, errors } = await adminService.getRequests(abortController.signal, { page, size });
                 if (errors.length === 0) {
+                    setPaging({ ...paging, totalCount: data.data.totalCount });
                     const filteredData = data.data.data;
                     filteredData.map((request, index) => {
-                        request.index = index + 1;
+                        request.index = ((paging.size * paging.page) - (paging.size - index)) + 1;
                         request.id = request._id;
                         request.product = request.quotationProducts[0].product.name;
                         request.terms = request.buyerQuotationIncoterm.label;
@@ -207,7 +221,8 @@ const Requests = () => {
 
         fetchData();
         return () => abortController.abort();
-    }, []);
+        // eslint-disable-next-line
+    }, [paging.page, paging.size]);
 
     return (
         <div className="Requests-Table">
@@ -230,13 +245,18 @@ const Requests = () => {
                 className="standard-table"
                 checkboxSelection
                 disableSelectionOnClick
-                pageSize={10}
+                pageSize={paging.size}
                 rows={rows}
                 columns={columns}
                 pagination
                 density="compact"
                 rowsPerPageOptions={[10, 20, 30, 40, 50]}
                 loading={rowsLoading}
+
+                rowCount={paging.totalCount}
+                paginationMode="server"
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
             />
         </div>
     )

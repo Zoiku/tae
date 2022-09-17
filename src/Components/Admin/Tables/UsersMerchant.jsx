@@ -22,6 +22,18 @@ import { formReducer, INITIAL_STATE } from "../../../Reducers/FormReducer";
 import { SEND_REQUEST, REQUEST_FAILED } from "../../../Reducers/Actions";
 
 const UsersMerchant = () => {
+    const [paging, setPaging] = useState({
+        page: 1,
+        size: 10,
+        totalCount: 0
+    });
+    const handlePageChange = (page) => {
+        setPaging({ ...paging, page: page + 1 })
+    }
+    const handlePageSizeChange = (size) => {
+        setPaging({ ...paging, size: size })
+    }
+
     const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
     const rootDispatch = useDispatch();
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -195,11 +207,13 @@ const UsersMerchant = () => {
             setRowsLoading(true);
             const adminService = new AdminService();
             try {
-                const { data, errors } = await adminService.getMerchants(abortController.signal);
+                const { page, size } = paging;
+                const { data, errors } = await adminService.getMerchants(abortController.signal, { page, size });
                 if (errors.length === 0) {
+                    setPaging({ ...paging, totalCount: data.data.totalCount });
                     const filteredData = data.data.data;
                     filteredData.map((user, index) => {
-                        user.index = index + 1;
+                        user.index = ((paging.size * paging.page) - (paging.size - index)) + 1
                         user.fullName = `${user.user.firstName} ${user.user.lastName}`;
                         user.email = user.user.email;
                         user.businessType = user.type.label;
@@ -217,7 +231,8 @@ const UsersMerchant = () => {
 
         fetchData();
         return () => abortController.abort();
-    }, []);
+        // eslint-disable-next-line
+    }, [paging.page, paging.size]);
 
     return (
         <div className="UsersMerchant-Table">
@@ -259,13 +274,18 @@ const UsersMerchant = () => {
                 className="standard-table"
                 checkboxSelection
                 disableSelectionOnClick
-                pageSize={10}
+                pageSize={paging.size}
                 rows={rows}
                 columns={columns}
                 pagination
                 density="compact"
                 rowsPerPageOptions={[10, 20, 30, 40, 50]}
                 loading={rowsLoading}
+
+                rowCount={paging.totalCount}
+                paginationMode="server"
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
             />
         </div>
     )

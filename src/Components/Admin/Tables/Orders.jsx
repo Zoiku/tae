@@ -13,6 +13,18 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
 const Orders = () => {
+    const [paging, setPaging] = useState({
+        page: 1,
+        size: 10,
+        totalCount: 0
+    });
+    const handlePageChange = (page) => {
+        setPaging({ ...paging, page: page + 1 })
+    };
+    const handlePageSizeChange = (size) => {
+        setPaging({ ...paging, size: size })
+    };
+
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -168,15 +180,19 @@ const Orders = () => {
             setRowsLoading(true);
             const adminService = new AdminService();
             try {
-                const { data, errors } = await adminService.getOrders(abortController.signal);
+                const { page, size } = paging;
+                const { data, errors } = await adminService.getOrders(abortController.signal, { page, size });
                 if (errors.length === 0) {
+                    setPaging({ ...paging, totalCount: data.data.totalCount });
                     const filteredData = data.data.data;
                     filteredData.map((order, index) => {
-                        order.index = index + 1;
+                        order.index = ((paging.size * paging.page) - (paging.size - index)) + 1;
                         order.id = order?._id;
+                        order.destination = order?.request?.destination;
                         order.product = order?.request?.quotationProducts[0]?.product.name;
                         order.terms = order?.request?.buyerQuotationIncoterm?.label;
                         order.quantity = order?.request?.quotationProducts[0]?.specification?.quantity;
+                        
                         return 1;
                     });
                     setRows(filteredData);
@@ -189,7 +205,8 @@ const Orders = () => {
 
         fetchData();
         return () => abortController.abort();
-    }, []);
+        // eslint-disable-next-line
+    }, [paging.page, paging.size]);
 
     return (
         <div className="Orders-Table">
@@ -228,13 +245,18 @@ const Orders = () => {
                 className="standard-table"
                 checkboxSelection
                 disableSelectionOnClick
-                pageSize={10}
+                pageSize={paging.size}
                 rows={rows}
                 columns={columns}
                 pagination
                 density="compact"
                 rowsPerPageOptions={[10, 20, 30, 40, 50]}
                 loading={rowsLoading}
+
+                rowCount={paging.totalCount}
+                paginationMode="server"
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
             />
         </div>
     )

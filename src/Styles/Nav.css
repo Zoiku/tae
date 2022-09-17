@@ -96,7 +96,7 @@
 
   .hamburger-menu-links {
     border-radius: 5px;
-    margin-bottom: 20px;
+    margin-bottom: 35px;
     padding: 15px 15px 15px 0;
     display: flex !important;
     align-items: center !important;
@@ -104,19 +104,18 @@
 
   .hamburger-menu-links > span {
     color: rgb(235, 235, 235);
-    font-size: 20px;
     font-weight: 500;
   }
 
   .hamburger-menu-links > span:nth-child(1) {
-    font-size: 30px;
+    font-size: 35px;
     margin-right: 20px;
     display: flex;
     align-items: center;
   }
 
   .hamburger-menu-links > span:nth-child(2) {
-    font-size: 21px;
+    font-size: 25px;
   }
 
   .hamburger-menu-logo-container {

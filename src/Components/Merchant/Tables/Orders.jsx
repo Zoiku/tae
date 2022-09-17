@@ -7,6 +7,41 @@ import { useState, useEffect } from "react";
 import Box from '@mui/material/Box';
 import { Puller } from "../../../Material/Drawer";
 import MerchantService from "../../../Services/Merchant";
+import Countdown from "../../Countdown";
+import "../../../Styles/Order.css";
+
+const ORDER_STATUS = {
+    RECEIVED: 'RECEIVED',
+    CONFIRMED: 'CONFIRMED',
+    PAID: "AWAITING PROOF OF PAYMENT",
+    APPROVED: "PROOF OF PAYMENT APPROVED",
+    PROCESSING: 'PROCESSING',
+    SHIPPED: 'SHIPPED',
+    DELIVERED: 'DELIVERED',
+}
+
+const ORDER_STATUS_LEVELS = {
+    RECEIVED: 10,
+    CONFIRMED: 20,
+    PAID: 30,
+    APPROVED: 40,
+    PROCESSING: 60,
+    SHIPPED: 80,
+    DELIVERED: 100
+}
+
+const ProgressBar = ({ status }) => {
+    return (
+        <div className="progress-bar-container">
+            <div>
+                <span>{ORDER_STATUS_LEVELS[status]}% Complete</span>
+            </div>
+            <div>
+                <progress className="order-status-progress" max="100" value={ORDER_STATUS_LEVELS[status]} />
+            </div>
+        </div>
+    )
+};
 
 const Orders = () => {
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -20,15 +55,24 @@ const Orders = () => {
         setOpenDrawer(open);
     };
 
+    const handleCloseDrawer = () => {
+        setOpenDrawer(false);
+        setSelectedOrderId(null);
+    }
+
     const columns = [
         { field: "index", headerName: "Order #", width: 100 },
         { field: "product", headerName: "Product", width: 200 },
         { field: "terms", headerName: "Terms", width: 70 },
         { field: "quantity", headerName: "Quantity", width: 90 },
-        { field: "timeLeft", headerName: "TimeLeft", width: 100, renderCell: () => <div>10hr 10m</div> },
+        { field: "timeLeft", headerName: "TimeLeft", width: 100, renderCell: ({ row }) => <div> <Countdown endDate={row.expiryDate} /> </div> },
         { field: "status", headerName: "Status", width: 90 },
         { field: "action", headerName: "", width: 90, renderCell: ({ row }) => <SmallPrimary onClick={() => selectOrder(row.id)}>View</SmallPrimary> },
     ];
+
+    useEffect(() => {
+        selectedOrder && setOpenDrawer(true);
+    }, [selectedOrder]);
 
     const list = () => (
         selectedOrder &&
@@ -38,13 +82,13 @@ const Orders = () => {
             className="drawer-container"
         >
             <div className="drawer-title-container">
-                <div>Request {selectedOrder.id}</div>
+                <div>Order Details</div>
                 <Puller />
             </div>
             <div className="drawer-body">
                 <div className="requests-sections-body">
                     <div className="requests-title-container">
-                        <div>Date: 22 January, 2022</div>
+                        <div>Order {selectedOrder.orderNo}</div>
                     </div>
                     <div className="requests-sections-container">
                         <section>
@@ -55,75 +99,20 @@ const Orders = () => {
                                     <span>{selectedOrder.product}</span>
                                 </div>
                                 <div>
-                                    <span>Species:</span>
-                                    <span>Teak</span>
-                                </div>
-                                <div>
-                                    <span>Types of species:</span>
-                                    <span>Teak</span>
-                                </div>
-                                <div>
-                                    <span>Origin:</span>
-                                    <span>{selectedOrder.destination}</span>
-                                </div>
-                                <div>
-                                    <span>Container size:</span>
-                                    <span>1000 20ft</span>
-                                </div>
-                                <div>
-                                    <span>Volume per container:</span>
-                                    <span>13.5 Cubic meters</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Product Specification</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Length:</span>
-                                    <span>20cm</span>
-                                </div>
-                                <div>
-                                    <span>Thickness:</span>
-                                    <span>2cm</span>
-                                </div>
-                                <div>
-                                    <span>Diameter:</span>
-                                    <span>20cm</span>
-                                </div>
-                                <div>
                                     <span>Quantity:</span>
-                                    <span>20cm</span>
+                                    <span>{selectedOrder.quantity} {selectedOrder.containerSize}</span>
+                                </div>
+                                <div>
+                                    <span>Requested Date:</span>
+                                    <span>{selectedOrder.createdOn}</span>
                                 </div>
                             </div>
                         </section>
 
                         <section>
-                            <div className="requests-section-title">Product Delivery Information</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Incoterm:</span>
-                                    <span>{selectedOrder.terms}</span>
-                                </div>
-                                <div>
-                                    <span>Destination:</span>
-                                    <span>{selectedOrder.destination}</span>
-                                </div>
-                                <div>
-                                    <span>Destination Port:</span>
-                                    <span>Nharva Sheva</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Request Settings</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Validity:</span>
-                                    <span>7 days</span>
-                                </div>
+                            <div className="requests-section-title">Track Order</div>
+                            <div className="order-section-body">
+                                <div> <ProgressBar status={selectedOrder.status} /> </div>
                             </div>
                         </section>
                     </div>
@@ -144,9 +133,12 @@ const Orders = () => {
                     filteredData.map((order, index) => {
                         order.index = index + 1;
                         order.id = order._id;
-                        order.product = order.request.quotationProducts[0].product.name;
-                        order.terms = order.request.buyerQuotationIncoterm.label;
                         order.quantity = order.request.quotationProducts[0].specification.quantity;
+                        order.terms = order.request.buyerQuotationIncoterm.label;
+                        order.containerSize = order.request.quotationProducts[0].product.supportedShippingContainers[0].label;
+                        order.product = order.request.quotationProducts[0].product.name;
+                        order.createdOn = new Date(order.createdOn).toUTCString().slice(0, 16);
+                        order.expiryDate = new Date(order?.request?.expiryDate).toUTCString().slice(0, 25);
                         return 1;
                     });
                     setRows(filteredData);
@@ -170,7 +162,7 @@ const Orders = () => {
                     anchor="bottom"
                     open={openDrawer}
                     onOpen={toggleDrawer(true)}
-                    onClose={toggleDrawer(false)}
+                    onClose={handleCloseDrawer}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
                     {list()}

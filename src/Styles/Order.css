@@ -1,0 +1,20 @@
+.order-section-body {
+  margin-top: 20px;
+  font-size: small;
+}
+
+.progress-bar-container {
+  font-weight: 600;
+}
+
+.progress-bar-container > div {
+  margin: 0 0 0px 0;
+}
+
+.progress-bar-container > div:nth-last-child(1) {
+  margin: 0;
+}
+
+.progress-bar-container progress {
+  width: 100%;
+}

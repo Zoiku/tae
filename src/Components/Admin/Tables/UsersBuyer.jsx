@@ -22,6 +22,18 @@ import { formReducer, INITIAL_STATE } from "../../../Reducers/FormReducer";
 import { SEND_REQUEST, REQUEST_FAILED } from "../../../Reducers/Actions";
 
 const UsersBuyer = () => {
+    const [paging, setPaging] = useState({
+        page: 1,
+        size: 10,
+        totalCount: 0
+    });
+    const handlePageChange = (page) => {
+        setPaging({ ...paging, page: page + 1 })
+    }
+    const handlePageSizeChange = (size) => {
+        setPaging({ ...paging, size: size })
+    }
+
     const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
     const rootDispatch = useDispatch();
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -92,7 +104,7 @@ const UsersBuyer = () => {
         { field: "index", headerName: "Number", width: 100 },
         { field: "fullName", headerName: "Full Name", width: 200 },
         { field: "email", headerName: "Email", width: 70 },
-        { field: "businessType", headerName: "Business Type", width: 70 },
+        { field: "joinedSince", headerName: "Joined Since", width: 70 },
         { field: "status", headerName: "Status", width: 90, renderCell: ({ row }) => row.status ? "Verified" : "Unverified" },
         { field: "activated", headerName: "Activated", width: 90, renderCell: ({ row }) => <IOSSwitch disabled={state.requestState.loading} onChange={() => handleToggleActivate(row.email, row.activated)} checked={row.activated} /> },
         { field: "more", headerName: "", width: 30, renderCell: ({ row }) => <div className="simple-center-div"><More id={row.id} /></div> },
@@ -170,13 +182,15 @@ const UsersBuyer = () => {
             setRowsLoading(true);
             const adminService = new AdminService();
             try {
-                const { data, errors } = await adminService.getBuyers(abortController.signal);
+                const { page, size } = paging;
+                const { data, errors } = await adminService.getBuyers(abortController.signal, { page, size });
                 if (errors.length === 0) {
+                    setPaging({ ...paging, totalCount: data.data.totalCount });
                     const filteredData = data.data.data;
                     filteredData.map((user, index) => {
-                        user.index = index + 1;
+                        user.index = ((paging.size * paging.page) - (paging.size - index)) + 1;
                         user.fullName = `${user.firstName} ${user.lastName}`;
-                        user.joinedSince = user.createdOn;
+                        user.joinedSince = new Date(user.createdOn).toUTCString.slice(0, 25);
                         user.status = user.isVerified;
                         user.activated = user.enabled;
                         return 1;
@@ -191,7 +205,8 @@ const UsersBuyer = () => {
 
         fetchData();
         return () => abortController.abort();
-    }, []);
+        // eslint-disable-next-line
+    }, [paging.page, paging.size]);
 
     return (
         <div className="UsersBuyer-Table">
@@ -233,13 +248,18 @@ const UsersBuyer = () => {
                 className="standard-table"
                 checkboxSelection
                 disableSelectionOnClick
-                pageSize={10}
+                pageSize={paging.size}
                 rows={rows}
                 columns={columns}
                 pagination
                 density="compact"
                 rowsPerPageOptions={[10, 20, 30, 40, 50]}
                 loading={rowsLoading}
+
+                rowCount={paging.totalCount}
+                paginationMode="server"
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
             />
         </div>
     )

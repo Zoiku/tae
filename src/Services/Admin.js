@@ -39,10 +39,11 @@ const monthReduce = (array) => {
 };
 
 export default class AdminService {
-  async getRequests(signal) {
+  async getRequests(signal, paging) {
     let errors = [];
     let data = null;
-    const url = "/buyer/quotation/requests";
+    const { page, size } = paging;
+    const url = `/buyer/quotation/requests?page=${page}&size=${size}`;
 
     try {
       data = await AxiosInstance().get(url, { signal });
@@ -151,10 +152,11 @@ export default class AdminService {
     };
   }
 
-  async getOrders(signal) {
+  async getOrders(signal, paging) {
     let errors = [];
     let data = null;
-    const url = "/orders";
+    const { page, size } = paging;
+    const url = `/orders?page=${page}&size=${size}`;
 
     try {
       data = await AxiosInstance().get(url, { signal });
@@ -168,10 +170,11 @@ export default class AdminService {
     };
   }
 
-  async getBuyers(signal) {
+  async getBuyers(signal, paging) {
     let errors = [];
     let data = null;
-    const url = `/buyers`;
+    const { page, size } = paging;
+    const url = `/buyers?page=${page}&size=${size}`;
 
     try {
       data = await AxiosInstance().get(url, { signal });
@@ -185,10 +188,11 @@ export default class AdminService {
     };
   }
 
-  async getMerchants(signal) {
+  async getMerchants(signal, paging) {
     let errors = [];
     let data = null;
-    const url = "/merchants";
+    const { page, size } = paging;
+    const url = `/merchants?page=${page}&size=${size}`;
 
     try {
       data = await AxiosInstance().get(url, { signal });
