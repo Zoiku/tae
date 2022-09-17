@@ -190,7 +190,7 @@ const UsersBuyer = () => {
                     filteredData.map((user, index) => {
                         user.index = ((paging.size * paging.page) - (paging.size - index)) + 1;
                         user.fullName = `${user.firstName} ${user.lastName}`;
-                        user.joinedSince = new Date(user.createdOn).toUTCString.slice(0, 25);
+                        user.joinedSince = new Date(user.createdOn).toUTCString().slice(0, 25);
                         user.status = user.isVerified;
                         user.activated = user.enabled;
                         return 1;

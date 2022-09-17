@@ -74,4 +74,21 @@ export default class AuthService {
       errors
     };
   }
+
+  async getUserProfile(signal) {
+    let errors = [];
+    let data = {};
+    const url = "/user";
+
+    try {
+      data = await AxiosInstance().get(url, { signal });
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors,
+      data
+    };
+  }
 }

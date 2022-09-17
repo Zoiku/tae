@@ -1,12 +1,18 @@
 import "../../Styles/Settings.css";
-
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-
 import Avatar from '@mui/material/Avatar';
 import { StyledBadge } from "../../Material/Avatar";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const Settings = () => {
+    const { profile } = useSelector(state => state.session.user);
+
+    useEffect(() => {
+        console.log(profile);
+    }, []);
+
     return (
         <div className="Settings-Page">
             <div className="user-profile-container">
@@ -18,8 +24,8 @@ const Settings = () => {
                     <Avatar className="user-avatar" alt="User" src="/" />
                 </StyledBadge>
                 <div className="user-short-desc-container">
-                    <div>User User</div>
-                    <div>user@gmail.com</div>
+                    <div>{profile.firstName} {profile.lastName}</div>
+                    <div>{profile.email}</div>
                 </div>
             </div>
 
@@ -35,34 +41,20 @@ const Settings = () => {
                     <section>
                         <div className="user-profile-section-title">Personal Details</div>
                         <div className="form-controller-input-duo form-controller">
-                            <TextField fullWidth type="text" name="firstName" label="First Name" variant="outlined" />
-                            <TextField fullWidth type="text" name="lastName" label="Last Name" variant="outlined" />
+                            <TextField disabled value={profile.firstName} fullWidth label="First Name" variant="outlined" />
+                            <TextField disabled value={profile.firstName} fullWidth label="Last Name" variant="outlined" />
                         </div>
                         <div className="form-controller-input form-controller">
-                            <TextField fullWidth type="text" name="email" label="Email" variant="outlined" />
+                            <TextField disabled value={profile.email} fullWidth label="Email" variant="outlined" />
                         </div>
                     </section>
 
-                    <section>
+                    {/* <section>
                         <div className="user-profile-section-title">Company Details</div>
                         <div className="form-controller-input form-controller">
                             <TextField multiline rows={5} fullWidth type="text" name="company" label="Company Introduction" variant="outlined" />
                         </div>
-                        <div className="form-controller-input-duo form-controller">
-                            <TextField fullWidth type="text" name="companyName" label="Company Name" variant="outlined" />
-                            <TextField fullWidth type="text" name="lastName" label="Company Address" variant="outlined" />
-                        </div>
-                        <div className="form-controller-input-duo form-controller">
-                            <TextField fullWidth type="text" name="companyYear" label="Company Year" variant="outlined" />
-                            <TextField fullWidth type="text" name="numOfEmployees" label="Number of Employees" variant="outlined" />
-                        </div>
-                        <div className="form-controller-input form-controller">
-                            <TextField fullWidth type="text" name="company" label="Business Type" variant="outlined" />
-                        </div>
-                        <div className="form-controller-input form-controller">
-                            <TextField fullWidth type="text" name="company" label="Supply Ability" variant="outlined" />
-                        </div>
-                    </section>
+                    </section> */}
                 </Box>
             </div>
         </div>

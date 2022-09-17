@@ -62,7 +62,7 @@ const Register = () => {
     };
 
     const handleSubmit = async (e) => {
-        dispatch({ type: SEND_REQUEST })
+        dispatch({ type: SEND_REQUEST });
         e.preventDefault();
         state.payload = {
             ...state.payload,
@@ -277,6 +277,7 @@ const Register = () => {
                         <div className="form-controller-input">
                             <TextField required helperText="Name of Company" fullWidth onChange={handleChange} type="text" name="companyName" label="Company Name" variant="outlined" />
                         </div>
+                        
                         <div className="form-controller-input">
                             <FormControl fullWidth>
                                 <InputLabel id="demo-multiple-chip-label">Country</InputLabel>
@@ -295,6 +296,7 @@ const Register = () => {
                                 </FormHelperText>
                             </FormControl>
                         </div>
+                        
                         <div className="form-controller-duo-input">
                             <div>
                                 <Select fullWidth disabled value={defaultCountryData.countryCode}>

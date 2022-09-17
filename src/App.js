@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useReducer } from "react";
 import { Routes, Route } from "react-router-dom";
+import AuthService from "./Services/Auth";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import AdminDashboard from "./Pages/Admin/Dashboard";
@@ -27,10 +28,18 @@ import ProtectedBuyerRoutes from "./Protected/BuyerRoutes";
 import ProtectedMerchantRoutes from "./Protected/MerchantRoutes";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAlerts } from "./Redux/Features/Alert";
+import { initUser } from "./Redux/Features/Session";
 import { MaterialAlert } from "./Material/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import { formReducer, INITIAL_STATE } from "./Reducers/FormReducer";
+import {
+  REQUEST_FAILED,
+  REQUEST_SUCCESSFUL,
+  SEND_REQUEST
+} from "./Reducers/Actions";
 
 const App = () => {
+  const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
   const rootDispatch = useDispatch();
   const { session } = useSelector((state) => state);
   const { alert } = useSelector((state) => state);
@@ -43,6 +52,30 @@ const App = () => {
     setOpenSnackBar(false);
     rootDispatch(clearAlerts());
   };
+
+  useEffect(() => {
+    dispatch({ type: SEND_REQUEST });
+    const abortController = new AbortController();
+    const fetchData = async () => {
+      const authService = new AuthService();
+      try {
+        const { errors, data } = await authService.getUserProfile(
+          abortController.signal
+        );
+        if (errors.length === 0) {
+          const profile = data.data.data.at(0);
+          dispatch({ type: REQUEST_SUCCESSFUL, payload: profile });
+          rootDispatch(initUser(profile));
+        }
+      } catch (error) {
+        //
+      }
+    };
+
+    session.isLogged && fetchData();
+
+    return () => abortController.abort();
+  }, [session.isLogged]);
 
   useEffect(() => {
     alert.active && alert.severity && handleOpenSnackBar();

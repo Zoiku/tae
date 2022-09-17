@@ -25,7 +25,7 @@
 
 .menu-links-container .active::before {
   content: "";
-  border-left: 5px solid #2ECA45;
+  border-left: 5px solid #efefef;
   height: 15px;
   position: absolute;
   left: -2px;
