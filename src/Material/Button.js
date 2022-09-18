@@ -34,6 +34,66 @@ export const PrimaryButton = styled(LoadingButton)({
   "&:focus": {}
 });
 
+export const GenericPrimaryButton = styled(LoadingButton)({
+  boxShadow: "none",
+  textTransform: "none",
+  background: "black",
+  transition: "all 0.2s ease",
+  padding: "10px",
+  color: "#fff",
+  lineHeight: 1.5,
+  fontFamily: [
+    "-apple-system",
+    "BlinkMacSystemFont",
+    '"Segoe UI"',
+    "Roboto",
+    '"Helvetica Neue"',
+    "Arial",
+    "sans-serif",
+    '"Apple Color Emoji"',
+    '"Segoe UI Emoji"',
+    '"Segoe UI Symbol"'
+  ].join(","),
+  "&:hover": {
+    boxShadow: "none",
+    background: "black",
+    color: "#fff"
+  },
+  "&:active": {
+    boxShadow: "none"
+  },
+  "&:focus": {}
+});
+
+export const GenericSecondary = styled(LoadingButton)({
+  boxShadow: "none",
+  textTransform: "none",
+  transition: "all 0.2s ease",
+  padding: "10px",
+  color: "black",
+  lineHeight: 1.5,
+  fontFamily: [
+    "-apple-system",
+    "BlinkMacSystemFont",
+    '"Segoe UI"',
+    "Roboto",
+    '"Helvetica Neue"',
+    "Arial",
+    "sans-serif",
+    '"Apple Color Emoji"',
+    '"Segoe UI Emoji"',
+    '"Segoe UI Symbol"'
+  ].join(","),
+  "&:hover": {
+    boxShadow: "none",
+    color: "black"
+  },
+  "&:active": {
+    boxShadow: "none"
+  },
+  "&:focus": {}
+});
+
 export const SettingsPageUpdateButton = styled(LoadingButton)({
   boxShadow: "none",
   textTransform: "none",

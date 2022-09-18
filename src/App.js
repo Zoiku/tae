@@ -1,8 +1,10 @@
 import { useEffect, useState, useReducer } from "react";
 import { Routes, Route } from "react-router-dom";
 import AuthService from "./Services/Auth";
+import PageLoadingAnimation from "./Components/PageLoadingAnimation";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
+import RequestQuote from "./Pages/RequestQuote";
 import AdminDashboard from "./Pages/Admin/Dashboard";
 import AdminUsers from "./Pages/Admin/Users";
 import AdminRequests from "./Pages/Admin/Requests";
@@ -43,6 +45,7 @@ const App = () => {
   const rootDispatch = useDispatch();
   const { session } = useSelector((state) => state);
   const { alert } = useSelector((state) => state);
+  const [pageLoadingAnimation, setPageLoadingAnimation] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(alert.active);
   const handleOpenSnackBar = () => setOpenSnackBar(true);
   const handleCloseSnackBar = (_event, reason) => {
@@ -52,6 +55,24 @@ const App = () => {
     setOpenSnackBar(false);
     rootDispatch(clearAlerts());
   };
+
+  useEffect(() => {
+    const onPageLoad = () => {
+      setPageLoadingAnimation(true);
+    };
+
+    const onCompleteLoad = () => {
+      setPageLoadingAnimation(false);
+    };
+
+    if (document.readyState === "complete") {
+      onCompleteLoad();
+    } else {
+      window.addEventListener("load", onPageLoad);
+    }
+
+    return () => window.removeEventListener("load", onPageLoad);
+  }, []);
 
   useEffect(() => {
     dispatch({ type: SEND_REQUEST });
@@ -83,6 +104,8 @@ const App = () => {
 
   return (
     <div>
+      {pageLoadingAnimation && <PageLoadingAnimation />}
+
       <SessionTimeout session={session} />
 
       {alert.active && (
@@ -107,6 +130,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/buyer/register" element={<BuyerRegistration />} />
           <Route path="/merchant/register" element={<MerchantRegistration />} />
+          <Route path="/requestquote" element={<RequestQuote />} />
         </Route>
 
         <Route element={<ProtectedAdminRoutes session={session} />}>

@@ -23,9 +23,7 @@ const Login = () => {
     const { session } = useSelector(state => state);
     const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
 
-    const handleChange = (e) => {
-        dispatch({ type: INPUTING, prop: e.target.name, value: e.target.value });
-    }
+    const handleChange = (e) => { dispatch({ type: INPUTING, prop: e.target.name, value: e.target.value }); }
 
     const handleFailedRequest = (message, timeOut) => {
         const payload = {

@@ -3,12 +3,55 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import log from "../Assets/log.jpg";
+import log1 from "../Assets/log-1.jpg";
+import log2 from "../Assets/log-2.jpg";
 import { PrimaryButton } from "../Material/Button";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
 import Marquee from "react-fast-marquee";
+import { useState, useEffect } from "react";
+import ProductService from "../Services/Product";
+import { useNavigate } from "react-router-dom";
+
+const IMAGES_TO_DISPLAY = {
+    ["Teak Round Logs"]: log,
+    ["Teak Square Logs"]: log1
+}
 
 const Home = () => {
+    const [products, setProducts] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const abortController = new AbortController();
+        const fetchData = async () => {
+            const productService = new ProductService();
+            try {
+                const { errors, data } = await productService.getProducts(abortController.signal);
+                if (errors.length === 0) {
+                    const filteredData = data.data.data;
+                    filteredData.map(product => {
+                        product.productInformation = {
+                            id: product.id,
+                            name: product.name,
+                            description: product.description,
+                            speciesType: product.species.type.label,
+                            species: product.species.label,
+                            volume: product.volume.value,
+                            volumeUnit: product.volume.unit,
+                            origin: product.origin.country,
+                            containerSize: "20ft Container"
+                        }
+                    });
+                    const products = filteredData.map(filter => filter.productInformation)
+                    setProducts(products);
+                }
+            } catch (error) { }
+        }
+        fetchData();
+        return () => abortController.abort();
+    }, []);
+
     return (
         <div className="Home">
             <div className="tae-home-banner-container">
@@ -27,59 +70,37 @@ const Home = () => {
             </div>
 
             <div className="product-section-containers">
-                <section className="product-section-container">
-                    <div className="specification-container">
-                        <div>
-                            <div className="specification-title">Teak Round Logs</div>
-                            <div className="specification-description-short">Long. Hard. Durable</div>
-                            <div className="specification-button-container">
-                                <PrimaryButton>Request Quotes</PrimaryButton>
+                {
+                    products &&
+                    products.length > 0 &&
+                    products.map(product =>
+                        <section className="product-section-container">
+                            <div className="specification-container">
+                                <div>
+                                    <div className="specification-title">{product.name}</div>
+                                    <div className="specification-description-short">{product.description}</div>
+                                    <div className="specification-button-container">
+                                        <PrimaryButton onClick={() => navigate(`/requestquote?product=${JSON.stringify(product)}`)}>Request Quotes</PrimaryButton>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div className="swiper-container">
-                        <Swiper
-                            navigation={true}
-                            pagination={true}
-                            modules={[Pagination, Navigation]}
-                            className="mySwiper"
-                        >
-                            <SwiperSlide>
-                                <img src={log} alt="" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src={log} alt="" />
-                            </SwiperSlide>
-                        </Swiper>
-                    </div>
-                </section>
-
-                <section className="product-section-container">
-                    <div className="specification-container">
-                        <div>
-                            <div className="specification-title">Teak Round Logs</div>
-                            <div className="specification-description-short">Long. Hard. Durable</div>
-                            <div className="specification-button-container">
-                                <PrimaryButton>Request Quotes</PrimaryButton>
+                            <div className="swiper-container">
+                                <Swiper
+                                    navigation={true}
+                                    pagination={true}
+                                    modules={[Pagination, Navigation]}
+                                    className="mySwiper"
+                                >
+                                    <SwiperSlide>
+                                        <img src={IMAGES_TO_DISPLAY[product.name]} alt="" />
+                                    </SwiperSlide>
+                                    <SwiperSlide>
+                                        <img src={IMAGES_TO_DISPLAY[product.name]} alt="" />
+                                    </SwiperSlide>
+                                </Swiper>
                             </div>
-                        </div>
-                    </div>
-                    <div className="swiper-container">
-                        <Swiper
-                            navigation={true}
-                            pagination={true}
-                            modules={[Pagination, Navigation]}
-                            className="mySwiper"
-                        >
-                            <SwiperSlide>
-                                <img src={log} alt="" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src={log} alt="" />
-                            </SwiperSlide>
-                        </Swiper>
-                    </div>
-                </section>
+                        </section>)
+                }
             </div>
 
             <div className="home-coming-soon-container">
@@ -87,43 +108,43 @@ const Home = () => {
                 <Marquee className="coming-soon-marquee" gradient={false} pauseOnClick={true} speed={30} style={{ marginTop: 20 }}>
                     <div className="coming-soon-card-container">
                         <div className="coming-soon-card-img">
-                            <img src={log} alt="" />
+                            <img src={log2} alt="" />
                         </div>
                         <div className="coming-soon-card-name">Special Log</div>
                     </div>
                     <div className="coming-soon-card-container">
                         <div className="coming-soon-card-img">
-                            <img src={log} alt="" />
+                            <img src={log2} alt="" />
                         </div>
                         <div className="coming-soon-card-name">Special Log</div>
                     </div>
                     <div className="coming-soon-card-container">
                         <div className="coming-soon-card-img">
-                            <img src={log} alt="" />
+                            <img src={log2} alt="" />
                         </div>
                         <div className="coming-soon-card-name">Special Log</div>
                     </div>
                     <div className="coming-soon-card-container">
                         <div className="coming-soon-card-img">
-                            <img src={log} alt="" />
+                            <img src={log2} alt="" />
                         </div>
                         <div className="coming-soon-card-name">Special Log</div>
                     </div>
                     <div className="coming-soon-card-container">
                         <div className="coming-soon-card-img">
-                            <img src={log} alt="" />
+                            <img src={log2} alt="" />
                         </div>
                         <div className="coming-soon-card-name">Special Log</div>
                     </div>
                     <div className="coming-soon-card-container">
                         <div className="coming-soon-card-img">
-                            <img src={log} alt="" />
+                            <img src={log2} alt="" />
                         </div>
                         <div className="coming-soon-card-name">Special Log</div>
                     </div>
                     <div className="coming-soon-card-container">
                         <div className="coming-soon-card-img">
-                            <img src={log} alt="" />
+                            <img src={log2} alt="" />
                         </div>
                         <div className="coming-soon-card-name">Special Log</div>
                     </div>
