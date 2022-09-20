@@ -60,17 +60,19 @@ const RequestQuote = ({ session }) => {
                     console.log(e);
                 } else {
                     dispatch({ type: REQUEST_FAILED });
-                    handleFailedRequest("Problem submitting request, please try again", 5000);
+                    handleFailedRequest("Could not process request", 5000);
                 }
             } else {
-                const { errors } = await buyerService.postPendingQuote(state.payload);
+                const { data, errors } = await buyerService.postPendingQuote(state.payload);
                 if (errors.length === 0) {
+                    const { _id } = data.data.data[0];
+                    sessionStorage.setItem("pqid", _id);
                     dispatch({ type: REQUEST_SUCCESSFUL });
                     handleSuccessfullRequest("Your request is pending, please log in to complete request", 6000);
                     navigate("/login");
                 } else {
                     dispatch({ type: REQUEST_FAILED });
-                    handleFailedRequest("Problem submitting request, please try again", 5000);
+                    handleFailedRequest("Could not process request", 5000);
                 }
             }
         } catch (error) { }

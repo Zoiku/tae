@@ -25,10 +25,12 @@ const Requests = () => {
     const selectRequest = (id) => setSelectedRequestId(id);
     const selectedRequest = rows && rows.find(row => row.id === selectedRequestId);
     const [openDrawer, setOpenDrawer] = useState(false);
-    const toggleDrawer = (open) => (_event) => setOpenDrawer(open);
+    const toggleDrawer = (open) => (_event) => {
+        setOpenDrawer(open);
+    };
     const handleCloseDrawer = () => {
         setOpenDrawer(false);
-        selectedRequestId(null);
+        setSelectedRequestId(null);
     }
 
     const [selectedOffers, setSelectedOffers] = useState(null);
@@ -205,10 +207,10 @@ const Requests = () => {
                     {
                         selectedOffers &&
                             selectedOffers.length > 0 ?
-                            selectedOffers.map((offer, index) => {
+                            selectedOffers.map((offer) => {
                                 return (
                                     <div className="request-section-offer-container">
-                                        <div>Offer {index + 1}</div>
+                                        <div>Offer {offer.index}</div>
                                         <div>
                                             <SmallPrimary onClick={() => handleSelectRequestOffer(offer)}>View</SmallPrimary>
                                         </div>
@@ -242,39 +244,39 @@ const Requests = () => {
                                     <thead>
                                         <tr className="incoterm-setting-heading-container">
                                             <th>Number</th>
-                                            {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <th>Diameter (cm)</th>}
+                                            {selectedOffer.terms !== "FOB" && <th>Diameter (cm)</th>}
                                             <th>Pieces/container</th>
                                             <th>Price/container</th>
                                             <th>Total price</th>
-                                            {selectedOffer?.request?.buyerQuotationIncoterm?.label === "CIF" && <th>Insurance</th>}
-                                            {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <th>Freight</th>}
+                                            {selectedOffer.terms === "CIF" && <th>Insurance</th>}
+                                            {selectedOffer.terms !== "FOB" && <th>Freight</th>}
                                             <th>Total amount</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
                                         {
-                                            selectedOffer.buyerQuotationRequestIncoterm.length > 0 ?
-                                                selectedOffer?.buyerQuotationRequestIncoterm.map((incoterm, index) =>
+                                            selectedOffer.incotermRows.length > 0 ?
+                                                selectedOffer?.incotermRows.map((incoterm, index) =>
                                                     <tr key={index + 1}>
                                                         <td><input disabled value={index + 1} /></td>
-                                                        {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <td><input value={incoterm.diameter} /></td>}
+                                                        {selectedOffer.terms !== "FOB" && <td><input value={incoterm.diameter} /></td>}
                                                         <td><input value={incoterm.noOfPieces} /></td>
                                                         <td><input value={incoterm.price} /></td>
                                                         <td><input value={incoterm.totalPrice} /></td>
-                                                        {selectedOffer?.request?.buyerQuotationIncoterm?.label === "CIF" && <td><input disabled value={incoterm.insurance} /></td>}
-                                                        {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <td><input disabled value={incoterm.costOfFreight} /></td>}
+                                                        {selectedOffer.terms === "CIF" && <td><input disabled value={incoterm.insurance} /></td>}
+                                                        {selectedOffer.terms !== "FOB" && <td><input disabled value={incoterm.costOfFreight} /></td>}
                                                         <td><input disabled value={incoterm.totalAmount} /></td>
                                                     </tr>
                                                 ) :
                                                 <tr>
                                                     <td><input disabled value="--" /></td>
-                                                    {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <td><input disabled value="--" /></td>}
+                                                    {selectedOffer.terms !== "FOB" && <td><input disabled value="--" /></td>}
                                                     <td><input disabled name="noOfPieces" value="--" /></td>
                                                     <td><input disabled name="price" value="--" /></td>
                                                     <td><input disabled name="totalPrice" value="--" /></td>
-                                                    {selectedOffer?.request?.buyerQuotationIncoterm?.label === "CIF" && <td><input disabled value="--" /></td>}
-                                                    {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <td><input disabled value="--" /></td>}
+                                                    {selectedOffer.terms === "CIF" && <td><input disabled value="--" /></td>}
+                                                    {selectedOffer.terms !== "FOB" && <td><input disabled value="--" /></td>}
                                                     <td><input disabled value="--" /></td>
                                                 </tr>
                                         }
@@ -323,7 +325,23 @@ const Requests = () => {
                         request.volume = request.quotationProducts[0].product.volume.value;
                         request.volumeUnit = request.quotationProducts[0].product.volume.unit;
                         request.expiryDate = new Date(request.expiryDate).toUTCString().slice(0, 25);
-                        request.offers = await (await buyerService.getOffers(request._id)).data.data.data;
+                        request.offers = (await (await buyerService.getOffers(request._id)).data.data.data).map((offer, index) => {
+                            offer.index = index + 1;
+                            offer.destination = offer.request.destination;
+                            offer.incotermRows = offer.buyerQuotationRequestIncoterm;
+                            offer.requestNo = offer.request.requestNo;
+                            offer.terms = offer.request.buyerQuotationIncoterm.label;
+                            offer.expiryDate = new Date(offer.createdOn).toUTCString().slice(0, 16);
+                            offer.merchant = {
+                                firstName: offer.merchant.firstName,
+                                lastName: offer.merchant.lastName,
+                                email: offer.merchant.email,
+                                mobileNo: offer.merchant.mobileNo,
+                                companyName: offer.merchant.companyName,
+                                role: offer.merchant.role
+                            };
+                            return offer;
+                        })
                         return 1;
                     }));
 
