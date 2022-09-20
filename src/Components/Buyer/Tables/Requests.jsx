@@ -229,7 +229,7 @@ const Requests = () => {
             className="drawer-container"
         >
             <div className="drawer-title-container">
-                <div>View Offer</div>
+                <div>Offer Details</div>
                 <Puller />
             </div>
             <div className="drawer-body">
@@ -242,12 +242,12 @@ const Requests = () => {
                                     <thead>
                                         <tr className="incoterm-setting-heading-container">
                                             <th>Number</th>
-                                            {/* {selectedOffer?.request?.buyerQuotationRequestIncoterm?.label !== "FOB" && <th>Diameter (cm)</th>} */}
+                                            {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <th>Diameter (cm)</th>}
                                             <th>Pieces/container</th>
                                             <th>Price/container</th>
                                             <th>Total price</th>
-                                            {/* {selectedOffer.request.buyerQuotationRequestIncoterm.label === "CIF" && <th>Insurance</th>} */}
-                                            {/* {selectedOffer.request.buyerQuotationRequestIncoterm.label !== "FOB" && <th>Freight</th>} */}
+                                            {selectedOffer?.request?.buyerQuotationIncoterm?.label === "CIF" && <th>Insurance</th>}
+                                            {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <th>Freight</th>}
                                             <th>Total amount</th>
                                         </tr>
                                     </thead>
@@ -258,23 +258,23 @@ const Requests = () => {
                                                 selectedOffer?.buyerQuotationRequestIncoterm.map((incoterm, index) =>
                                                     <tr key={index + 1}>
                                                         <td><input disabled value={index + 1} /></td>
-                                                        {/* {selectedOffer.request.buyerQuotationRequestIncoterm.label !== "FOB" && <td><input name="diameter" value={incoterm.diameter} /></td>} */}
-                                                        <td><input name="noOfPieces" value={incoterm.noOfPieces} /></td>
-                                                        <td><input name="price" value={incoterm.price} /></td>
-                                                        <td><input name="totalPrice" value={incoterm.totalPrice} /></td>
-                                                        {/* {selectedOffer.request.buyerQuotationRequestIncoterm.label === "CIF" && <td><input disabled name="insurance" /></td>} */}
-                                                        {/* {selectedOffer.request.buyerQuotationRequestIncoterm.label !== "FOB" && <td><input disabled name="freight" value={incoterm.costOfFreight} /></td>} */}
-                                                        <td><input type="number" disabled value={incoterm.totalAmount} /></td>
+                                                        {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <td><input value={incoterm.diameter} /></td>}
+                                                        <td><input value={incoterm.noOfPieces} /></td>
+                                                        <td><input value={incoterm.price} /></td>
+                                                        <td><input value={incoterm.totalPrice} /></td>
+                                                        {selectedOffer?.request?.buyerQuotationIncoterm?.label === "CIF" && <td><input disabled value={incoterm.insurance} /></td>}
+                                                        {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <td><input disabled value={incoterm.costOfFreight} /></td>}
+                                                        <td><input disabled value={incoterm.totalAmount} /></td>
                                                     </tr>
                                                 ) :
                                                 <tr>
                                                     <td><input disabled value="--" /></td>
-                                                    {selectedOffer.request.buyerQuotationRequestIncoterm.label !== "FOB" && <td><input disabled name="diameter" value="--" /></td>}
+                                                    {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <td><input disabled value="--" /></td>}
                                                     <td><input disabled name="noOfPieces" value="--" /></td>
                                                     <td><input disabled name="price" value="--" /></td>
                                                     <td><input disabled name="totalPrice" value="--" /></td>
-                                                    {selectedOffer.request.buyerQuotationRequestIncoterm.label === "CIF" && <td><input disabled name="insurance" value="--" /></td>}
-                                                    {selectedOffer.request.buyerQuotationRequestIncoterm.label !== "FOB" && <td><input disabled name="freight" value="--" /></td>}
+                                                    {selectedOffer?.request?.buyerQuotationIncoterm?.label === "CIF" && <td><input disabled value="--" /></td>}
+                                                    {selectedOffer?.request?.buyerQuotationIncoterm?.label !== "FOB" && <td><input disabled value="--" /></td>}
                                                     <td><input disabled value="--" /></td>
                                                 </tr>
                                         }
@@ -282,6 +282,9 @@ const Requests = () => {
                                 </table>
                             </div>
                             <div className="incoterm-settings-table-note-container">Kindly note that all prices are quoted in ($)</div>
+                        </div>
+                        <div>
+                            <div></div>
                         </div>
                     </section>
                 </div>
