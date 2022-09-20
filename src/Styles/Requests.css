@@ -129,4 +129,15 @@
   .Requests-Page-Merchant .tables-container {
     height: 1110px;
   }
+
+  .request-section-offer-container {
+    margin-bottom: 10px;
+    border: 1px solid #c5c5c5;
+    border-radius: 5px;
+  }
+
+  .request-section-offer-container > div:nth-child(1) {
+    font-weight: 800;
+    padding: 10px;
+  }
 }

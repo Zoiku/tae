@@ -71,7 +71,7 @@
   order: 2;
 }
 
-.swiper-container {
+.Home .swiper-container {
   padding: 0 30px;
 }
 
@@ -161,6 +161,10 @@
   font-weight: 600;
 }
 
+.specification-button-container-mobile {
+  display: none;
+}
+
 @media screen and (max-width: 1000px) {
   .tae-home-banner {
     flex-direction: column;
@@ -171,6 +175,23 @@
   }
 
   .product-section-container > div {
+    width: 100%;
+  }
+
+  .product-section-container > div:nth-last-child(1) {
+    display: block;
+    text-align: center;
+    height: auto;
+    order: 3;
+    margin: 20px 0 0 0;
+    width: 100%;
+  }
+
+  .specification-button-container-mobile {
+    padding: 0 10px;
+  }
+
+  .specification-button-container-mobile > button {
     width: 100%;
   }
 
@@ -199,7 +220,7 @@
     display: none;
   }
 
-  .swiper-container {
+  .Home .swiper-container {
     padding: 0 10px;
   }
 

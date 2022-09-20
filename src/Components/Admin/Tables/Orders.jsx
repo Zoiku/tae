@@ -11,6 +11,70 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import StepContent from '@mui/material/StepContent';
+
+const ORDER_STATUS_LEVELS = {
+    RECEIVED: 10,
+    CONFIRMED: 20,
+    PAID: 30,
+    APPROVED: 40,
+    PROCESSING: 60,
+    SHIPPED: 80,
+    DELIVERED: 100
+};
+
+const ORDER_STATUS_STEPS = {
+    RECEIVED: 0,
+    CONFIRMED: 1,
+    PAID: 2,
+    APPROVED: 3,
+    PROCESSING: 4,
+    SHIPPED: 5,
+    DELIVERED: 6,
+};
+
+const steps = [
+    {
+        label: 'Order placed',
+        description: "Thank you for placing your order.",
+    },
+    {
+        label: "Confirm Order",
+        description: "Confirm your order to alert Merchant.",
+    },
+    {
+        label: "Order Approved",
+        description: "Your order has been approved and will be processed shortly.",
+    },
+    {
+        label: "Processing",
+        description: "Please wait while your order is being processed.",
+    },
+    {
+        label: "Shipped",
+        description: "Your order is being shipped.",
+    },
+    {
+        label: "Delivered",
+        description: "Your order has been delivered.",
+    },
+];
+
+const ProgressBar = ({ status }) => {
+    return (
+        <div className="progress-bar-container">
+            <div>
+                <span>{ORDER_STATUS_LEVELS[status]}% Complete</span>
+            </div>
+            <div>
+                <progress className="order-status-progress" max="100" value={ORDER_STATUS_LEVELS[status]} />
+            </div>
+        </div>
+    )
+};
 
 const Orders = () => {
     const [paging, setPaging] = useState({
@@ -80,13 +144,13 @@ const Orders = () => {
             className="drawer-container"
         >
             <div className="drawer-title-container">
-                <div>Request {selectedOrder.id}</div>
+                <div>Order Details</div>
                 <Puller />
             </div>
             <div className="drawer-body">
                 <div className="requests-sections-body">
                     <div className="requests-title-container">
-                        <div>Date: 22 January, 2022</div>
+                        <div>Order {selectedOrder.orderNo}</div>
                     </div>
                     <div className="requests-sections-container">
                         <section>
@@ -97,75 +161,40 @@ const Orders = () => {
                                     <span>{selectedOrder.product}</span>
                                 </div>
                                 <div>
-                                    <span>Species:</span>
-                                    <span>Teak</span>
-                                </div>
-                                <div>
-                                    <span>Types of species:</span>
-                                    <span>Teak</span>
-                                </div>
-                                <div>
-                                    <span>Origin:</span>
-                                    <span>{selectedOrder.destination}</span>
-                                </div>
-                                <div>
-                                    <span>Container size:</span>
-                                    <span>1000 20ft</span>
-                                </div>
-                                <div>
-                                    <span>Volume per container:</span>
-                                    <span>13.5 Cubic meters</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Product Specification</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Length:</span>
-                                    <span>20cm</span>
-                                </div>
-                                <div>
-                                    <span>Thickness:</span>
-                                    <span>2cm</span>
-                                </div>
-                                <div>
-                                    <span>Diameter:</span>
-                                    <span>20cm</span>
-                                </div>
-                                <div>
                                     <span>Quantity:</span>
-                                    <span>20cm</span>
+                                    <span>{selectedOrder.quantity} {selectedOrder.containerSize}</span>
+                                </div>
+                                <div>
+                                    <span>Requested Date:</span>
+                                    <span>{selectedOrder.createdOn}</span>
                                 </div>
                             </div>
                         </section>
 
                         <section>
-                            <div className="requests-section-title">Product Delivery Information</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Incoterm:</span>
-                                    <span>{selectedOrder.terms}</span>
-                                </div>
-                                <div>
-                                    <span>Destination:</span>
-                                    <span>{selectedOrder.destination}</span>
-                                </div>
-                                <div>
-                                    <span>Destination Port:</span>
-                                    <span>Nharva Sheva</span>
-                                </div>
+                            <div className="requests-section-title">Track Order</div>
+                            <div className="order-section-body">
+                                <div> <ProgressBar status={selectedOrder.status} /> </div>
                             </div>
-                        </section>
+                            <div className="order-section-stepper-container">
+                                <Box fullWidth>
+                                    <Stepper activeStep={ORDER_STATUS_STEPS[selectedOrder.status]} orientation="vertical">
+                                        {steps.map((step) => (
+                                            <Step key={step.label}>
+                                                <StepLabel>
+                                                    {step.label}
+                                                </StepLabel>
 
-                        <section>
-                            <div className="requests-section-title">Request Settings</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Validity:</span>
-                                    <span>7 days</span>
-                                </div>
+                                                <StepContent>
+                                                    <div>{step.description}</div>
+                                                    <Box sx={{ mb: 0 }}>
+                                                        <div></div>
+                                                    </Box>
+                                                </StepContent>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
                             </div>
                         </section>
                     </div>
@@ -173,6 +202,7 @@ const Orders = () => {
             </div>
         </Box>
     );
+
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -192,14 +222,13 @@ const Orders = () => {
                         order.product = order?.request?.quotationProducts[0]?.product.name;
                         order.terms = order?.request?.buyerQuotationIncoterm?.label;
                         order.quantity = order?.request?.quotationProducts[0]?.specification?.quantity;
-                        
+                        order.createdOn = new Date(order.createdOn).toUTCString().slice(0, 16);
+                        order.expiryDate = new Date(order?.request?.expiryDate).toUTCString().slice(0, 25);
                         return 1;
                     });
                     setRows(filteredData);
                 }
-            } catch (error) {
-                //
-            }
+            } catch (error) { }
             setRowsLoading(false);
         }
 
@@ -220,7 +249,7 @@ const Orders = () => {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
-                    <MenuItem>
+                    <MenuItem onClick={toggleDrawer(true)}>
                         View
                     </MenuItem>
                 </Menu>

@@ -41,6 +41,7 @@ import {
 } from "./Reducers/Actions";
 
 const App = () => {
+  // eslint-disable-next-line
   const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
   const rootDispatch = useDispatch();
   const { session } = useSelector((state) => state);
@@ -87,15 +88,16 @@ const App = () => {
           const profile = data.data.data.at(0);
           dispatch({ type: REQUEST_SUCCESSFUL, payload: profile });
           rootDispatch(initUser(profile));
+        }else {
+          dispatch({ type: REQUEST_FAILED });
         }
-      } catch (error) {
-        //
-      }
+      } catch (error) {}
     };
 
     session.isLogged && fetchData();
 
     return () => abortController.abort();
+    // eslint-disable-next-line
   }, [session.isLogged]);
 
   useEffect(() => {
@@ -130,7 +132,10 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/buyer/register" element={<BuyerRegistration />} />
           <Route path="/merchant/register" element={<MerchantRegistration />} />
-          <Route path="/requestquote" element={<RequestQuote />} />
+          <Route
+            path="/requestquote"
+            element={<RequestQuote session={session} />}
+          />
         </Route>
 
         <Route element={<ProtectedAdminRoutes session={session} />}>
@@ -143,7 +148,7 @@ const App = () => {
         </Route>
 
         <Route element={<ProtectedMerchantRoutes session={session} />}>
-          <Route element={<MerchantLayout />}>
+          <Route element={<MerchantLayout session={session} />}>
             <Route path="/merchant/dashboard" element={<MerchantDashboard />} />
             <Route path="/merchant/requests" element={<MerchantRequests />} />
             <Route

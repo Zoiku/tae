@@ -197,9 +197,7 @@ const UsersBuyer = () => {
                     });
                     setRows(filteredData);
                 }
-            } catch (error) {
-                //
-            }
+            } catch (error) {}
             setRowsLoading(false);
         }
 

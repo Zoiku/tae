@@ -13,13 +13,30 @@ import { useReducer } from "react";
 import { INITIAL_STATE, formReducer } from "../Reducers/FormReducer";
 import { INPUTING, REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST } from "../Reducers/Actions";
 import axios from "axios";
+import BuyerService from "../Services/Buyer";
+import { setAlert } from "../Redux/Features/Alert.js";
+import { useDispatch } from "react-redux";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper";
+import log from "../Assets/log.jpg";
+import log1 from "../Assets/log-1.jpg";
 
 const SPECIFICATION_DETAILS = {
-    ["Teak Round Logs"]: [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "diameter", label: "Diameter", units: [{ name: "diameterUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", units: [{ name: "quantityUnit", values: ["cm", "m"] }] }],
-    ["Teak Square Logs"]: [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "thickness", label: "Thickness", units: [{ name: "thicknessUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", units: [{ name: "quantityUnit", values: ["cm", "m"] }] }, { name: "width", label: "Width", units: [{ name: "widthUnit", values: ["mm", "cm"] }] }, { name: "drying", label: "Drying" },],
+    ["Teak Round Logs"]: [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "diameter", label: "Diameter", units: [{ name: "diameterUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }],
+    ["Teak Square Logs"]: [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "thickness", label: "Thickness", units: [{ name: "thicknessUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }, { name: "width", label: "Width", units: [{ name: "widthUnit", values: ["mm", "cm"] }] }, { name: "dryingLabel", label: "Drying", menu: ["Air Drying", "Kiln Drying", "Fresh Sawn"] },],
 }
 
-const RequestQuote = () => {
+const IMAGES_TO_DISPLAY = {
+    ["Teak Round Logs"]: log,
+    ["Teak Square Logs"]: log1
+}
+
+const RequestQuote = ({ session }) => {
+    const { isLogged } = session;
+    const rootDispatch = useDispatch();
     const [state, dispatch] = useReducer(formReducer, INITIAL_STATE)
     const [countries, setCountries] = useState(null);
     const navigate = useNavigate();
@@ -29,10 +46,53 @@ const RequestQuote = () => {
 
     const handleChange = (e) => { dispatch({ type: INPUTING, prop: e.target.name, value: e.target.value }); }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(state);
+        dispatch({ type: SEND_REQUEST });
+        state.payload.product = parsedProduct.id;
+        const buyerService = new BuyerService();
+        try {
+            if (isLogged) {
+                const { errors } = await buyerService.postQuote(state.payload);
+                if (errors.length === 0) {
+                    dispatch({ type: REQUEST_SUCCESSFUL });
+                    handleSuccessfullRequest("Request successfull, merchants will respond shortly", 6000);
+                    console.log(e);
+                } else {
+                    dispatch({ type: REQUEST_FAILED });
+                    handleFailedRequest("Problem submitting request, please try again", 5000);
+                }
+            } else {
+                const { errors } = await buyerService.postPendingQuote(state.payload);
+                if (errors.length === 0) {
+                    dispatch({ type: REQUEST_SUCCESSFUL });
+                    handleSuccessfullRequest("Your request is pending, please log in to complete request", 6000);
+                    navigate("/login");
+                } else {
+                    dispatch({ type: REQUEST_FAILED });
+                    handleFailedRequest("Problem submitting request, please try again", 5000);
+                }
+            }
+        } catch (error) { }
     };
+
+    const handleSuccessfullRequest = (message, timeOut) => {
+        const payload = {
+            severity: "success",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
+    }
+
+    const handleFailedRequest = (message, timeOut) => {
+        const payload = {
+            severity: "error",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
+    }
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -54,6 +114,22 @@ const RequestQuote = () => {
                 <div className="request-quote-page-header">
                     <div>{parsedProduct.name}</div>
                     <div>{parsedProduct.description}</div>
+                </div>
+
+                <div className="swiper-container">
+                    <Swiper
+                        navigation={true}
+                        pagination={true}
+                        modules={[Pagination, Navigation]}
+                        className="mySwiper"
+                    >
+                        <SwiperSlide>
+                            <img src={IMAGES_TO_DISPLAY[parsedProduct.name]} alt="" />
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <img src={IMAGES_TO_DISPLAY[parsedProduct.name]} alt="" />
+                        </SwiperSlide>
+                    </Swiper>
                 </div>
 
                 <Box
@@ -78,41 +154,68 @@ const RequestQuote = () => {
 
                     <section>
                         <div className="request-quote-section-title">2. Specifications</div>
+                        <div className="request-quote-specification-note-container">
+                            <div>
+                                <div>How to specify dimensions</div>
+                                <ul>
+                                    <li>To specify a range: use a hyphen (-) separator. [Example: 25-50 ("from 25 to 50")]</li>
+                                    <li>To specify a lower bound only: add the "+" sign. [Example: 25+ ("25 and more")]</li>
+                                    <li>Please use a point (.) as decimal separator and NOT a comma.</li>
+                                </ul>
+                            </div>
+                        </div>
                         <div className="request-quote-section-body select-input-form">
                             {
                                 SPECIFICATION_DETAILS[parsedProduct.name].map(specification =>
-                                    <div>
-                                        <div>{specification.label}</div>
-                                        <div className="select-input-form-with-units">
-                                            <TextField required onChange={handleChange} size="small" fullWidth type="text" name={specification.name} label={specification.label} variant="outlined" />
-                                            {
-                                                specification.units &&
-                                                specification.units.length > 0 &&
-                                                specification.units.map(specificationUnits =>
-                                                    <FormControl required key={specificationUnits.name} size="small" fullWidth>
-                                                        <InputLabel>Units</InputLabel>
-                                                        <Select key={specificationUnits.name} size="small" onChange={handleChange} name={specificationUnits.name} label="Units">
-                                                            {
-                                                                specificationUnits.values &&
-                                                                specificationUnits.values.length > 0 &&
-                                                                specificationUnits.values.map(value =>
-                                                                    <MenuItem key={value} value={value}>
-                                                                        {value}
-                                                                    </MenuItem>
-                                                                )
-                                                            }
-                                                        </Select>
-                                                    </FormControl>
-                                                )
-                                            }
+                                    specification.name === "dryingLabel" ?
+                                        <div>
+                                            <div>Drying</div>
+                                            <div>
+                                                <FormControl required size="small" fullWidth>
+                                                    <InputLabel id="demo-multiple-chip-label">Drying</InputLabel>
+                                                    <Select onChange={handleChange} name={specification.name} label={specification.label}>
+                                                        {
+                                                            specification.menu.map(menuItem =>
+                                                                <MenuItem key={menuItem} value={menuItem}>{menuItem}</MenuItem>
+                                                            )
+                                                        }
+                                                    </Select>
+                                                </FormControl>
+                                            </div>
                                         </div>
-                                    </div>
+                                        :
+                                        <div>
+                                            <div>{specification.label}</div>
+                                            <div className="select-input-form-with-units">
+                                                <TextField required onChange={handleChange} size="small" fullWidth type="text" name={specification.name} label={specification.label} variant="outlined" />
+                                                {
+                                                    specification.units &&
+                                                    specification.units.length > 0 &&
+                                                    specification.units.map(specificationUnits =>
+                                                        <FormControl required key={specificationUnits.name} size="small" fullWidth>
+                                                            <InputLabel>Units</InputLabel>
+                                                            <Select key={specificationUnits.name} size="small" onChange={handleChange} name={specificationUnits.name} label="Units">
+                                                                {
+                                                                    specificationUnits.values &&
+                                                                    specificationUnits.values.length > 0 &&
+                                                                    specificationUnits.values.map(value =>
+                                                                        <MenuItem key={value} value={value}>
+                                                                            {value}
+                                                                        </MenuItem>
+                                                                    )
+                                                                }
+                                                            </Select>
+                                                        </FormControl>
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
                                 )
                             }
                             <div>
                                 <div>Additional Information</div>
                                 <div>
-                                    <TextField onChange={handleChange} multiline rows={1} size="small" fullWidth type="text" name="additionalInformation" label="Additional Information" variant="outlined" />
+                                    <TextField onChange={handleChange} multiline rows={1} size="small" fullWidth type="text" name="information" label="Additional Information" variant="outlined" />
                                 </div>
                             </div>
                         </div>
@@ -195,8 +298,8 @@ const RequestQuote = () => {
                     </section>
 
                     <Stack spacing={2} direction="row">
+                        <GenericPrimaryButton type="submit" loading={state.requestState.loading} variant="contained">Post Quote</GenericPrimaryButton>
                         <GenericSecondary onClick={() => navigate("/")} variant="text">Back</GenericSecondary>
-                        <GenericPrimaryButton type="submit" loading={state.requestState.loading} variant="containerd">Post Quote</GenericPrimaryButton>
                     </Stack>
                 </Box>
             </div>

@@ -66,4 +66,51 @@ export default class MerchantService {
       errors
     };
   }
+
+  async orderConfirmation(id) {
+    let errors = [];
+    const url = `/order/${id}/status/confirm`;
+
+    try {
+      await AxiosInstance().put(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
+
+  async orderRejection(id) {
+    let errors = [];
+    const url = `/orders/${id}`;
+
+    try {
+      await AxiosInstance().delete(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
+
+  async postCompanyDetails(payload) {
+    let errors = [];
+    let data = {};
+    const url = "/user/company";
+
+    try {
+      data = await AxiosInstance().post(url, payload);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors,
+      data
+    };
+  }
 }

@@ -178,7 +178,7 @@ const Settings = () => {
                         {
                             updateProfileButton ?
                                 <>
-                                    <SettingsPageUpdateButtonSecondary onClick={toggleUpdate(false)} className="settings-button-controller" variant="contained">Complete Profile Update</SettingsPageUpdateButtonSecondary>
+                                    <SettingsPageUpdateButtonSecondary onClick={toggleUpdate(false)} className="settings-button-controller" variant="contained">Save Changes</SettingsPageUpdateButtonSecondary>
                                     <SettingsPageCancelButton onClick={toggleUpdate(false)} className="settings-button-controller" variant="text">Cancel</SettingsPageCancelButton>
                                 </>
                                 :

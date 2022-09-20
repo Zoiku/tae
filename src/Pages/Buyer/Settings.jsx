@@ -4,15 +4,9 @@ import TextField from '@mui/material/TextField';
 import Avatar from '@mui/material/Avatar';
 import { StyledBadge } from "../../Material/Avatar";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
 
 const Settings = () => {
     const { profile } = useSelector(state => state.session.user);
-
-    useEffect(() => {
-        console.log(profile);
-    }, []);
-
     return (
         <div className="Settings-Page">
             <div className="user-profile-container">
@@ -48,13 +42,6 @@ const Settings = () => {
                             <TextField disabled value={profile.email} fullWidth label="Email" variant="outlined" />
                         </div>
                     </section>
-
-                    {/* <section>
-                        <div className="user-profile-section-title">Company Details</div>
-                        <div className="form-controller-input form-controller">
-                            <TextField multiline rows={5} fullWidth type="text" name="company" label="Company Introduction" variant="outlined" />
-                        </div>
-                    </section> */}
                 </Box>
             </div>
         </div>

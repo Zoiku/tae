@@ -27,6 +27,19 @@ const sessionReducer = createSlice({
       };
     },
 
+    initCompany: (state, action) => {
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          profile: {
+            ...state.user.profile,
+            company: action.payload
+          }
+        }
+      };
+    },
+
     endSession: () => {
       return {
         isLogged: false
@@ -35,5 +48,6 @@ const sessionReducer = createSlice({
   }
 });
 
-export const { startSession, endSession, initUser } = sessionReducer.actions;
+export const { startSession, endSession, initUser, initCompany } =
+  sessionReducer.actions;
 export default sessionReducer.reducer;

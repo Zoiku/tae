@@ -156,7 +156,7 @@ const Requests = () => {
         dispatch({ type: SEND_REQUEST });
         const merchantService = new MerchantService();
         try {
-            const payload = { incotermArray: incotermSettings, requestId: selectedRequestId }
+            const payload = { incotermArray: incotermSettings, requestID: selectedRequestId }
             const { errors } = await merchantService.postOffer(payload);
             if (errors.length === 0) {
                 dispatch({ type: REQUEST_SUCCESSFUL });
@@ -165,11 +165,11 @@ const Requests = () => {
                 setRefreshTable(prev => !prev);
             } else {
                 dispatch({ type: REQUEST_FAILED });
-                handleFailedRequest("Problem completing request", 3000);
+                handleFailedRequest("Problem completing request", 5000);
             }
         } catch (error) {
             dispatch({ type: REQUEST_FAILED });
-            handleFailedRequest("Problem completing request", 3000);
+            handleFailedRequest("Problem completing request", 5000);
         }
     };
 
@@ -321,7 +321,7 @@ const Requests = () => {
                                         <thead>
                                             <tr className="incoterm-setting-heading-container">
                                                 <th>Number</th>
-                                                {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <th>Diameter (cm)</th>}
+                                                {selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS && <th>Diameter (cm)</th>}
                                                 <th>Pieces/container</th>
                                                 <th>Price/container</th>
                                                 <th>Total price</th>
@@ -336,7 +336,7 @@ const Requests = () => {
                                                 Array.from(Array(incotermRows)).map((_row, index) =>
                                                     <tr key={index + 1}>
                                                         <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="number" value={index + 1} disabled /></td>
-                                                        {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="diameter" /></td>}
+                                                        {selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS && <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="diameter" /></td>}
                                                         <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="noOfPieces" /></td>
                                                         <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="price" /></td>
                                                         <td><input required type="number" disabled onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="totalPrice" value={incotermSettings[index]?.totalPrice ? incotermSettings[index]?.totalPrice : 0} /></td>

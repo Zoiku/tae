@@ -1,7 +1,7 @@
 import { DataGrid } from "@mui/x-data-grid";
 import LinearProgress from '@mui/material/LinearProgress';
 import Toolbar from "../../../Material/Toolbar";
-import { SmallPrimary } from "../../../Material/Button";
+import { SmallPrimary, SmallSecondary, SmallCancel } from "../../../Material/Button";
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { useState, useEffect } from "react";
 import Box from '@mui/material/Box';
@@ -9,16 +9,12 @@ import { Puller } from "../../../Material/Drawer";
 import MerchantService from "../../../Services/Merchant";
 import Countdown from "../../Countdown";
 import "../../../Styles/Order.css";
-
-const ORDER_STATUS = {
-    RECEIVED: 'RECEIVED',
-    CONFIRMED: 'CONFIRMED',
-    PAID: "AWAITING PROOF OF PAYMENT",
-    APPROVED: "PROOF OF PAYMENT APPROVED",
-    PROCESSING: 'PROCESSING',
-    SHIPPED: 'SHIPPED',
-    DELIVERED: 'DELIVERED',
-}
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import StepContent from '@mui/material/StepContent';
+import { useDispatch } from "react-redux";
+import { setAlert } from "../../../Redux/Features/Alert.js";
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -28,7 +24,44 @@ const ORDER_STATUS_LEVELS = {
     PROCESSING: 60,
     SHIPPED: 80,
     DELIVERED: 100
-}
+};
+
+const ORDER_STATUS_STEPS = {
+    RECEIVED: 0,
+    CONFIRMED: 1,
+    PAID: 2,
+    APPROVED: 3,
+    PROCESSING: 4,
+    SHIPPED: 5,
+    DELIVERED: 6,
+};
+
+const steps = [
+    {
+        label: 'Order placed',
+        description: "Thank you for placing your order",
+    },
+    {
+        label: "Confirm Order",
+        description: "Confirm your order to alert Merchant",
+    },
+    {
+        label: "Order Approved",
+        description: "Your order has been approved and will be processed shortly",
+    },
+    {
+        label: "Processing",
+        description: "Please wait while your order is being processed",
+    },
+    {
+        label: "Shipped",
+        description: "Your order is being shipped",
+    },
+    {
+        label: "Delivered",
+        description: "Your order has been delivered",
+    },
+];
 
 const ProgressBar = ({ status }) => {
     return (
@@ -44,6 +77,8 @@ const ProgressBar = ({ status }) => {
 };
 
 const Orders = () => {
+    const [refreshTable, setRefreshTable] = useState(false);
+    const rootDispatch = useDispatch();
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
     const [rows, setRows] = useState([]);
     const [rowsLoading, setRowsLoading] = useState(false);
@@ -60,6 +95,50 @@ const Orders = () => {
         setSelectedOrderId(null);
     }
 
+    const handleConfirmOrder = async (id) => {
+        const merchantService = new MerchantService();
+        try {
+            const { errors } = await merchantService.orderConfirmation(id);
+            if (errors.length === 0) {
+                setRefreshTable(prev => !prev);
+                handleSuccessfulRequest("Successfully confirmed your order", 3000);
+            } else {
+                handleFailedRequest("Could not process your request", 5000);
+            }
+        } catch (error) { }
+    };
+
+    const handleCancelOrder = async (id) => {
+        const merchantService = new MerchantService();
+        try {
+            const { errors } = await merchantService.orderConfirmation(id);
+            if (errors.length === 0) {
+                setRefreshTable(prev => !prev);
+                handleSuccessfulRequest("Successfully cancelled your order", 3000);
+            } else {
+                handleFailedRequest("Could not process your request", 5000);
+            }
+        } catch (error) { }
+    };
+
+    const handleFailedRequest = (message, timeOut) => {
+        const payload = {
+            severity: "error",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
+    };
+
+    const handleSuccessfulRequest = (message, timeOut) => {
+        const payload = {
+            severity: "success",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
+    };
+
     const columns = [
         { field: "index", headerName: "Order #", width: 100 },
         { field: "product", headerName: "Product", width: 200 },
@@ -67,7 +146,16 @@ const Orders = () => {
         { field: "quantity", headerName: "Quantity", width: 90 },
         { field: "timeLeft", headerName: "TimeLeft", width: 100, renderCell: ({ row }) => <div> <Countdown endDate={row.expiryDate} /> </div> },
         { field: "status", headerName: "Status", width: 90 },
-        { field: "action", headerName: "", width: 90, renderCell: ({ row }) => <SmallPrimary onClick={() => selectOrder(row.id)}>View</SmallPrimary> },
+        {
+            field: "action", headerName: "", width: 220,
+            renderCell: ({ row }) => row.isConfirmed ?
+                <div style={{ width: "100%", display: "flex", justifyContent: "center" }}><SmallPrimary onClick={() => selectOrder(row.id)}>View</SmallPrimary></div> :
+                <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+                    <SmallPrimary onClick={() => selectOrder(row.id)}>View</SmallPrimary>
+                    <SmallSecondary onClick={() => handleConfirmOrder(row.id)}>Confirm</SmallSecondary>
+                    <SmallCancel onClick={() => handleCancelOrder(row.id)}>Cancel</SmallCancel>
+                </div>
+        },
     ];
 
     useEffect(() => {
@@ -114,6 +202,26 @@ const Orders = () => {
                             <div className="order-section-body">
                                 <div> <ProgressBar status={selectedOrder.status} /> </div>
                             </div>
+                            <div className="order-section-stepper-container">
+                                <Box fullWidth>
+                                    <Stepper activeStep={ORDER_STATUS_STEPS[selectedOrder.status]} orientation="vertical">
+                                        {steps.map((step) => (
+                                            <Step key={step.label}>
+                                                <StepLabel>
+                                                    {step.label}
+                                                </StepLabel>
+
+                                                <StepContent>
+                                                    <div>{step.description}</div>
+                                                    <Box sx={{ mb: 0 }}>
+                                                        <div></div>
+                                                    </Box>
+                                                </StepContent>
+                                            </Step>
+                                        ))}
+                                    </Stepper>
+                                </Box>
+                            </div>
                         </section>
                     </div>
                 </div>
@@ -143,15 +251,13 @@ const Orders = () => {
                     });
                     setRows(filteredData);
                 }
-            } catch (error) {
-                //
-            }
+            } catch (error) { }
             setRowsLoading(false);
         }
 
         fetchData();
         return () => abortController.abort();
-    }, []);
+    }, [refreshTable]);
 
     return (
         <div className="Orders-Table">

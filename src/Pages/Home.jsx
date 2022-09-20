@@ -99,13 +99,17 @@ const Home = () => {
                                     </SwiperSlide>
                                 </Swiper>
                             </div>
-                        </section>)
+                            <div className="specification-button-container-mobile">
+                                <PrimaryButton fullWidth onClick={() => navigate(`/requestquote?product=${JSON.stringify(product)}`)}>Request Quotes</PrimaryButton>
+                            </div>
+                        </section>
+                    )
                 }
             </div>
 
             <div className="home-coming-soon-container">
                 <div className="home-coming-soon-title">Coming Soon</div>
-                <Marquee className="coming-soon-marquee" gradient={false} pauseOnClick={true} speed={30} style={{ marginTop: 20 }}>
+                <Marquee className="coming-soon-marquee" gradient={false} pauseOnClick={true} speed={10} style={{ marginTop: 20 }}>
                     <div className="coming-soon-card-container">
                         <div className="coming-soon-card-img">
                             <img src={log2} alt="" />
