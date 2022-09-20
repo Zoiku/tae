@@ -1,7 +1,7 @@
 import { DataGrid } from "@mui/x-data-grid";
 import LinearProgress from '@mui/material/LinearProgress';
 import Toolbar from "../../../Material/Toolbar";
-import { SmallPrimary } from "../../../Material/Button";
+import { SmallPrimary, SmallSecondary } from "../../../Material/Button";
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { useState, useEffect } from "react";
 import Box from '@mui/material/Box';
@@ -11,13 +11,31 @@ import Countdown from "../../Countdown";
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import { StyledBadge } from "../../../Material/Badge";
 import IconButton from '@mui/material/IconButton';
+import log from "../../../Assets/log.jpg";
+import log1 from "../../../Assets/log-1.jpg";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import { useReducer } from "react";
+import { INITIAL_STATE, formReducer } from "../../../Reducers/FormReducer"
+import { REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST } from "../../../Reducers/Actions"
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
     TEAK_ROUND_LOGS: "Teak Round Logs",
 }
 
+const IMAGES_TO_DISPLAY = {
+    ["Teak Round Logs"]: log,
+    ["Teak Square Logs"]: log1
+}
+
 const Requests = () => {
+    const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
+    const [revealCompanyProfile, setRevealCompanyProfile] = useState(false);
+    const toggleCompanyProfile = (open) => (_event) => {
+        setRevealCompanyProfile(open);
+    };
+
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
     const [rows, setRows] = useState([]);
     const [rowsLoading, setRowsLoading] = useState(false);
@@ -49,13 +67,13 @@ const Requests = () => {
     const handleSelectRequestOffer = (offer) => {
         setSelectedOffer(offer);
         setOpenDrawerOffer(true);
-        console.log(offer);
     };
     const [openDrawerOffer, setOpenDrawerOffer] = useState(false);
     const toggleDrawerOffer = (open) => (_event) => { setOpenDrawerOffer(open) };
     const handleCloseDrawerOffer = () => {
         setOpenDrawerOffer(false);
         setSelectedOffer(null);
+        setRevealCompanyProfile(false);
     };
 
     const columns = [
@@ -70,6 +88,23 @@ const Requests = () => {
     useEffect(() => {
         selectedRequest && setOpenDrawer(true);
     }, [selectedRequest]);
+
+    const handleOrderSubmit = async () => {
+        dispatch({ type: SEND_REQUEST });
+        state.payload = {
+            requestID: selectedOffer.requestId,
+            merchant: selectedOffer.merchantId
+        }
+        const buyerService = new BuyerService();
+        try {
+            const { errors } = await buyerService.acceptOffer(state.payload);
+            if (errors.length === 0) {
+                dispatch({ type: REQUEST_SUCCESSFUL });
+            }else {
+                dispatch({ type: REQUEST_FAILED });
+            }
+        } catch (error) {}
+    }
 
     const list = () => (
         selectedRequest &&
@@ -210,9 +245,17 @@ const Requests = () => {
                             selectedOffers.map((offer) => {
                                 return (
                                     <div className="request-section-offer-container">
-                                        <div>Offer {offer.index}</div>
-                                        <div>
-                                            <SmallPrimary onClick={() => handleSelectRequestOffer(offer)}>View</SmallPrimary>
+                                        <div><img src={IMAGES_TO_DISPLAY[offer.product]} alt="" /></div>
+                                        <div className="request-offer-body-container">
+                                            <div>
+                                                <div>Offer {offer.index}</div>
+                                                <div>{offer.merchant.firstName} {offer.merchant.lastName}</div>
+                                                <div>{offer.expiryDate}</div>
+                                                <div>{offer.destination}</div>
+                                            </div>
+                                            <div>
+                                                <SmallPrimary onClick={() => handleSelectRequestOffer(offer)}>View</SmallPrimary>
+                                            </div>
                                         </div>
                                     </div>
                                 )
@@ -226,7 +269,7 @@ const Requests = () => {
     const listOffer = () => (
         selectedOffer &&
         <Box
-            sx={{ width: "auto", height: "700px" }}
+            sx={{ width: "auto", height: "400px" }}
             role="presentation"
             className="drawer-container"
         >
@@ -237,7 +280,6 @@ const Requests = () => {
             <div className="drawer-body">
                 <div className="requests-sections-body">
                     <section>
-                        <div className="requests-section-title">Incoterm Settings</div>
                         <div>
                             <div className="incoterm-settings-table-container">
                                 <table>
@@ -285,10 +327,31 @@ const Requests = () => {
                             </div>
                             <div className="incoterm-settings-table-note-container">Kindly note that all prices are quoted in ($)</div>
                         </div>
-                        <div>
-                            <div></div>
-                        </div>
                     </section>
+                    <section className="request-offer-company-profile-section">
+                        <div>
+                            <div>Company Profile</div>
+                            {
+                                !revealCompanyProfile ? <IconButton onClick={toggleCompanyProfile(true)}><ArrowDropDownIcon /></IconButton> : <IconButton onClick={toggleCompanyProfile(false)}><ArrowDropUpIcon /></IconButton>
+                            }
+                        </div>
+
+                        {
+                            revealCompanyProfile &&
+                            <div>
+                                <div><span>Business Type</span>: <span>{selectedOffer.merchant.role}</span></div>
+                                <div><span>Member Since</span>: <span></span></div>
+                                <div><span>Year Established</span>: <span></span></div>
+                                <div><span>No of Employees</span>: <span></span></div>
+                                <div><span>Products</span>: <span></span></div>
+                                <div><span>Supply Ability</span>: <span></span></div>
+                            </div>
+                        }
+                    </section>
+
+                    <div>
+                        <SmallSecondary loading={state.requestState.loading} onClick={handleOrderSubmit} variant="contained">Place Order</SmallSecondary>
+                    </div>
                 </div>
             </div>
         </Box>
@@ -327,6 +390,7 @@ const Requests = () => {
                         request.expiryDate = new Date(request.expiryDate).toUTCString().slice(0, 25);
                         request.offers = (await (await buyerService.getOffers(request._id)).data.data.data).map((offer, index) => {
                             offer.index = index + 1;
+                            offer.product = offer.request.quotationProducts[0].product.name;
                             offer.destination = offer.request.destination;
                             offer.incotermRows = offer.buyerQuotationRequestIncoterm;
                             offer.requestNo = offer.request.requestNo;
@@ -341,7 +405,9 @@ const Requests = () => {
                                 role: offer.merchant.role
                             };
                             return offer;
-                        })
+                        });
+
+                        console.log(request);
                         return 1;
                     }));
 

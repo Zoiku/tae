@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack';
 import { GenericPrimaryButton, GenericSecondary } from "../Material/Button";
 import { useReducer } from "react";
 import { INITIAL_STATE, formReducer } from "../Reducers/FormReducer";
-import { INPUTING, REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST } from "../Reducers/Actions";
+import { INPUTING, REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST, PUSH_FORM_DATA, CLEAR_FORM } from "../Reducers/Actions";
 import axios from "axios";
 import BuyerService from "../Services/Buyer";
 import { setAlert } from "../Redux/Features/Alert.js";
@@ -25,8 +25,8 @@ import log from "../Assets/log.jpg";
 import log1 from "../Assets/log-1.jpg";
 
 const SPECIFICATION_DETAILS = {
-    ["Teak Round Logs"]: [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "diameter", label: "Diameter", units: [{ name: "diameterUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }],
-    ["Teak Square Logs"]: [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "thickness", label: "Thickness", units: [{ name: "thicknessUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }, { name: "width", label: "Width", units: [{ name: "widthUnit", values: ["mm", "cm"] }] }, { name: "dryingLabel", label: "Drying", menu: ["Air Drying", "Kiln Drying", "Fresh Sawn"] },],
+    ["Teak Round Logs"]: [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "diameter", label: "Diameter", units: [{ name: "diameterUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }],
+    ["Teak Square Logs"]: [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "thickness", label: "Thickness", units: [{ name: "thicknessUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }, { name: "width", label: "Width", units: [{ name: "widthUnit", values: ["mm", "cm"] }] }, { name: "dryingLabel", label: "Drying", menu: ["Air Drying", "Kiln Drying", "Fresh Sawn"] },],
 }
 
 const IMAGES_TO_DISPLAY = {
@@ -57,7 +57,6 @@ const RequestQuote = ({ session }) => {
                 if (errors.length === 0) {
                     dispatch({ type: REQUEST_SUCCESSFUL });
                     handleSuccessfullRequest("Request successfull, merchants will respond shortly", 6000);
-                    console.log(e);
                 } else {
                     dispatch({ type: REQUEST_FAILED });
                     handleFailedRequest("Could not process request", 5000);
@@ -66,7 +65,7 @@ const RequestQuote = ({ session }) => {
                 const { data, errors } = await buyerService.postPendingQuote(state.payload);
                 if (errors.length === 0) {
                     const { _id } = data.data.data[0];
-                    sessionStorage.setItem("pqid", _id);
+                    sessionStorage.setItem(`${parsedProduct.name}_pqid`, _id);
                     dispatch({ type: REQUEST_SUCCESSFUL });
                     handleSuccessfullRequest("Your request is pending, please log in to complete request", 6000);
                     navigate("/login");
@@ -98,13 +97,40 @@ const RequestQuote = ({ session }) => {
 
     useEffect(() => {
         const abortController = new AbortController();
+        const pendingQuoteId = sessionStorage.getItem(`${parsedProduct.name}_pqid`);
+
+        if (pendingQuoteId) {
+            const fetchData = async () => {
+                const buyerService = new BuyerService();
+                try {
+                    const { errors, data } = await buyerService.getQuote(pendingQuoteId, abortController.signal);
+                    if (errors.length === 0) {
+                        const _pendingQuote = {
+                            ...data.data.data[0],
+                            ...data.data.data[0].specification,
+                            dryingLabel: data.data.data[0].specification?.drying.label
+                        };
+
+                        dispatch({ type: PUSH_FORM_DATA, payload: _pendingQuote });
+                    }
+                } catch (error) { }
+            }
+            fetchData();
+        }
+
+        return () => {
+            dispatch({ type: CLEAR_FORM });
+            abortController.abort();
+        };
+    }, [search]);
+
+    useEffect(() => {
+        const abortController = new AbortController();
         const fetchData = async () => {
             try {
                 const { data } = await axios.get("https://restcountries.com/v2/all", { signal: abortController.signal });
                 setCountries(data);
-            } catch (error) {
-                console.log(error);
-            }
+            } catch (error) { }
         }
         fetchData();
         return () => abortController.abort();
@@ -175,7 +201,7 @@ const RequestQuote = ({ session }) => {
                                             <div>
                                                 <FormControl required size="small" fullWidth>
                                                     <InputLabel id="demo-multiple-chip-label">Drying</InputLabel>
-                                                    <Select onChange={handleChange} name={specification.name} label={specification.label}>
+                                                    <Select value={state.payload?.[specification.name]} onChange={handleChange} name={specification.name} label={specification.label}>
                                                         {
                                                             specification.menu.map(menuItem =>
                                                                 <MenuItem key={menuItem} value={menuItem}>{menuItem}</MenuItem>
@@ -189,14 +215,14 @@ const RequestQuote = ({ session }) => {
                                         <div>
                                             <div>{specification.label}</div>
                                             <div className="select-input-form-with-units">
-                                                <TextField required onChange={handleChange} size="small" fullWidth type="text" name={specification.name} label={specification.label} variant="outlined" />
+                                                <TextField value={state.payload?.[specification.name]} required onChange={handleChange} size="small" fullWidth type="text" name={specification.name} label={specification.label} variant="outlined" />
                                                 {
                                                     specification.units &&
                                                     specification.units.length > 0 &&
                                                     specification.units.map(specificationUnits =>
                                                         <FormControl required key={specificationUnits.name} size="small" fullWidth>
                                                             <InputLabel>Units</InputLabel>
-                                                            <Select key={specificationUnits.name} size="small" onChange={handleChange} name={specificationUnits.name} label="Units">
+                                                            <Select value={state.payload?.[specificationUnits.name] ? state.payload?.[specificationUnits.name] : specification?.defaultUnit} key={specificationUnits.name} size="small" onChange={handleChange} name={specificationUnits.name} label="Units">
                                                                 {
                                                                     specificationUnits.values &&
                                                                     specificationUnits.values.length > 0 &&
@@ -217,7 +243,7 @@ const RequestQuote = ({ session }) => {
                             <div>
                                 <div>Additional Information</div>
                                 <div>
-                                    <TextField onChange={handleChange} multiline rows={1} size="small" fullWidth type="text" name="information" label="Additional Information" variant="outlined" />
+                                    <TextField value={state.payload?.information} onChange={handleChange} multiline rows={1} size="small" fullWidth type="text" name="information" label="Additional Information" variant="outlined" />
                                 </div>
                             </div>
                         </div>
@@ -231,7 +257,7 @@ const RequestQuote = ({ session }) => {
                                 <div>
                                     <FormControl required size="small" fullWidth>
                                         <InputLabel id="demo-multiple-chip-label">Incoterm</InputLabel>
-                                        <Select onChange={handleChange} name="incoterm" label="Country">
+                                        <Select value={state.payload?.incoterm} onChange={handleChange} name="incoterm" label="Country">
                                             <MenuItem value="FOB">
                                                 FOB
                                             </MenuItem>
@@ -251,7 +277,7 @@ const RequestQuote = ({ session }) => {
                                 <div>
                                     <FormControl required size="small" fullWidth>
                                         <InputLabel id="demo-multiple-chip-label">Destination</InputLabel>
-                                        <Select onChange={handleChange} required name="destination" label="Destination">
+                                        <Select value={state.payload?.destination} onChange={handleChange} required name="destination" label="Destination">
                                             {
                                                 countries &&
                                                 countries.map(country =>
@@ -268,7 +294,7 @@ const RequestQuote = ({ session }) => {
                             <div>
                                 <div>Destination Port</div>
                                 <div>
-                                    <TextField required onChange={handleChange} size="small" fullWidth type="text" name="port" label="Destination Port" variant="outlined" />
+                                    <TextField value={state.payload?.port} required onChange={handleChange} size="small" fullWidth type="text" name="port" label="Destination Port" variant="outlined" />
                                 </div>
                             </div>
                         </div>
@@ -282,7 +308,7 @@ const RequestQuote = ({ session }) => {
                                 <div>
                                     <FormControl required size="small" fullWidth>
                                         <InputLabel id="demo-multiple-chip-label">Validity</InputLabel>
-                                        <Select onChange={handleChange} required name="validity" label="Validity">
+                                        <Select value={state.payload?.validity} onChange={handleChange} required name="validity" label="Validity">
                                             <MenuItem value="7">
                                                 7 Days
                                             </MenuItem>

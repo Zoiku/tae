@@ -2,7 +2,9 @@ import {
   INPUTING,
   SEND_REQUEST,
   REQUEST_SUCCESSFUL,
-  REQUEST_FAILED
+  REQUEST_FAILED,
+  CLEAR_FORM,
+  PUSH_FORM_DATA
 } from "./Actions";
 
 export const INITIAL_STATE = {
@@ -54,6 +56,20 @@ export const formReducer = (state = INITIAL_STATE, action) => {
           loading: false
         }
       };
+
+      case PUSH_FORM_DATA: {
+        return {
+          ...state,
+          payload: action.payload
+        }
+      }
+
+      case CLEAR_FORM: {
+        return {
+          ...state,
+          payload: null
+        }
+      }
 
     default:
       return state;

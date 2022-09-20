@@ -35,6 +35,23 @@ export default class AdminService {
     };
   }
 
+  async getQuote(id, signal) {
+    let errors = [];
+    let data = null;
+    const url = `/buyer/quotation/requests/pending/${id}`;
+
+    try {
+      data = await AxiosInstance().get(url, { signal });
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors,
+      data
+    };
+  }
+
   async postPendingQuote(payload) {
     let errors = [];
     let data = null;
@@ -83,6 +100,21 @@ export default class AdminService {
     return {
       errors,
       data
+    };
+  }
+
+  async acceptOffer(payload) {
+    let errors = [];
+    const url = "/order";
+
+    try {
+      await AxiosInstance().post(url, payload);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
     };
   }
 }

@@ -5,7 +5,7 @@ export default class ProductService {
     let data = null;
     let errors = [];
     const url = "/products/enabled/true";
-    
+
     try {
       data = await AxiosInstance().get(url, { signal });
     } catch (error) {
