@@ -25,8 +25,8 @@ const PRODUCTS = {
 }
 
 const IMAGES_TO_DISPLAY = {
-    ["Teak Round Logs"]: log,
-    ["Teak Square Logs"]: log1
+    "Teak Round Logs": log,
+    "Teak Square Logs": log1
 }
 
 const Requests = () => {

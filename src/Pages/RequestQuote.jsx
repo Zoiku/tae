@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack';
 import { GenericPrimaryButton, GenericSecondary } from "../Material/Button";
 import { useReducer } from "react";
 import { INITIAL_STATE, formReducer } from "../Reducers/FormReducer";
-import { INPUTING, REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST, PUSH_FORM_DATA, CLEAR_FORM } from "../Reducers/Actions";
+import { INPUTING, REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST, PUSH_FORM_DATA } from "../Reducers/Actions";
 import axios from "axios";
 import BuyerService from "../Services/Buyer";
 import { setAlert } from "../Redux/Features/Alert.js";
@@ -25,13 +25,13 @@ import log from "../Assets/log.jpg";
 import log1 from "../Assets/log-1.jpg";
 
 const SPECIFICATION_DETAILS = {
-    ["Teak Round Logs"]: [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "diameter", label: "Diameter", units: [{ name: "diameterUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }],
-    ["Teak Square Logs"]: [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "thickness", label: "Thickness", units: [{ name: "thicknessUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }, { name: "width", label: "Width", units: [{ name: "widthUnit", values: ["mm", "cm"] }] }, { name: "dryingLabel", label: "Drying", menu: ["Air Drying", "Kiln Drying", "Fresh Sawn"] },],
+    "Teak Round Logs": [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "diameter", label: "Diameter", units: [{ name: "diameterUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }],
+    "Teak Square Logs": [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "thickness", label: "Thickness", units: [{ name: "thicknessUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }, { name: "width", label: "Width", units: [{ name: "widthUnit", values: ["mm", "cm"] }] }, { name: "dryingLabel", label: "Drying", menu: ["Air Drying", "Kiln Drying", "Fresh Sawn"] },],
 }
 
 const IMAGES_TO_DISPLAY = {
-    ["Teak Round Logs"]: log,
-    ["Teak Square Logs"]: log1
+    "Teak Round Logs": log,
+    "Teak Square Logs": log1
 }
 
 const RequestQuote = ({ session }) => {
@@ -118,11 +118,9 @@ const RequestQuote = ({ session }) => {
             fetchData();
         }
 
-        return () => {
-            dispatch({ type: CLEAR_FORM });
-            abortController.abort();
-        };
-    }, [search]);
+        return () => abortController.abort();
+
+    }, [parsedProduct.name]);
 
     useEffect(() => {
         const abortController = new AbortController();
