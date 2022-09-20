@@ -46,6 +46,22 @@ const RequestQuote = ({ session }) => {
 
     const handleChange = (e) => { dispatch({ type: INPUTING, prop: e.target.name, value: e.target.value }); }
 
+    const removePendingQuote = async () => {
+        const id = sessionStorage.getItem(`${parsedProduct.name}_pqid`);
+        if (id) {
+            const buyerService = new BuyerService();
+            try {
+                const { errors } = await buyerService.deleteQuote(id);
+                if (errors.length === 0) {
+                    sessionStorage.removeItem(`${parsedProduct.name}_pqid`);
+                    document.location.reload();
+                }
+            } catch (error) { }
+        } else {
+            document.location.reload();
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         dispatch({ type: SEND_REQUEST });
@@ -55,6 +71,7 @@ const RequestQuote = ({ session }) => {
             if (isLogged) {
                 const { errors } = await buyerService.postQuote(state.payload);
                 if (errors.length === 0) {
+                    removePendingQuote();
                     dispatch({ type: REQUEST_SUCCESSFUL });
                     handleSuccessfullRequest("Request successfull, merchants will respond shortly", 6000);
                 } else {
@@ -108,7 +125,7 @@ const RequestQuote = ({ session }) => {
                         const _pendingQuote = {
                             ...data.data.data[0],
                             ...data.data.data[0].specification,
-                            dryingLabel: data.data.data[0].specification?.drying.label
+                            dryingLabel: data.data.data[0].specification?.drying?.label
                         };
 
                         dispatch({ type: PUSH_FORM_DATA, payload: _pendingQuote });
@@ -117,9 +134,7 @@ const RequestQuote = ({ session }) => {
             }
             fetchData();
         }
-
         return () => abortController.abort();
-
     }, [parsedProduct.name]);
 
     useEffect(() => {
@@ -199,7 +214,7 @@ const RequestQuote = ({ session }) => {
                                             <div>
                                                 <FormControl required size="small" fullWidth>
                                                     <InputLabel id="demo-multiple-chip-label">Drying</InputLabel>
-                                                    <Select value={state.payload?.[specification.name]} onChange={handleChange} name={specification.name} label={specification.label}>
+                                                    <Select value={state.payload[specification.name] ? state.payload[specification.name] : ''} onChange={handleChange} name={specification.name} label={specification.label}>
                                                         {
                                                             specification.menu.map(menuItem =>
                                                                 <MenuItem key={menuItem} value={menuItem}>{menuItem}</MenuItem>
@@ -213,14 +228,14 @@ const RequestQuote = ({ session }) => {
                                         <div>
                                             <div>{specification.label}</div>
                                             <div className="select-input-form-with-units">
-                                                <TextField value={state.payload?.[specification.name]} required onChange={handleChange} size="small" fullWidth type="text" name={specification.name} label={specification.label} variant="outlined" />
+                                                <TextField value={state.payload[specification.name] ? state.payload[specification.name] : ''} required onChange={handleChange} size="small" fullWidth type="text" name={specification.name} label={specification.label} variant="outlined" />
                                                 {
                                                     specification.units &&
                                                     specification.units.length > 0 &&
                                                     specification.units.map(specificationUnits =>
                                                         <FormControl required key={specificationUnits.name} size="small" fullWidth>
                                                             <InputLabel>Units</InputLabel>
-                                                            <Select value={state.payload?.[specificationUnits.name] ? state.payload?.[specificationUnits.name] : specification?.defaultUnit} key={specificationUnits.name} size="small" onChange={handleChange} name={specificationUnits.name} label="Units">
+                                                            <Select value={state.payload[specificationUnits.name] ? state.payload[specificationUnits.name] : (specification.defaultUnit ? specification.defaultUnit : '')} key={specificationUnits.name} size="small" onChange={handleChange} name={specificationUnits.name} label="Units">
                                                                 {
                                                                     specificationUnits.values &&
                                                                     specificationUnits.values.length > 0 &&
@@ -241,7 +256,7 @@ const RequestQuote = ({ session }) => {
                             <div>
                                 <div>Additional Information</div>
                                 <div>
-                                    <TextField value={state.payload?.information} onChange={handleChange} multiline rows={1} size="small" fullWidth type="text" name="information" label="Additional Information" variant="outlined" />
+                                    <TextField value={state.payload.information ? state.payload.information : ''} onChange={handleChange} multiline rows={1} size="small" fullWidth type="text" name="information" label="Additional Information" variant="outlined" />
                                 </div>
                             </div>
                         </div>
@@ -255,7 +270,7 @@ const RequestQuote = ({ session }) => {
                                 <div>
                                     <FormControl required size="small" fullWidth>
                                         <InputLabel id="demo-multiple-chip-label">Incoterm</InputLabel>
-                                        <Select value={state.payload?.incoterm} onChange={handleChange} name="incoterm" label="Country">
+                                        <Select value={state.payload.incoterm ? state.payload.incoterm : ''} onChange={handleChange} name="incoterm" label="Country">
                                             <MenuItem value="FOB">
                                                 FOB
                                             </MenuItem>
@@ -275,7 +290,7 @@ const RequestQuote = ({ session }) => {
                                 <div>
                                     <FormControl required size="small" fullWidth>
                                         <InputLabel id="demo-multiple-chip-label">Destination</InputLabel>
-                                        <Select value={state.payload?.destination} onChange={handleChange} required name="destination" label="Destination">
+                                        <Select value={state.payload.destination ? state.payload.destination : ''} onChange={handleChange} required name="destination" label="Destination">
                                             {
                                                 countries &&
                                                 countries.map(country =>
@@ -292,7 +307,7 @@ const RequestQuote = ({ session }) => {
                             <div>
                                 <div>Destination Port</div>
                                 <div>
-                                    <TextField value={state.payload?.port} required onChange={handleChange} size="small" fullWidth type="text" name="port" label="Destination Port" variant="outlined" />
+                                    <TextField value={state.payload.port ? state.payload.port : ''} required onChange={handleChange} size="small" fullWidth type="text" name="port" label="Destination Port" variant="outlined" />
                                 </div>
                             </div>
                         </div>
@@ -306,7 +321,7 @@ const RequestQuote = ({ session }) => {
                                 <div>
                                     <FormControl required size="small" fullWidth>
                                         <InputLabel id="demo-multiple-chip-label">Validity</InputLabel>
-                                        <Select value={state.payload?.validity} onChange={handleChange} required name="validity" label="Validity">
+                                        <Select value={state.payload.validity ? state.payload.validity : ''} onChange={handleChange} required name="validity" label="Validity">
                                             <MenuItem value="7">
                                                 7 Days
                                             </MenuItem>

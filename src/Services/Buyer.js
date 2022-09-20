@@ -117,4 +117,19 @@ export default class AdminService {
       errors
     };
   }
+
+  async deleteQuote(id) {
+    let errors = [];
+    const url = `/buyer/quotation/requests/pending/${id}`;
+
+    try {
+      await AxiosInstance().delete(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
 }
