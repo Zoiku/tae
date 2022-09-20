@@ -1,7 +1,6 @@
 import { DataGrid } from "@mui/x-data-grid";
 import LinearProgress from '@mui/material/LinearProgress';
 import Toolbar from "../../../Material/Toolbar";
-import { SmallPrimary, SmallSecondary, SmallCancel } from "../../../Material/Button";
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { useState, useEffect } from "react";
 import Box from '@mui/material/Box';
@@ -15,6 +14,11 @@ import StepLabel from '@mui/material/StepLabel';
 import StepContent from '@mui/material/StepContent';
 import { useDispatch } from "react-redux";
 import { setAlert } from "../../../Redux/Features/Alert.js";
+import Tooltip from "@mui/material/Tooltip";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import IconButton from '@mui/material/IconButton';
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -77,6 +81,8 @@ const ProgressBar = ({ status }) => {
 };
 
 const Orders = () => {
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
     const [refreshTable, setRefreshTable] = useState(false);
     const rootDispatch = useDispatch();
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -85,6 +91,15 @@ const Orders = () => {
     const [selectedOrderId, setSelectedOrderId] = useState(null);
     const selectOrder = (id) => setSelectedOrderId(id);
     const selectedOrder = rows && rows.find(row => row.id === selectedOrderId);
+
+    const handleClick = (event, id) => {
+        setAnchorEl(event.currentTarget);
+        selectOrder(id);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     const [openDrawer, setOpenDrawer] = useState(false);
     const toggleDrawer = (open) => (_event) => {
         setOpenDrawer(open);
@@ -139,6 +154,24 @@ const Orders = () => {
         rootDispatch(setAlert(payload));
     };
 
+    const More = ({ id }) => (
+        <div>
+            <Box sx={{ display: "flex", alignItems: "center", textAlign: "center", position: "relative" }}>
+                <Tooltip title="More">
+                    <IconButton
+                        onClick={event => handleClick(event, id)}
+                        size="small"
+                        aria-controls={open ? "account-menu" : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? "true" : undefined}
+                    >
+                        <MoreHorizIcon />
+                    </IconButton>
+                </Tooltip>
+            </Box>
+        </div >
+    );
+
     const columns = [
         { field: "index", headerName: "Order #", width: 100 },
         { field: "product", headerName: "Product", width: 200 },
@@ -146,21 +179,8 @@ const Orders = () => {
         { field: "quantity", headerName: "Quantity", width: 90 },
         { field: "timeLeft", headerName: "TimeLeft", width: 100, renderCell: ({ row }) => <div> <Countdown endDate={row.expiryDate} /> </div> },
         { field: "status", headerName: "Status", width: 90 },
-        {
-            field: "action", headerName: "", width: 220,
-            renderCell: ({ row }) => row.isConfirmed ?
-                <div style={{ width: "100%", display: "flex", justifyContent: "center" }}><SmallPrimary onClick={() => selectOrder(row.id)}>View</SmallPrimary></div> :
-                <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
-                    <SmallPrimary onClick={() => selectOrder(row.id)}>View</SmallPrimary>
-                    <SmallSecondary onClick={() => handleConfirmOrder(row.id)}>Confirm</SmallSecondary>
-                    <SmallCancel onClick={() => handleCancelOrder(row.id)}>Cancel</SmallCancel>
-                </div>
-        },
+        { field: "action", headerName: "", width: 30, renderCell: ({ row }) => <div className="simple-center-div"><More id={row.id} /></div> },
     ];
-
-    useEffect(() => {
-        selectedOrder && setOpenDrawer(true);
-    }, [selectedOrder]);
 
     const list = () => (
         selectedOrder &&
@@ -261,6 +281,34 @@ const Orders = () => {
 
     return (
         <div className="Orders-Table">
+            <div>
+                <Menu
+                    anchorEl={anchorEl}
+                    id="account-menu"
+                    open={open}
+                    onClose={handleClose}
+                    onClick={handleClose}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                >
+                    <MenuItem onClick={toggleDrawer(true)}>
+                        View
+                    </MenuItem>
+                    {
+                        selectedOrder &&
+                        !selectedOrder.isConfirmed &&
+                        <div>
+                            <MenuItem onClick={handleConfirmOrder}>
+                                Confirm
+                            </MenuItem>
+                            <MenuItem onClick={handleCancelOrder}>
+                                Cancel
+                            </MenuItem>
+                        </div>
+                    }
+                </Menu>
+            </div>
+
             <div>
                 <SwipeableDrawer
                     className="drawer"

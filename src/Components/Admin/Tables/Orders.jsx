@@ -101,9 +101,10 @@ const Orders = () => {
     const toggleDrawer = (open) => (_event) => {
         setOpenDrawer(open);
     };
+    
     const handleClick = (event, id) => {
         setAnchorEl(event.currentTarget);
-        selectOrder(id)
+        selectOrder(id);
     };
     const handleClose = () => {
         setAnchorEl(null);

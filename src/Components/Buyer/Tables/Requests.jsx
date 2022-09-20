@@ -18,6 +18,10 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { useReducer } from "react";
 import { INITIAL_STATE, formReducer } from "../../../Reducers/FormReducer"
 import { REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST } from "../../../Reducers/Actions"
+import Tooltip from "@mui/material/Tooltip";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
@@ -30,6 +34,8 @@ const IMAGES_TO_DISPLAY = {
 }
 
 const Requests = () => {
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
     const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
     const [revealCompanyProfile, setRevealCompanyProfile] = useState(false);
     const toggleCompanyProfile = (open) => (_event) => {
@@ -42,6 +48,7 @@ const Requests = () => {
     const [selectedRequestId, setSelectedRequestId] = useState(null);
     const selectRequest = (id) => setSelectedRequestId(id);
     const selectedRequest = rows && rows.find(row => row.id === selectedRequestId);
+
     const [openDrawer, setOpenDrawer] = useState(false);
     const toggleDrawer = (open) => (_event) => {
         setOpenDrawer(open);
@@ -76,18 +83,37 @@ const Requests = () => {
         setRevealCompanyProfile(false);
     };
 
+    const handleClick = (event, id) => {
+        setAnchorEl(event.currentTarget);
+        selectRequest(id);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const More = ({ id }) => (
+        <div>
+            <Box sx={{ display: "flex", alignItems: "center", textAlign: "center", position: "relative" }}>
+                <Tooltip title="More">
+                    <IconButton
+                        onClick={event => handleClick(event, id)}
+                        size="small"
+                    >
+                        <MoreHorizIcon />
+                    </IconButton>
+                </Tooltip>
+            </Box>
+        </div >
+    );
+
     const columns = [
         { field: "index", headerName: "Request #", width: 100 },
         { field: "product", headerName: "Product", width: 200 },
         { field: "quantity", headerName: "Quantity", width: 90 },
         { field: "timeLeft", headerName: "TimeLeft", width: 100, renderCell: ({ row }) => <div> <Countdown endDate={row.expiryDate} /> </div> },
         { field: "totalOffers", headerName: "Offers", width: 100, renderCell: ({ row }) => <div><IconButton onClick={() => handleSelectRequestOffers(row.offers)} aria-label="cart"><StyledBadge showZero badgeContent={row.offers.length} color="primary"><RequestQuoteIcon /></StyledBadge></IconButton></div> },
-        { field: "action", headerName: "", width: 90, renderCell: ({ row }) => <SmallPrimary onClick={() => selectRequest(row.id)}>View</SmallPrimary> },
+        { field: "more", headerName: "", width: 30, renderCell: ({ row }) => <div className="simple-center-div"><More id={row.id} /></div> },
     ];
-
-    useEffect(() => {
-        selectedRequest && setOpenDrawer(true);
-    }, [selectedRequest]);
 
     const handleOrderSubmit = async () => {
         dispatch({ type: SEND_REQUEST });
@@ -100,10 +126,10 @@ const Requests = () => {
             const { errors } = await buyerService.acceptOffer(state.payload);
             if (errors.length === 0) {
                 dispatch({ type: REQUEST_SUCCESSFUL });
-            }else {
+            } else {
                 dispatch({ type: REQUEST_FAILED });
             }
-        } catch (error) {}
+        } catch (error) { }
     }
 
     const list = () => (
@@ -269,7 +295,7 @@ const Requests = () => {
     const listOffer = () => (
         selectedOffer &&
         <Box
-            sx={{ width: "auto", height: "400px" }}
+            sx={{ width: "auto", height: "700px" }}
             role="presentation"
             className="drawer-container"
         >
@@ -406,8 +432,6 @@ const Requests = () => {
                             };
                             return offer;
                         });
-
-                        console.log(request);
                         return 1;
                     }));
 
@@ -423,6 +447,22 @@ const Requests = () => {
 
     return (
         <div className="Requests-Table">
+            <div>
+                <Menu
+                    anchorEl={anchorEl}
+                    id="account-menu"
+                    open={open}
+                    onClose={handleClose}
+                    onClick={handleClose}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                >
+                    <MenuItem onClick={toggleDrawer(true)}>
+                        View Request
+                    </MenuItem>
+                </Menu>
+            </div>
+
             <div>
                 <SwipeableDrawer
                     className="drawer"
