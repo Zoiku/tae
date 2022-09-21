@@ -22,7 +22,7 @@ import IconButton from '@mui/material/IconButton';
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
-    CONFIRMED: 20,
+    CONFIRMED: 30,
     PAID: 30,
     APPROVED: 40,
     PROCESSING: 60,
@@ -32,7 +32,7 @@ const ORDER_STATUS_LEVELS = {
 
 const ORDER_STATUS_STEPS = {
     RECEIVED: 0,
-    CONFIRMED: 1,
+    CONFIRMED: 2,
     PAID: 2,
     APPROVED: 3,
     PROCESSING: 4,
@@ -43,27 +43,27 @@ const ORDER_STATUS_STEPS = {
 const steps = [
     {
         label: 'Order placed',
-        description: "Thank you for placing your order",
+        description: "Order has been placed",
     },
     {
         label: "Confirm Order",
-        description: "Confirm your order to alert Merchant",
+        description: "Confirm the order",
     },
     {
         label: "Order Approved",
-        description: "Your order has been approved and will be processed shortly",
+        description: "Order awaiting approval",
     },
     {
         label: "Processing",
-        description: "Please wait while your order is being processed",
+        description: "Please wait while the order is being processed",
     },
     {
         label: "Shipped",
-        description: "Your order is being shipped",
+        description: "The order is being shipped",
     },
     {
         label: "Delivered",
-        description: "Your order has been delivered",
+        description: "The order has been delivered",
     },
 ];
 
@@ -110,7 +110,8 @@ const Orders = () => {
         setSelectedOrderId(null);
     }
 
-    const handleConfirmOrder = async (id) => {
+    const handleConfirmOrder = async () => {
+        const {id} = selectedOrder;
         const merchantService = new MerchantService();
         try {
             const { errors } = await merchantService.orderConfirmation(id);
@@ -123,10 +124,11 @@ const Orders = () => {
         } catch (error) { }
     };
 
-    const handleCancelOrder = async (id) => {
+    const handleCancelOrder = async () => {
+        const {id} = selectedOrder;
         const merchantService = new MerchantService();
         try {
-            const { errors } = await merchantService.orderConfirmation(id);
+            const { errors } = await merchantService.orderRejection(id);
             if (errors.length === 0) {
                 setRefreshTable(prev => !prev);
                 handleSuccessfulRequest("Successfully cancelled your order", 3000);

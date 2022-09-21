@@ -132,4 +132,36 @@ export default class AdminService {
       errors
     };
   }
+
+  async getCompany(id) {
+    let errors = [];
+    let data = null;
+    const url = `/user/company/${id}`;
+
+    try {
+      data = await AxiosInstance().get(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors,
+      data
+    };
+  }
+
+  async confirmOrder(id, payload) {
+    let errors = [];
+    const url = `/order/${id}/payment/details`;
+
+    try {
+      await AxiosInstance().put(url, payload);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
 }

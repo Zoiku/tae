@@ -2,7 +2,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import LinearProgress from '@mui/material/LinearProgress';
 import Toolbar from "../../../Material/Toolbar";
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import Box from '@mui/material/Box';
 import { Puller } from "../../../Material/Drawer";
 import BuyerService from "../../../Services/Buyer";
@@ -16,7 +16,16 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import StepContent from '@mui/material/StepContent';
-
+import Countdown from "../../Countdown";
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import TextField from '@mui/material/TextField';
+import { INPUTING, SEND_REQUEST, REQUEST_SUCCESSFUL, REQUEST_FAILED } from "../../../Reducers/Actions";
+import { INITIAL_STATE, formReducer } from "../../../Reducers/FormReducer";
+import { SmallSecondary } from "../../../Material/Button";
+import { setAlert } from "../../../Redux/Features/Alert.js"
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -61,7 +70,7 @@ const steps = [
     },
     {
         label: "Delivered",
-        description: "Your order has been delivered",
+        description: "Your order is pending delivery",
     },
 ];
 
@@ -83,7 +92,7 @@ const Orders = () => {
     const open = Boolean(anchorEl);
     const [refreshTable, setRefreshTable] = useState(false);
     const rootDispatch = useDispatch();
-
+    const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
     const [rows, setRows] = useState([]);
     const [rowsLoading, setRowsLoading] = useState(false);
@@ -95,6 +104,11 @@ const Orders = () => {
         setOpenDrawer(open);
     };
 
+    const [openDrawerConfirm, setOpenDrawerConfirm] = useState(false);
+    const toggleDrawerConfirm = (open) => (_event) => {
+        setOpenDrawerConfirm(open);
+    };
+
     const handleClick = (event, id) => {
         setAnchorEl(event.currentTarget);
         selectOrder(id);
@@ -102,6 +116,45 @@ const Orders = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const handleChange = (e) => { dispatch({ type: INPUTING, prop: e.target.name, value: e.target.value }); }
+
+    const handleConfirm = async (e) => {
+        dispatch({ type: SEND_REQUEST });
+        e.preventDefault();
+        const { id } = selectedOrder;
+        const buyerService = new BuyerService();
+        try {
+            const { errors } = await buyerService.confirmOrder(id, state.payload);
+            if (errors.length === 0) {
+                dispatch({ type: REQUEST_SUCCESSFUL });
+                setRefreshTable(prev => !prev);
+                handleSuccessfullRequest("Successfully confirmed your order", 3000);
+                setOpenDrawerConfirm(false);
+            } else {
+                dispatch({ type: REQUEST_FAILED });
+                handleFailedRequest("Could not process your request", 5000);
+            }
+        } catch (error) { }
+    }
+
+    const handleSuccessfullRequest = (message, timeOut) => {
+        const payload = {
+            severity: "success",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
+    }
+
+    const handleFailedRequest = (message, timeOut) => {
+        const payload = {
+            severity: "error",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
+    }
 
     const More = ({ id }) => (
         <div>
@@ -126,7 +179,7 @@ const Orders = () => {
         { field: "product", headerName: "Product", width: 200 },
         { field: "terms", headerName: "Terms", width: 70 },
         { field: "quantity", headerName: "Quantity", width: 90 },
-        { field: "timeLeft", headerName: "Time Left", width: 100, renderCell: () => <div>10hr 10m</div> },
+        { field: "timeLeft", headerName: "Time Left", width: 100, renderCell: ({ row }) => <div className="countdown-table-container"> <Countdown endDate={row.expiryDate} /> </div> },
         { field: "status", headerName: "Status", width: 100 },
         { field: "action", headerName: "", width: 30, renderCell: ({ row }) => <div className="simple-center-div"><More id={row.id} /></div> },
     ];
@@ -198,6 +251,60 @@ const Orders = () => {
         </Box>
     );
 
+    const listConfirm = () => (
+        selectedOrder &&
+        <Box
+            sx={{ width: "auto", height: "650px" }}
+            role="presentation"
+            className="drawer-container"
+            component="form"
+            onSubmit={handleConfirm}
+        >
+            <div className="drawer-title-container">
+                <div>Confirm Order</div>
+                <Puller />
+            </div>
+            <div className="drawer-body">
+                <div className="requests-sections-body">
+                    <div className="orders-confirmation-sections-container">
+                        <section>
+                            <div>A. Kindly choose one of the payment options below</div>
+                            <div>
+                                <FormControl>
+                                    <RadioGroup
+                                        aria-labelledby="demo-radio-buttons-group-label"
+                                        name="orderPayment"
+                                        onChange={handleChange}
+                                        required
+                                    >
+                                        <FormControlLabel value="Cash against documents (10%) Escrow deposit required" control={<Radio size="small" />} label="Cash against documents (10%) Escrow deposit required" />
+                                        <FormControlLabel value="Letter of credit" control={<Radio size="small" />} label="Letter of credit" />
+                                        <FormControlLabel value="Bank transfer" control={<Radio size="small" />} label="Bank transfer" />
+                                    </RadioGroup>
+                                </FormControl>
+                            </div>
+                        </section>
+                        <section>
+                            <div>B. Please provide your shipping address below</div>
+                            <div>
+                                <TextField required sx={{ background: "white" }} multiline rows={3} fullWidth onChange={handleChange} type="text" name="shippingAddress" variant="outlined" />
+                            </div>
+                        </section>
+                        <section className="sales-and-purchase-agreement-container">
+                            <div>C. Sales and purchanse agreement</div>
+                            <div>
+                                <div>Click to open sales and purchase agreement</div>
+                                <div>
+                                    <SmallSecondary type="submit" loading={state.requestState.loading} variant="contained">Confirm Order</SmallSecondary>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </Box>
+    );
+
     useEffect(() => {
         const abortController = new AbortController();
         const fetchData = async () => {
@@ -226,7 +333,7 @@ const Orders = () => {
 
         fetchData();
         return () => abortController.abort();
-    }, []);
+    }, [refreshTable]);
 
     return (
         <div className="Orders-Table">
@@ -245,13 +352,10 @@ const Orders = () => {
                     </MenuItem>
                     {
                         selectedOrder &&
-                        !selectedOrder.isConfirmed &&
+                        selectedOrder.isConfirmed && !selectedOrder.orderPaymentDetails &&
                         <div>
-                            <MenuItem>
+                            <MenuItem onClick={toggleDrawerConfirm(true)}>
                                 Confirm
-                            </MenuItem>
-                            <MenuItem>
-                                Cancel
                             </MenuItem>
                         </div>
                     }
@@ -269,6 +373,20 @@ const Orders = () => {
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
                     {list()}
+                </SwipeableDrawer>
+            </div>
+
+            <div>
+                <SwipeableDrawer
+                    className="drawer"
+                    variant="temporary"
+                    anchor="bottom"
+                    open={openDrawerConfirm}
+                    onOpen={toggleDrawerConfirm(true)}
+                    onClose={toggleDrawerConfirm(false)}
+                    disableBackdropTransition={!iOS} disableDiscovery={iOS}
+                >
+                    {listConfirm()}
                 </SwipeableDrawer>
             </div>
 

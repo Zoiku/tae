@@ -220,4 +220,19 @@ export default class AdminService {
       errors
     };
   }
+
+  async updateOrder(id, status) {
+    let errors = [];
+    const url = `/order/${id}/${status}`;
+
+    try {
+      await AxiosInstance().patch(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
 }

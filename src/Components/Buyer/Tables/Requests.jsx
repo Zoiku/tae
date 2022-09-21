@@ -22,6 +22,8 @@ import Tooltip from "@mui/material/Tooltip";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { useDispatch } from "react-redux";
+import { setAlert } from "../../../Redux/Features/Alert.js"
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
@@ -34,6 +36,9 @@ const IMAGES_TO_DISPLAY = {
 }
 
 const Requests = () => {
+    const rootDispatch = useDispatch();
+    const [refreshTable, setRefreshTable] = useState(false);
+    const [companyProfile, setCompanyProfile] = useState(null);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
@@ -71,9 +76,26 @@ const Requests = () => {
     };
 
     const [selectedOffer, setSelectedOffer] = useState(null);
-    const handleSelectRequestOffer = (offer) => {
-        setSelectedOffer(offer);
-        setOpenDrawerOffer(true);
+    const handleSelectRequestOffer = async (offer) => {
+        const { id } = offer.merchant;
+        const buyerService = new BuyerService();
+        try {
+            const { errors, data } = await buyerService.getCompany(id);
+            if (errors.length === 0) {
+                const filteredData = data.data.data;
+                filteredData.map(company => {
+                    company.businessType = company.type.label;
+                    company.memberSince = new Date(company.type.createdOn).toUTCString().slice(0, 16);
+                    company.yearEstablished = company.company.year;
+                    company.employees = company.company.noOfEmployees;
+                    company.supplyAbility = company.company.supplyAbility;
+                    return 1;
+                });
+                setSelectedOffer(offer);
+                setOpenDrawerOffer(true);
+                setCompanyProfile(filteredData[0]);
+            }
+        } catch (error) { }
     };
     const [openDrawerOffer, setOpenDrawerOffer] = useState(false);
     const toggleDrawerOffer = (open) => (_event) => { setOpenDrawerOffer(open) };
@@ -119,18 +141,41 @@ const Requests = () => {
         dispatch({ type: SEND_REQUEST });
         state.payload = {
             requestID: selectedOffer.requestId,
-            merchant: selectedOffer.merchantId
+            merchant: selectedOffer.merchant.id
         }
         const buyerService = new BuyerService();
         try {
             const { errors } = await buyerService.acceptOffer(state.payload);
             if (errors.length === 0) {
                 dispatch({ type: REQUEST_SUCCESSFUL });
+                handleSuccessfullRequest("Successfull", 3000);
+                setRefreshTable(prev => !prev);
+                handleCloseDrawerOffers();
+                handleCloseDrawerOffer();
             } else {
                 dispatch({ type: REQUEST_FAILED });
+                handleFailedRequest("Order could not be processed, please try again", 5000);
             }
         } catch (error) { }
     }
+
+    const handleSuccessfullRequest = (message, timeOut) => {
+        const payload = {
+            severity: "success",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
+    };
+
+    const handleFailedRequest = (message, timeOut) => {
+        const payload = {
+            severity: "error",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
+    };
 
     const list = () => (
         selectedRequest &&
@@ -295,7 +340,7 @@ const Requests = () => {
     const listOffer = () => (
         selectedOffer &&
         <Box
-            sx={{ width: "auto", height: "700px" }}
+            sx={{ width: "auto", height: "400px" }}
             role="presentation"
             className="drawer-container"
         >
@@ -305,6 +350,9 @@ const Requests = () => {
             </div>
             <div className="drawer-body">
                 <div className="requests-sections-body">
+                    <section>
+                        <div>{selectedOffer.merchant.firstName} {selectedOffer.merchant.lastName}</div>
+                    </section>
                     <section>
                         <div>
                             <div className="incoterm-settings-table-container">
@@ -364,13 +412,14 @@ const Requests = () => {
 
                         {
                             revealCompanyProfile &&
+                            companyProfile &&
                             <div>
-                                <div><span>Business Type</span>: <span>{selectedOffer.merchant.role}</span></div>
-                                <div><span>Member Since</span>: <span></span></div>
-                                <div><span>Year Established</span>: <span></span></div>
-                                <div><span>No of Employees</span>: <span></span></div>
-                                <div><span>Products</span>: <span></span></div>
-                                <div><span>Supply Ability</span>: <span></span></div>
+                                <div><span>Business Type</span><span>{companyProfile.businessType}</span></div>
+                                <div><span>Member Since</span><span>{companyProfile.memberSince}</span></div>
+                                <div><span>Year Established</span><span>{companyProfile.yearEstablished}</span></div>
+                                <div><span>No of Employees</span><span>{companyProfile.employees}</span></div>
+                                <div><span>Products</span>{companyProfile.subscription.map((product, index) => <span>{product.product} {companyProfile.subscription.length !== index + 1 && "& "}</span>)}</div>
+                                <div><span>Supply Ability</span><span>{companyProfile.supplyAbility}</span></div>
                             </div>
                         }
                     </section>
@@ -416,6 +465,7 @@ const Requests = () => {
                         request.expiryDate = new Date(request.expiryDate).toUTCString().slice(0, 25);
                         request.offers = (await (await buyerService.getOffers(request._id)).data.data.data).map((offer, index) => {
                             offer.index = index + 1;
+                            offer.requestId = request._id;
                             offer.product = offer.request.quotationProducts[0].product.name;
                             offer.destination = offer.request.destination;
                             offer.incotermRows = offer.buyerQuotationRequestIncoterm;
@@ -428,7 +478,8 @@ const Requests = () => {
                                 email: offer.merchant.email,
                                 mobileNo: offer.merchant.mobileNo,
                                 companyName: offer.merchant.companyName,
-                                role: offer.merchant.role
+                                role: offer.merchant.role,
+                                id: offer?.merchant?._id
                             };
                             return offer;
                         });
@@ -443,7 +494,7 @@ const Requests = () => {
 
         fetchData();
         return () => abortController.abort();
-    }, []);
+    }, [refreshTable]);
 
     return (
         <div className="Requests-Table">

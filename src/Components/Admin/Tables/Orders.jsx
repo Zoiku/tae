@@ -15,43 +15,49 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import StepContent from '@mui/material/StepContent';
+import { setAlert } from "../../../Redux/Features/Alert.js"
+import { useDispatch } from "react-redux";
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
     CONFIRMED: 20,
-    PAID: 30,
-    APPROVED: 40,
+    "AWAITING PROOF OF PAYMENT": 30,
+    "PROOF OF PAYMENT APPROVED": 40,
     PROCESSING: 60,
     SHIPPED: 80,
     DELIVERED: 100
 };
 
 const ORDER_STATUS_STEPS = {
-    RECEIVED: 0,
-    CONFIRMED: 1,
-    PAID: 2,
-    APPROVED: 3,
-    PROCESSING: 4,
-    SHIPPED: 5,
-    DELIVERED: 6,
+    RECEIVED: 1,
+    CONFIRMED: 2,
+    "AWAITING PROOF OF PAYMENT": 3,
+    "PROOF OF PAYMENT APPROVED": 4,
+    PROCESSING: 5,
+    SHIPPED: 6,
+    DELIVERED: 7,
 };
 
 const steps = [
     {
         label: 'Order placed',
-        description: "Thank you for placing your order.",
+        description: "Order placed by buyer",
     },
     {
         label: "Confirm Order",
-        description: "Confirm your order to alert Merchant.",
+        description: "Order to be confirmed by merchant",
     },
     {
-        label: "Order Approved",
-        description: "Your order has been approved and will be processed shortly.",
+        label: "Proof of payment",
+        description: "Awaiting proof of payment from the buyer",
+    },
+    {
+        label: "Payment Approval",
+        description: "Pending Approval",
     },
     {
         label: "Processing",
-        description: "Please wait while your order is being processed.",
+        description: "The order is being processed.",
     },
     {
         label: "Shipped",
@@ -89,6 +95,8 @@ const Orders = () => {
         setPaging({ ...paging, size: size })
     };
 
+    const rootDispatch = useDispatch();
+    const [refreshTable, setRefreshTable] = useState(false);
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -101,7 +109,7 @@ const Orders = () => {
     const toggleDrawer = (open) => (_event) => {
         setOpenDrawer(open);
     };
-    
+
     const handleClick = (event, id) => {
         setAnchorEl(event.currentTarget);
         selectOrder(id);
@@ -109,6 +117,37 @@ const Orders = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const updateOrder = async (status) => {
+        const adminService = new AdminService();
+        try {
+            const { errors } = await adminService.updateOrder(selectedOrderId, status);
+            if (errors.length === 0) {
+                setRefreshTable(prev => !prev);
+                handleSuccessfullRequest("Success", 3000);
+            }else {
+                handleFailedRequest("Could not process your order", 5000);
+            }
+        } catch (error) { }
+    }
+
+    const handleSuccessfullRequest = (message, timeOut) => {
+        const payload = {
+            severity: "success",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
+    }
+
+    const handleFailedRequest = (message, timeOut) => {
+        const payload = {
+            severity: "error",
+            message,
+            timeOut
+        }
+        rootDispatch(setAlert(payload));
+    }
 
     const More = ({ id }) => (
         <div>
@@ -155,24 +194,6 @@ const Orders = () => {
                     </div>
                     <div className="requests-sections-container">
                         <section>
-                            <div className="requests-section-title">Product Info</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Product:</span>
-                                    <span>{selectedOrder.product}</span>
-                                </div>
-                                <div>
-                                    <span>Quantity:</span>
-                                    <span>{selectedOrder.quantity} {selectedOrder.containerSize}</span>
-                                </div>
-                                <div>
-                                    <span>Requested Date:</span>
-                                    <span>{selectedOrder.createdOn}</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
                             <div className="requests-section-title">Track Order</div>
                             <div className="order-section-body">
                                 <div> <ProgressBar status={selectedOrder.status} /> </div>
@@ -198,6 +219,80 @@ const Orders = () => {
                                 </Box>
                             </div>
                         </section>
+
+                        <section>
+                            <div className="requests-section-title">Product Info</div>
+                            <div className="request-section-body">
+                                <div>
+                                    <span>Product:</span>
+                                    <span>{selectedOrder.product}</span>
+                                </div>
+                                <div>
+                                    <span>Species:</span>
+                                    <span>{selectedOrder.species}</span>
+                                </div>
+                                <div>
+                                    <span>Species Type:</span>
+                                    <span>{selectedOrder.speciesType}</span>
+                                </div>
+                                <div>
+                                    <span>Origin:</span>
+                                    <span>{selectedOrder.origin}</span>
+                                </div>
+                                <div>
+                                    <span>Container Size:</span>
+                                    <span>{selectedOrder.containerSize}</span>
+                                </div>
+                                <div>
+                                    <span>Volume:</span>
+                                    <span>{selectedOrder.volume} {selectedOrder.volumeUnit}</span>
+                                </div>
+                                <div>
+                                    <span>Quantity:</span>
+                                    <span>{selectedOrder.quantity} {selectedOrder.containerSize}</span>
+                                </div>
+                                <div>
+                                    <span>Requested Date:</span>
+                                    <span>{selectedOrder.createdOn}</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section>
+                            <div className="requests-section-title">Pricing ad Delivery Details</div>
+                            <div className="request-section-body">
+                                <div>
+                                    <span>Shipping Address:</span>
+                                    <span>{selectedOrder.shippingAddress}</span>
+                                </div>
+                                <div>
+                                    <span>Terms:</span>
+                                    <span>{selectedOrder.terms}</span>
+                                </div>
+                                <div>
+                                    <span>Destination:</span>
+                                    <span>{selectedOrder.destination}</span>
+                                </div>
+                                <div>
+                                    <span>Destination port:</span>
+                                    <span>{selectedOrder.port}</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        {
+                            selectedOrder?.paymentMode &&
+                            <section>
+                                <div className="requests-section-title">Payment Details</div>
+                                <div className="request-section-body">
+                                    <div>
+                                        <span>Payment Mode:</span>
+                                        <span>{selectedOrder.paymentMode}</span>
+                                    </div>
+                                </div>
+                            </section>
+                        }
+
                     </div>
                 </div>
             </div>
@@ -221,10 +316,19 @@ const Orders = () => {
                         order.id = order?._id;
                         order.destination = order?.request?.destination;
                         order.product = order?.request?.quotationProducts[0]?.product.name;
+                        order.species = order?.request?.quotationProducts[0]?.product?.species?.label;
+                        order.speciesType = order?.request?.quotationProducts[0]?.product?.species?.type?.label;
+                        order.origin = order?.request?.quotationProducts[0]?.product?.origin?.country;
+                        order.containerSize = order?.request?.quotationProducts[0]?.product?.supportedShippingContainers[0].label;
+                        order.volume = order?.request?.quotationProducts[0]?.product?.volume?.value;
+                        order.volumeUnit = order?.request?.quotationProducts[0]?.product?.volume?.unit;
                         order.terms = order?.request?.buyerQuotationIncoterm?.label;
                         order.quantity = order?.request?.quotationProducts[0]?.specification?.quantity;
                         order.createdOn = new Date(order.createdOn).toUTCString().slice(0, 16);
                         order.expiryDate = new Date(order?.request?.expiryDate).toUTCString().slice(0, 25);
+                        order.shippingAddress = order?.orderPaymentDetails?.shippingAddress;
+                        order.port = order?.request?.port;
+                        order.paymentMode = order?.orderPaymentDetails?.orderPayment
                         return 1;
                     });
                     setRows(filteredData);
@@ -236,7 +340,7 @@ const Orders = () => {
         fetchData();
         return () => abortController.abort();
         // eslint-disable-next-line
-    }, [paging.page, paging.size]);
+    }, [paging.page, paging.size, refreshTable]);
 
     return (
         <div className="Orders-Table">
@@ -253,6 +357,32 @@ const Orders = () => {
                     <MenuItem onClick={toggleDrawer(true)}>
                         View
                     </MenuItem>
+
+                    {
+                        selectedOrder &&
+                        <div>
+                            {
+                                selectedOrder.status === "AWAITING PROOF OF PAYMENT" &&
+                                <MenuItem onClick={() => updateOrder("APPROVED")}>
+                                    Approve
+                                </MenuItem>
+                            }
+
+                            {
+                                selectedOrder.status === "PROOF OF PAYMENT APPROVED" &&
+                                <MenuItem onClick={() => updateOrder("SHIPPED")}>
+                                    Ship
+                                </MenuItem>
+                            }
+
+                            {
+                                selectedOrder.status === "SHIPPED" &&
+                                <MenuItem onClick={() => updateOrder("DELIVERED")}>
+                                    Deliver
+                                </MenuItem>
+                            }
+                        </div>
+                    }
                 </Menu>
             </div>
 
