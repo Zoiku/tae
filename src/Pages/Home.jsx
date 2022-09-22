@@ -12,17 +12,20 @@ import Marquee from "react-fast-marquee";
 import { useState, useEffect } from "react";
 import ProductService from "../Services/Product";
 import { useNavigate } from "react-router-dom";
+import PageLoadingAnimation from "../Components/PageLoadingAnimation";
 
 const IMAGES_TO_DISPLAY = {
-    ["Teak Round Logs"]: log,
-    ["Teak Square Logs"]: log1
+    "Teak Round Logs": log,
+    "Teak Square Logs": log1
 }
 
-const Home = () => {
+const Home = ({ session }) => {
     const [products, setProducts] = useState(null);
     const navigate = useNavigate();
+    const [pageLoad, setPageLoad] = useState(false);
 
     useEffect(() => {
+        setPageLoad(true);
         const abortController = new AbortController();
         const fetchData = async () => {
             const productService = new ProductService();
@@ -42,18 +45,23 @@ const Home = () => {
                             origin: product.origin.country,
                             containerSize: "20ft Container"
                         }
+                        return 1;
                     });
                     const products = filteredData.map(filter => filter.productInformation)
                     setProducts(products);
                 }
             } catch (error) { }
+            setPageLoad(false);
         }
         fetchData();
+
         return () => abortController.abort();
     }, []);
 
     return (
         <div className="Home">
+            {pageLoad && <PageLoadingAnimation />}
+
             <div className="tae-home-banner-container">
                 <div className="tae-home-banner">
                     <ul>
@@ -80,7 +88,7 @@ const Home = () => {
                                     <div className="specification-title">{product.name}</div>
                                     <div className="specification-description-short">{product.description}</div>
                                     <div className="specification-button-container">
-                                        <PrimaryButton onClick={() => navigate(`/requestquote?product=${JSON.stringify(product)}`)}>Request Quotes</PrimaryButton>
+                                        <PrimaryButton variant="contained" disabled={session?.user?.role === "MERCHANT"} onClick={() => navigate(`/requestquote?product=${JSON.stringify(product)}`)}>Request Quotes</PrimaryButton>
                                     </div>
                                 </div>
                             </div>
@@ -100,7 +108,7 @@ const Home = () => {
                                 </Swiper>
                             </div>
                             <div className="specification-button-container-mobile">
-                                <PrimaryButton fullWidth onClick={() => navigate(`/requestquote?product=${JSON.stringify(product)}`)}>Request Quotes</PrimaryButton>
+                                <PrimaryButton variant="contained" disabled={session?.user?.role === "MERCHANT"} fullWidth onClick={() => navigate(`/requestquote?product=${JSON.stringify(product)}`)}>Request Quotes</PrimaryButton>
                             </div>
                         </section>
                     )

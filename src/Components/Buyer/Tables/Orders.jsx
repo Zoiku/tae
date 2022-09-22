@@ -27,13 +27,13 @@ import { INITIAL_STATE, formReducer } from "../../../Reducers/FormReducer";
 import { SmallSecondary } from "../../../Material/Button";
 import { setAlert } from "../../../Redux/Features/Alert.js"
 import Modal from '@mui/material/Modal';
-import { inAppStandard, inAppWide } from "../../../Styles/Modal";
+import { inAppStandard, inAppWider } from "../../../Styles/Modal";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
     CONFIRMED: 20,
-    PAID: 30,
+    "PROOF OF PAYMENT APPROVED": 30,
     APPROVED: 40,
     PROCESSING: 60,
     SHIPPED: 80,
@@ -43,7 +43,7 @@ const ORDER_STATUS_LEVELS = {
 const ORDER_STATUS_STEPS = {
     RECEIVED: 0,
     CONFIRMED: 1,
-    PAID: 2,
+    "PROOF OF PAYMENT APPROVED": 2,
     APPROVED: 3,
     PROCESSING: 4,
     SHIPPED: 5,
@@ -178,7 +178,8 @@ const Orders = () => {
     );
 
     const columns = [
-        { field: "index", headerName: "Order #", width: 100 },
+        { field: "index", headerName: "#", width: 50 },
+        { field: "orderNo", headerName: "Order #", width: 100 },
         { field: "product", headerName: "Product", width: 200 },
         { field: "terms", headerName: "Terms", width: 70 },
         { field: "quantity", headerName: "Quantity", width: 90 },
@@ -196,7 +197,7 @@ const Orders = () => {
                 </div>
                 <div className="requests-sections-container">
                     <section>
-                        <div className="requests-section-title">Product Info</div>
+                        <div className="requests-section-title">Product Information</div>
                         <div className="request-section-body">
                             <div>
                                 <span>Product:</span>
@@ -332,7 +333,7 @@ const Orders = () => {
                     aria-describedby="modal-modal-description"
                     className="modal-container"
                 >
-                    <Box sx={inAppWide}>
+                    <Box sx={inAppWider}>
                         <div className="modal-title-container">
                             <div>Order Details</div>
                             <div><CloseRoundedIcon onClick={toggleDrawer(false)} /></div>
@@ -353,7 +354,7 @@ const Orders = () => {
                     aria-describedby="modal-modal-description"
                     className="modal-container"
                 >
-                    <Box sx={inAppWide}>
+                    <Box sx={inAppStandard}>
                         <div className="modal-title-container">
                             <div>Confirm Order</div>
                             <div><CloseRoundedIcon onClick={toggleDrawerConfirm(false)} /></div>

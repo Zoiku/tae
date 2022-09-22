@@ -71,7 +71,7 @@ const Requests = () => {
                 </div>
                 <div className="requests-sections-container">
                     <section>
-                        <div className="requests-section-title">Product Info</div>
+                        <div className="requests-section-title">Product Information</div>
                         <div className="request-section-body">
                             <div>
                                 <span>Product:</span>
@@ -101,7 +101,7 @@ const Requests = () => {
                     </section>
 
                     <section>
-                        <div className="requests-section-title">Product Specification</div>
+                        <div className="requests-section-title">Specifications</div>
                         <div className="request-section-body">
                             <div>
                                 <span>Length:</span>
@@ -141,7 +141,7 @@ const Requests = () => {
                     </section>
 
                     <section>
-                        <div className="requests-section-title">Product Delivery Information</div>
+                        <div className="requests-section-title">Pricing and Delivery Information</div>
                         <div className="request-section-body">
                             <div>
                                 <span>Incoterm:</span>

@@ -60,7 +60,7 @@ export default class AdminService {
   async getRequestsSalesData(signal) {
     let errors = [];
     let data = null;
-    const url = "/buyer/quotation/requests";
+    const url = "/admin/buyer/quotation/requests";
 
     try {
       data = await AxiosInstance().get(url, { signal });
@@ -83,7 +83,7 @@ export default class AdminService {
   async getRequestsCategories(signal) {
     let errors = [];
     let data = null;
-    const url = "/buyer/quotation/requests";
+    const url = "/admin/buyer/quotation/requests";
 
     try {
       data = await AxiosInstance().get(url, { signal });

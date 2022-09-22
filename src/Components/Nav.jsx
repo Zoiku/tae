@@ -14,6 +14,10 @@ const ROLE_PATH = {
     BUYER: "/buyer/dashboard",
 }
 
+const toLowerCase = (string) => {
+    return string.toLowerCase();
+}
+
 const Nav = ({ session }) => {
     const rootDispatch = useDispatch();
     const [openMenu, setOpenMenu] = useState(false);
@@ -96,9 +100,18 @@ const Nav = ({ session }) => {
                     <img style={{ cursor: "pointer" }} onClick={handleRedirect} src={logo} alt="tae logo" />
                 </div>
                 <ul className="nav-links-container">
-                    <li className="nav-links"><NavLink style={defaultNavStyle} to="/merchant/register">Become a Merchant</NavLink></li>
-                    <li className="nav-links"><NavLink style={defaultNavStyle} to="/buyer/register">Sign Up</NavLink></li>
-                    <li className="nav-links"><NavLink style={defaultNavStyle} to="/login">Login</NavLink></li>
+                    {
+                        session.isLogged ?
+                            <>
+                                <li className="nav-links"><NavLink style={defaultNavStyle} to={`${toLowerCase(session.user.role)}/dashboard`}>Dashboard</NavLink></li>
+                                <li style={{cursor: "pointer"}} className="nav-links" onClick={handleLogout(false)}>Logout</li>
+                            </> :
+                            <>
+                                <li className="nav-links"><NavLink style={defaultNavStyle} to="/merchant/register">Become a Merchant</NavLink></li>
+                                <li className="nav-links"><NavLink style={defaultNavStyle} to="/buyer/register">Sign Up</NavLink></li>
+                                <li className="nav-links"><NavLink style={defaultNavStyle} to="/login">Login</NavLink></li>
+                            </>
+                    }
                 </ul>
             </div>
         </div >

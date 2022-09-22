@@ -16,7 +16,9 @@ import { setAlert } from "../Redux/Features/Alert.js"
 import CloseIcon from '@mui/icons-material/Close';
 import { endSession } from "../Redux/Features/Session";
 import MerchantService from "../Services/Merchant";
-
+import { inAppStandard } from "../Styles/Modal";
+import Modal from '@mui/material/Modal';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const MerchantLayout = ({ session }) => {
     const { user } = session;
@@ -85,47 +87,66 @@ const MerchantLayout = ({ session }) => {
             component="form"
             onSubmit={handleSubmit}
         >
-            <div className="drawer-title-container">
-                <div>Complete Company Profile</div>
-                <div><CloseIcon className="close-icon" onClick={handleLogout(false)} /></div>
+            <div className="registration-form-verification-code-container">
+                <div>Almost Done!</div>
+                <div>Kindly fill in the following company details.</div>
             </div>
-            <div className="drawer-body">
-                <div className="drawer-desc">
-                    <div>Almost Done!</div>
-                    <div>Kindly fill in the following company details.</div>
+            <div className="form-controller-container">
+                <div className="form-controller-input">
+                    <TextField name="year" onChange={handleChange} fullWidth label="Year Established" variant="standard" />
                 </div>
-                <div className="drawer-form-controller-container">
-                    <div className="form-controller-input">
-                        <TextField name="year" onChange={handleChange} fullWidth label="Year Established" variant="standard" />
-                    </div>
 
-                    <div className="form-controller-input">
-                        <TextField name="noOfEmployees" onChange={handleChange} fullWidth label="Number of Employees" variant="standard" />
-                    </div>
-
-                    <div className="form-controller-input">
-                        <TextField onChange={handleChange} InputProps={{ endAdornment: <div style={{ width: "300px", textAlign: "right", fontSize: "12px", color: "gray" }}>20ft per month</div> }} fullWidth label="Supply Ability" name="supplyAbility" variant="standard" />
-                    </div>
-
-                    <div className="form-controller-input">
-                        <TextField onChange={handleChange} multiline fullWidth label="Company History" name="introduction" variant="standard" />
-                    </div>
+                <div className="form-controller-input">
+                    <TextField name="noOfEmployees" onChange={handleChange} fullWidth label="Number of Employees" variant="standard" />
                 </div>
-                <div><PrimaryButton loading={state.requestState.loading} type="submit" variant="contained" sx={{ width: "100%" }}>Complete Profile</PrimaryButton></div>
+
+                <div className="form-controller-input">
+                    <TextField onChange={handleChange} InputProps={{ endAdornment: <div style={{ width: "300px", textAlign: "right", fontSize: "12px", color: "gray" }}>20ft per month</div> }} fullWidth label="Supply Ability" name="supplyAbility" variant="standard" />
+                </div>
+
+                <div className="form-controller-input">
+                    <TextField onChange={handleChange} multiline fullWidth label="Company History" name="introduction" variant="standard" />
+                </div>
             </div>
+            <div><PrimaryButton loading={state.requestState.loading} type="submit" variant="contained" sx={{ width: "100%" }}>Complete Profile</PrimaryButton></div>
         </Box>
     );
 
     return (
         <div className="Merchant-Layout App-Layout">
             <div>
+                <Modal
+                    open={openDrawer}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppStandard}>
+                        <div className="modal-title-container">
+                            <div>Complete Company Profile</div>
+                            <div><CloseRoundedIcon onClick={handleLogout(false)} /></div>
+                        </div>
+                        <div className="modal-body">
+                            {list()}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
                 <Drawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawer}
                 >
-                    {list()}
+                    <div className="drawer-title-container">
+                        <div>Complete Company Profile</div>
+                        <div><CloseIcon className="close-icon" onClick={handleLogout(false)} /></div>
+                    </div>
+                    <div className="drawer-body">
+                        {list()}
+                    </div>
                 </Drawer>
             </div>
 

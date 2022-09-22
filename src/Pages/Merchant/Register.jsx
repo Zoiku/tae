@@ -31,8 +31,7 @@ import { getStyles, MenuProps } from "../../Material/Select";
 import { useTheme } from "@mui/material/styles";
 import Modal from '@mui/material/Modal';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { inAppStandard } from "../../Styles/Modal";
-
+import { small } from "../../Styles/Modal";
 
 const Register = () => {
     const navLinkStyle = {
@@ -246,14 +245,14 @@ const Register = () => {
             onSubmit={handleCodeVerification}
             autoComplete="off"
         >
-            <div className="drawer-desc">
+            <div className="registration-form-verification-code-container">
                 <div>Almost Done!</div>
                 <div>We've sent the code to <span style={{ color: "#ee9b00", fontWeight: 500 }}>{state.payload.email}</span></div>
             </div>
-            <div className="drawer-form-controller-container">
+            <div className="form-controller-container">
                 <div className="form-controller-input">
                     <TextField required error={state.requestState.error !== null} InputProps={{ endAdornment: <IconButton className="registration-resend-container" onClick={handleResend} size="small">resend ({resendCodeTimer.seconds})</IconButton> }} name="verificationCode" onChange={handleChange} fullWidth label="Enter Code" variant="standard" />
-                    <span style={{ fontSize: "12px", color: "gray" }}>Verifying the code and activate your account</span>
+                    <span style={{ fontSize: "12px", color: "gray" }}>Verify with code and activate your account</span>
                 </div>
             </div>
             <div><PrimaryButton loading={state.requestState.loading} type="submit" variant="contained" sx={{ width: "100%" }}>Verify</PrimaryButton></div>
@@ -269,12 +268,12 @@ const Register = () => {
                     aria-describedby="modal-modal-description"
                     className="modal-container"
                 >
-                    <Box sx={inAppStandard}>
+                    <Box sx={small}>
                         <div className="modal-title-container">
                             <div>Verify Account</div>
                             <div><CloseRoundedIcon onClick={toggleDrawer(false)} /></div>
                         </div>
-                        <div className="modal-body-container">
+                        <div className="modal-body">
                             {list()}
                         </div>
                     </Box>
@@ -323,7 +322,7 @@ const Register = () => {
                             <TextField required helperText="Enter your Last Name" fullWidth onChange={handleChange} type="text" name="lastName" label="Last Name" variant="outlined" />
                         </div>
                         <div className="form-controller-input">
-                            <TextField required helperText="Enter valid Email Address" fullWidth onChange={handleChange} type="text" name="email" label="Email" variant="outlined" />
+                            <TextField required helperText="Enter valid Email Address" fullWidth onChange={handleChange} type="email" name="email" label="Email" variant="outlined" />
                         </div>
                         <div className="form-controller-input">
                             <TextField
@@ -381,7 +380,7 @@ const Register = () => {
                                     Country Code
                                 </FormHelperText>
                             </div>
-                            <TextField required helperText="8-15 characters" onChange={handleChange} type="text" name="telephone" label="Phone Number" variant="outlined" />
+                            <TextField required helperText="8-15 characters" onChange={handleChange} type="number" name="telephone" label="Phone Number" variant="outlined" />
                         </div>
 
                         <div className="form-controller-input">

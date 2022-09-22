@@ -91,4 +91,21 @@ export default class AuthService {
       data
     };
   }
+
+  async sendResetPasswordLink(email) {
+    let errors = [];
+    let data = {};
+    const url = `/user/password/${email}`;
+
+    try {
+      data = await AxiosInstance().get(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors,
+      data
+    };
+  }
 }

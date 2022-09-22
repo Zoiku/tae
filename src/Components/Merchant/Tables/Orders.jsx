@@ -19,14 +19,14 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from '@mui/material/IconButton';
-import { inAppWide } from "../../../Styles/Modal";
+import { inAppWider } from "../../../Styles/Modal";
 import Modal from '@mui/material/Modal';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
     CONFIRMED: 30,
-    PAID: 30,
+    "PROOF OF PAYMENT APPROVED": 30,
     APPROVED: 40,
     PROCESSING: 60,
     SHIPPED: 80,
@@ -36,7 +36,7 @@ const ORDER_STATUS_LEVELS = {
 const ORDER_STATUS_STEPS = {
     RECEIVED: 0,
     CONFIRMED: 2,
-    PAID: 2,
+    "PROOF OF PAYMENT APPROVED": 2,
     APPROVED: 3,
     PROCESSING: 4,
     SHIPPED: 5,
@@ -178,7 +178,8 @@ const Orders = () => {
     );
 
     const columns = [
-        { field: "index", headerName: "Order #", width: 100 },
+        { field: "index", headerName: "#", width: 50 },
+        { field: "orderNo", headerName: "Order #", width: 100 },
         { field: "product", headerName: "Product", width: 200 },
         { field: "terms", headerName: "Terms", width: 70 },
         { field: "quantity", headerName: "Quantity", width: 90 },
@@ -196,7 +197,7 @@ const Orders = () => {
                 </div>
                 <div className="requests-sections-container">
                     <section>
-                        <div className="requests-section-title">Product Info</div>
+                        <div className="requests-section-title">Product Information</div>
                         <div className="request-section-body">
                             <div>
                                 <span>Product:</span>
@@ -286,13 +287,13 @@ const Orders = () => {
                     aria-describedby="modal-modal-description"
                     className="modal-container"
                 >
-                    <Box sx={inAppWide}>
+                    <Box sx={inAppWider}>
                         <div className="modal-title-container">
                             <div>Order Details</div>
                             <div><CloseRoundedIcon onClick={handleCloseDrawer} /></div>
                         </div>
                         <div className="modal-body">
-                            {list()}
+                            {list("horizontal")}
                         </div>
                     </Box>
                 </Modal>
@@ -342,7 +343,7 @@ const Orders = () => {
                     </div>
 
                     <div className="drawer-body">
-                        {list()}
+                        {list("vertical")}
                     </div>
                 </SwipeableDrawer>
             </div>

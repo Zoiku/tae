@@ -19,7 +19,7 @@ import { setAlert } from "../../../Redux/Features/Alert.js"
 import { useDispatch } from "react-redux";
 import Modal from '@mui/material/Modal';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { inAppWide } from "../../../Styles/Modal";
+import { inAppWider } from "../../../Styles/Modal";
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -219,7 +219,7 @@ const Orders = () => {
                     </section>
 
                     <section>
-                        <div className="requests-section-title">Product Info</div>
+                        <div className="requests-section-title">Product Information</div>
                         <div className="request-section-body">
                             <div>
                                 <span>Product:</span>
@@ -348,7 +348,7 @@ const Orders = () => {
                     aria-describedby="modal-modal-description"
                     className="modal-container"
                 >
-                    <Box sx={inAppWide}>
+                    <Box sx={inAppWider}>
                         <div className="modal-title-container">
                             <div>Order Details</div>
                             <div><CloseRoundedIcon onClick={toggleDrawer(false)} /></div>

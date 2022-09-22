@@ -14,7 +14,7 @@ import { useNavigate, NavLink } from "react-router-dom";
 const ROLES = {
     ADMIN: "/admin/dashboard",
     MERCHANT: "/merchant/dashboard",
-    BUYER: "/buyer/dashboard",
+    BUYER: "/",
 }
 
 const Login = () => {
@@ -89,8 +89,8 @@ const Login = () => {
                         autoComplete="off"
                         onSubmit={handleSubmit}
                     >
-                        <TextField error={state.requestState.error != null} onChange={handleChange} type="text" name="username" label="Email" variant="outlined" />
-                        <TextField InputProps={{ endAdornment: <div style={{ width: "160px", textAlign: "right" }}><NavLink style={navLinkStyle2} to="/forgotpassword">Forgot Password?</NavLink></div> }} error={state.requestState.error != null} onChange={handleChange} type="password" name="password" label="Password" variant="outlined" />
+                        <TextField required error={state.requestState.error != null} onChange={handleChange} type="email" name="username" label="Email" variant="outlined" />
+                        <TextField required InputProps={{ endAdornment: <div style={{ width: "160px", textAlign: "right" }}><NavLink style={navLinkStyle2} to="/forgotpassword">Forgot Password?</NavLink></div> }} error={state.requestState.error != null} onChange={handleChange} type="password" name="password" label="Password" variant="outlined" />
                         <div style={{ fontSize: "small", color: "gray" }}>
                             <span>Don't have an account? </span>
                             <span><NavLink style={navLinkStyle} to="/buyer/register">Click here to register</NavLink></span>

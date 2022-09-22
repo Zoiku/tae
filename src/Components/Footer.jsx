@@ -21,7 +21,7 @@ const Footer = () => {
                     <li>Payment Terms</li>
                     <li>Privacy Policy</li>
                     <li>Cookie Policy</li>
-                    <li>Sale and Purchace Agreement</li>
+                    <li>Sale and Purchase Agreement</li>
                 </ul>
             </div>
 

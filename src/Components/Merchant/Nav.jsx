@@ -11,8 +11,10 @@ import Logout from "@mui/icons-material/Logout";
 import { endSession } from "../../Redux/Features/Session";
 import { useDispatch } from "react-redux";
 import logo from "../../Assets/tae-logo-1.png";
+import { useNavigate } from "react-router-dom";
 
 const MerchantNav = () => {
+    const navigate = useNavigate();
     const rootDispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -25,11 +27,14 @@ const MerchantNav = () => {
     const handleLogout = () => {
         rootDispatch(endSession());
     }
+    const handleRedirect = () => {
+        navigate("/");
+    };
 
     return (
         <div className="Nav">
             <div className="Nav-logo-tae-container logged-mobile-nav-logo-container">
-                <img src={logo} alt="tae tae" />
+                <img onClick={handleRedirect} src={logo} alt="tae tae" />
             </div>
             <div>
                 <Box

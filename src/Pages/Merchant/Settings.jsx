@@ -190,7 +190,7 @@ const Settings = () => {
                     </section>
 
                     <section>
-                        {/* <div className="user-profile-section-title">Subscription</div>
+                        <div className="user-profile-section-title">Subscription</div>
                         <div className="form-controller-input form-controller">
                             <div className="form-controller-input form-controller">
                                 <FormControl disabled={!updateProfileButton} required fullWidth>
@@ -228,7 +228,7 @@ const Settings = () => {
                                     ))}
                                 </Select>
                             </FormControl>
-                        </div> */}
+                        </div>
                     </section>
 
                     <div className="settings-button-controller-container">

@@ -15,6 +15,9 @@ import { REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST } from "../../../Reduc
 import { useReducer } from "react";
 import { setAlert } from "../../../Redux/Features/Alert.js"
 import { useDispatch } from "react-redux";
+import { inAppWider } from "../../../Styles/Modal";
+import Modal from '@mui/material/Modal';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
@@ -199,190 +202,182 @@ const Requests = () => {
         selectedRequest &&
         <Box
             component="form"
-            sx={{ width: "auto", height: "700px" }}
             role="presentation"
-            className="drawer-container"
             onSubmit={handleSubmit}
             autoComplete="off"
         >
-            <div className="drawer-title-container">
-                <div>Request Details</div>
-                <Puller />
-            </div>
-            <div className="drawer-body">
-                <div className="requests-sections-body">
-                    <div className="requests-title-container">
-                        <div>Request {selectedRequest.requestNo}</div>
-                    </div>
-                    <div className="requests-sections-container">
-                        <section>
-                            <div className="requests-section-title">Product Info</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Product:</span>
-                                    <span>{selectedRequest.product}</span>
-                                </div>
-                                <div>
-                                    <span>Species:</span>
-                                    <span>{selectedRequest.species}</span>
-                                </div>
-                                <div>
-                                    <span>Types of species:</span>
-                                    <span>{selectedRequest.speciesType}</span>
-                                </div>
-                                <div>
-                                    <span>Origin:</span>
-                                    <span>{selectedRequest.origin}</span>
-                                </div>
-                                <div>
-                                    <span>Container size:</span>
-                                    <span>{selectedRequest.containerSize}</span>
-                                </div>
-                                <div>
-                                    <span>Volume per container:</span>
-                                    <span>{selectedRequest.volume} {selectedRequest.volumeUnit}</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Product Specification</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Length:</span>
-                                    <span>{selectedRequest.length} {selectedRequest.lengthUnit}</span>
-                                </div>
-                                {
-                                    selectedRequest.product === PRODUCTS.TEAK_SQUARE_LOGS &&
-                                    <>
-                                        <div>
-                                            <span>Thickness:</span>
-                                            <span>{selectedRequest.thickness} {selectedRequest.thicknessUnit}</span>
-                                        </div>
-                                        <div>
-                                            <span>Width:</span>
-                                            <span>{selectedRequest.width} {selectedRequest.widthUnit}</span>
-                                        </div>
-                                        <div>
-                                            <span>Drying:</span>
-                                            <span>{selectedRequest.drying}</span>
-                                        </div>
-                                    </>
-                                }
-                                {
-                                    selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS &&
-                                    <>
-                                        <div>
-                                            <span>Diameter:</span>
-                                            <span>{selectedRequest.diameter} {selectedRequest.diameterUnit}</span>
-                                        </div>
-                                    </>
-                                }
-                                <div>
-                                    <span>Quantity:</span>
-                                    <span>{selectedRequest.quantity} {selectedRequest.containerSize}</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Product Delivery Information</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Incoterm:</span>
-                                    <span>{selectedRequest.terms}</span>
-                                </div>
-                                <div>
-                                    <span>Destination:</span>
-                                    <span>{selectedRequest.destination}</span>
-                                </div>
-                                <div>
-                                    <span>Destination Port:</span>
-                                    <span>{selectedRequest.port}</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Request Settings</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Validity:</span>
-                                    <span>{selectedRequest.validity} days</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Incoterm Settings</div>
+            <div className="requests-sections-body">
+                <div className="requests-title-container">
+                    <div>Request {selectedRequest.requestNo}</div>
+                </div>
+                <div className="requests-sections-container">
+                    <section>
+                        <div className="requests-section-title">Product Information</div>
+                        <div className="request-section-body">
                             <div>
-                                <div className="incoterm-settings-table-container">
-                                    <table>
-                                        <thead>
-                                            <tr className="incoterm-setting-heading-container">
-                                                <th>Number</th>
-                                                {selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS && <th>Diameter (cm)</th>}
-                                                <th>Pieces/container</th>
-                                                <th>Price/container</th>
-                                                <th>Total price</th>
-                                                {selectedRequest.terms === "CIF" && <th>Insurance</th>}
-                                                {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <th>Freight Rate</th>}
-                                                {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <th>Freight</th>}
-                                                <th>Total amount</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {
-                                                Array.from(Array(incotermRows)).map((_row, index) =>
-                                                    <tr key={index + 1}>
-                                                        <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="number" value={index + 1} disabled /></td>
-                                                        {selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS && <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="diameter" /></td>}
-                                                        <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="noOfPieces" /></td>
-                                                        <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="price" /></td>
-                                                        <td><input required type="number" disabled onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="totalPrice" value={incotermSettings[index]?.totalPrice ? incotermSettings[index]?.totalPrice : 0} /></td>
-                                                        {selectedRequest.terms === "CIF" && <td><input required type="number" disabled onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="insurance" value={incotermSettings[index]?.insurance ? incotermSettings[index]?.insurance : 0} /></td>}
-                                                        {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <td><input required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="freightRate" /></td>}
-                                                        {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <td><input required type="number" disabled value={incotermSettings[index]?.freight ? incotermSettings[index]?.freight : 0} onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="freight" /></td>}
-                                                        <td><input required type="number" disabled value={incotermSettings[index]?.totalAmount ? incotermSettings[index]?.totalAmount : 0} /></td>
-                                                    </tr>
-                                                )
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div className="incoterm-settings-table-note-container">Kindly note that all prices are quoted in ($)</div>
+                                <span>Product:</span>
+                                <span>{selectedRequest.product}</span>
                             </div>
-                        </section>
+                            <div>
+                                <span>Species:</span>
+                                <span>{selectedRequest.species}</span>
+                            </div>
+                            <div>
+                                <span>Types of species:</span>
+                                <span>{selectedRequest.speciesType}</span>
+                            </div>
+                            <div>
+                                <span>Origin:</span>
+                                <span>{selectedRequest.origin}</span>
+                            </div>
+                            <div>
+                                <span>Container size:</span>
+                                <span>{selectedRequest.containerSize}</span>
+                            </div>
+                            <div>
+                                <span>Volume per container:</span>
+                                <span>{selectedRequest.volume} {selectedRequest.volumeUnit}</span>
+                            </div>
+                        </div>
+                    </section>
 
-                        <section>
-                            <div className="incoterm-settings-size-container">
-                                <div onClick={() => handleIncotermSize(TYPE.INCREASE)}>
-                                    <span><AddCircleOutlineRoundedIcon /></span>
-                                    <span>add new field</span>
-                                </div>
-                                {
-                                    incotermRows > 1 &&
-                                    <div onClick={() => handleIncotermSize(TYPE.DECREASE)}>
-                                        <span><RemoveCircleOutlineRoundedIcon /></span>
-                                        <span>remove last field</span>
+                    <section>
+                        <div className="requests-section-title">Specifications</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Length:</span>
+                                <span>{selectedRequest.length} {selectedRequest.lengthUnit}</span>
+                            </div>
+                            {
+                                selectedRequest.product === PRODUCTS.TEAK_SQUARE_LOGS &&
+                                <>
+                                    <div>
+                                        <span>Thickness:</span>
+                                        <span>{selectedRequest.thickness} {selectedRequest.thicknessUnit}</span>
                                     </div>
-                                }
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="incoterm-settings-note-container">
-                                <div>Additional Notes for {selectedRequest.terms} </div>
-                                {INCOTERM_NOTES[selectedRequest.terms]}
-                            </div>
-                        </section>
-
-                        <section>
+                                    <div>
+                                        <span>Width:</span>
+                                        <span>{selectedRequest.width} {selectedRequest.widthUnit}</span>
+                                    </div>
+                                    <div>
+                                        <span>Drying:</span>
+                                        <span>{selectedRequest.drying}</span>
+                                    </div>
+                                </>
+                            }
+                            {
+                                selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS &&
+                                <>
+                                    <div>
+                                        <span>Diameter:</span>
+                                        <span>{selectedRequest.diameter} {selectedRequest.diameterUnit}</span>
+                                    </div>
+                                </>
+                            }
                             <div>
-                                <div className="button-controller"><SmallSecondary loading={state.requestState.loading} type="submit" variant="contained" >Post Quote</SmallSecondary></div>
+                                <span>Quantity:</span>
+                                <span>{selectedRequest.quantity} {selectedRequest.containerSize}</span>
                             </div>
-                        </section>
-                    </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div className="requests-section-title">Pricing and Delivery Information</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Incoterm:</span>
+                                <span>{selectedRequest.terms}</span>
+                            </div>
+                            <div>
+                                <span>Destination:</span>
+                                <span>{selectedRequest.destination}</span>
+                            </div>
+                            <div>
+                                <span>Destination Port:</span>
+                                <span>{selectedRequest.port}</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div className="requests-section-title">Request Settings</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Validity:</span>
+                                <span>{selectedRequest.validity} days</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div className="requests-section-title">Incoterm</div>
+                        <div>
+                            <div className="incoterm-settings-table-container">
+                                <table>
+                                    <thead>
+                                        <tr className="incoterm-setting-heading-container">
+                                            <th>Number</th>
+                                            {selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS && <th>Diameter (cm)</th>}
+                                            <th>Pieces/container</th>
+                                            <th>Price/container</th>
+                                            <th>Total price</th>
+                                            {selectedRequest.terms === "CIF" && <th>Insurance</th>}
+                                            {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <th>Freight Rate</th>}
+                                            {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <th>Freight</th>}
+                                            <th>Total amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            Array.from(Array(incotermRows)).map((_row, index) =>
+                                                <tr key={index + 1}>
+                                                    <td><input placeholder="eg 40-50" required type="text" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="number" value={index + 1} disabled /></td>
+                                                    {selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS && <td><input placeholder="eg 40-50" required type="text" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="diameter" /></td>}
+                                                    <td><input placeholder="eg 40-50" required type="text" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="noOfPieces" /></td>
+                                                    <td><input placeholder="0" required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="price" /></td>
+                                                    <td><input placeholder="0" required type="number" disabled onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="totalPrice" value={incotermSettings[index]?.totalPrice ? incotermSettings[index]?.totalPrice : 0} /></td>
+                                                    {selectedRequest.terms === "CIF" && <td><input placeholder="0" required type="number" disabled onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="insurance" value={incotermSettings[index]?.insurance ? incotermSettings[index]?.insurance : 0} /></td>}
+                                                    {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <td><input placeholder="0" required type="number" onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="freightRate" /></td>}
+                                                    {(selectedRequest.terms === "CIF" || selectedRequest.terms === "CFR") && <td><input placeholder="0" required type="number" disabled value={incotermSettings[index]?.freight ? incotermSettings[index]?.freight : 0} onChange={(e) => handleChange(e, index, selectedRequest.terms)} name="freight" /></td>}
+                                                    <td><input required type="number" disabled value={incotermSettings[index]?.totalAmount ? incotermSettings[index]?.totalAmount : 0} /></td>
+                                                </tr>
+                                            )
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="incoterm-settings-table-note-container">Kindly note that all prices are quoted in ($)</div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div className="incoterm-settings-size-container">
+                            <div onClick={() => handleIncotermSize(TYPE.INCREASE)}>
+                                <span><AddCircleOutlineRoundedIcon /></span>
+                                <span>add new field</span>
+                            </div>
+                            {
+                                incotermRows > 1 &&
+                                <div onClick={() => handleIncotermSize(TYPE.DECREASE)}>
+                                    <span><RemoveCircleOutlineRoundedIcon /></span>
+                                    <span>remove last field</span>
+                                </div>
+                            }
+                        </div>
+                    </section>
+
+                    <section>
+                        <div className="incoterm-settings-note-container">
+                            <div>Additional Notes for {selectedRequest.terms} </div>
+                            {INCOTERM_NOTES[selectedRequest.terms]}
+                        </div>
+                    </section>
+
+                    <section>
+                        <div>
+                            <div className="button-controller"><SmallSecondary loading={state.requestState.loading} type="submit" variant="contained" >Post Quote</SmallSecondary></div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </Box>
@@ -440,8 +435,28 @@ const Requests = () => {
     return (
         <div className="Requests-Tables">
             <div>
+                <Modal
+                    open={openDrawer}
+                    onClose={handleCloseDrawer}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppWider}>
+                        <div className="modal-title-container">
+                            <div>Request Details</div>
+                            <div><CloseRoundedIcon onClick={handleCloseDrawer} /></div>
+                        </div>
+                        <div className="modal-body">
+                            {list()}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
                 <SwipeableDrawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawer}
@@ -449,7 +464,14 @@ const Requests = () => {
                     onClose={handleCloseDrawer}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
-                    {list()}
+                    <div className="drawer-title-container">
+                        <div>Request Details</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {list()}
+                    </div>
                 </SwipeableDrawer>
             </div>
             <div>

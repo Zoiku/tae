@@ -39,6 +39,7 @@ const IMAGES_TO_DISPLAY = {
 }
 
 const Requests = () => {
+    const [viewOfferLoading, setViewOfferLoading] = useState(false);
     const rootDispatch = useDispatch();
     const [refreshTable, setRefreshTable] = useState(false);
     const [companyProfile, setCompanyProfile] = useState(null);
@@ -80,6 +81,7 @@ const Requests = () => {
 
     const [selectedOffer, setSelectedOffer] = useState(null);
     const handleSelectRequestOffer = async (offer) => {
+        setViewOfferLoading(true);
         const { id } = offer.merchant;
         const buyerService = new BuyerService();
         try {
@@ -99,6 +101,7 @@ const Requests = () => {
                 setCompanyProfile(filteredData[0]);
             }
         } catch (error) { }
+        setViewOfferLoading(false);
     };
     const [openDrawerOffer, setOpenDrawerOffer] = useState(false);
     const toggleDrawerOffer = (open) => (_event) => { setOpenDrawerOffer(open) };
@@ -132,7 +135,8 @@ const Requests = () => {
     );
 
     const columns = [
-        { field: "index", headerName: "Request #", width: 100 },
+        { field: "index", headerName: "#", width: 50 },
+        { field: "requestNo", headerName: "Request #", width: 100 },
         { field: "product", headerName: "Product", width: 200 },
         { field: "quantity", headerName: "Quantity", width: 90 },
         { field: "timeLeft", headerName: "TimeLeft", width: 100, renderCell: ({ row }) => <div> <Countdown endDate={row.expiryDate} /> </div> },
@@ -189,7 +193,7 @@ const Requests = () => {
                 </div>
                 <div className="requests-sections-container">
                     <section>
-                        <div className="requests-section-title">Product Info</div>
+                        <div className="requests-section-title">Product Information</div>
                         <div className="request-section-body">
                             <div>
                                 <span>Product:</span>
@@ -219,7 +223,7 @@ const Requests = () => {
                     </section>
 
                     <section>
-                        <div className="requests-section-title">Product Specification</div>
+                        <div className="requests-section-title">Specifications</div>
                         <div className="request-section-body">
                             <div>
                                 <span>Length:</span>
@@ -259,7 +263,7 @@ const Requests = () => {
                     </section>
 
                     <section>
-                        <div className="requests-section-title">Product Delivery Information</div>
+                        <div className="requests-section-title">Pricing and Delivery Information</div>
                         <div className="request-section-body">
                             <div>
                                 <span>Incoterm:</span>
@@ -309,7 +313,7 @@ const Requests = () => {
                                             <div>{offer.destination}</div>
                                         </div>
                                         <div>
-                                            <SmallPrimary onClick={() => handleSelectRequestOffer(offer)}>View</SmallPrimary>
+                                            <SmallPrimary loading={viewOfferLoading} onClick={() => handleSelectRequestOffer(offer)} variant="contained">View</SmallPrimary>
                                         </div>
                                     </div>
                                 </div>
@@ -392,7 +396,7 @@ const Requests = () => {
                             <div><span>Member Since</span><span>{companyProfile.memberSince}</span></div>
                             <div><span>Year Established</span><span>{companyProfile.yearEstablished}</span></div>
                             <div><span>No of Employees</span><span>{companyProfile.employees}</span></div>
-                            <div><span>Products</span>{companyProfile.subscription.map((product, index) => <span>{product.product} {companyProfile.subscription.length !== index + 1 && "& "}</span>)}</div>
+                            <div><span>Products</span> <span>{companyProfile.subscription.map((product, index) => <span className="special-products-container"><span>{product.product} {companyProfile.subscription.length !== index + 1 && "& "}</span></span>)}</span> </div>
                             <div><span>Supply Ability</span><span>{companyProfile.supplyAbility}</span></div>
                         </div>
                     }
@@ -523,7 +527,7 @@ const Requests = () => {
                 >
                     <Box sx={inAppWide}>
                         <div className="modal-title-container">
-                            <div>View Offers</div>
+                            <div>View Offer</div>
                             <div><CloseRoundedIcon onClick={handleCloseDrawerOffer} /></div>
                         </div>
 

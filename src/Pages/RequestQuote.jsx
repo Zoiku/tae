@@ -8,7 +8,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
-import { GenericPrimaryButton, GenericSecondary } from "../Material/Button";
+import { GenericPrimaryButton, GenericSecondary, SmallSecondary } from "../Material/Button";
 import { useReducer } from "react";
 import { INITIAL_STATE, formReducer } from "../Reducers/FormReducer";
 import { INPUTING, REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST, PUSH_FORM_DATA } from "../Reducers/Actions";
@@ -23,6 +23,11 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
 import log from "../Assets/log.jpg";
 import log1 from "../Assets/log-1.jpg";
+import Modal from '@mui/material/Modal';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { small } from "../Styles/Modal";
+import { Puller } from "../Material/Drawer";
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 
 const SPECIFICATION_DETAILS = {
     "Teak Round Logs": [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "diameter", label: "Diameter", units: [{ name: "diameterUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }],
@@ -43,6 +48,10 @@ const RequestQuote = ({ session }) => {
     const { search } = useLocation();
     const { product } = useMemo(() => Object.fromEntries([...new URLSearchParams(search)]), [search]);
     const parsedProduct = useMemo(() => JSON.parse(product), [product]);
+    const [openDrawer, setOpenDrawer] = useState(false);
+    const toggleDrawer = (open) => (_event) => {
+        setOpenDrawer(open);
+    };
 
     const handleChange = (e) => { dispatch({ type: INPUTING, prop: e.target.name, value: e.target.value }); }
 
@@ -62,6 +71,11 @@ const RequestQuote = ({ session }) => {
         }
     }
 
+    const preSubmission = (e) => {
+        e.preventDefault();
+        setOpenDrawer(true);
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         dispatch({ type: SEND_REQUEST });
@@ -73,6 +87,7 @@ const RequestQuote = ({ session }) => {
                 if (errors.length === 0) {
                     removePendingQuote();
                     dispatch({ type: REQUEST_SUCCESSFUL });
+                    setOpenDrawer(false);
                     handleSuccessfullRequest("Request successfull, merchants will respond shortly", 6000);
                 } else {
                     dispatch({ type: REQUEST_FAILED });
@@ -84,6 +99,7 @@ const RequestQuote = ({ session }) => {
                     const { _id } = data.data.data[0];
                     sessionStorage.setItem(`${parsedProduct.name}_pqid`, _id);
                     dispatch({ type: REQUEST_SUCCESSFUL });
+                    setOpenDrawer(false);
                     handleSuccessfullRequest("Your request is pending, please log in to complete request", 6000);
                     navigate("/login");
                 } else {
@@ -111,6 +127,158 @@ const RequestQuote = ({ session }) => {
         }
         rootDispatch(setAlert(payload));
     }
+
+    const list = () => (
+        state.payload &&
+        <Box
+            component="form"
+            role="presentation"
+            onSubmit={handleSubmit}
+            autoComplete="off"
+        >
+            <div className="request-summary-container">
+                <div>
+                    <div>1. Profile Introduction</div>
+                    <div>
+                        <div>
+                            <span>Types of Species: </span>
+                            <span>{parsedProduct.speciesType}</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <span>Container Size: </span>
+                            <span>20ft Container</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <span>Species: </span>
+                            <span>{parsedProduct.species}</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <span>Volume per Container: </span>
+                            <span>{parsedProduct.volume} {parsedProduct.volumeUnit}</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <span>Origin: </span>
+                            <span>{parsedProduct.origin}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div>2. Specifications</div>
+                    <div>
+                        <div>
+                            <span>Length: </span>
+                            <span>{state.payload.length} {state.payload.lengthUnit}</span>
+                        </div>
+                    </div>
+
+                    {
+                        state.payload?.diameter &&
+                        <div>
+                            <div>
+                                <span>Diameter: </span>
+                                <span>{state.payload.diameter} {state.payload.diameterUnit}</span>
+                            </div>
+                        </div>
+                    }
+
+                    {
+                        state.payload?.thickness &&
+                        <div>
+                            <div>
+                                <span>Thickness: </span>
+                                <span>{state.payload.thickness} {state.payload.thicknessUnit}</span>
+                            </div>
+                        </div>
+                    }
+
+                    {
+                        state.payload?.width &&
+                        <div>
+                            <div>
+                                <span>Width: </span>
+                                <span>{state.payload.width} {state.payload.widthUnit}</span>
+                            </div>
+                        </div>
+                    }
+
+                    <div>
+                        <div>
+                            <span>Quantity: </span>
+                            <span>{state.payload.quantity} 20ft container (s)</span>
+                        </div>
+                    </div>
+
+                    {
+                        state.payload?.drying &&
+                        <div>
+                            <div>
+                                <span>Drying: </span>
+                                <span>Air Drying</span>
+                            </div>
+                        </div>
+                    }
+
+                    <div>
+                        <div>
+                            <span>Additional Information: </span>
+                            <span>{state.payload?.information ? state.payload?.information : "n/a"}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div>3. Pricing and Delivery Information</div>
+                    <div>
+                        <div>
+                            <span>Incoterm: </span>
+                            <span>{state.payload.incoterm}</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <span>Destination: </span>
+                            <span>{state.payload.destination}</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <span>Destination Port: </span>
+                            <span>{state.payload.port}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div>4. Request Settings</div>
+                    <div>
+                        <div>
+                            <span>Validity: </span>
+                            <span>{state.payload.validity} days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <SmallSecondary type="submit" loading={state.requestState.loading} variant="contained">Confirm Quote</SmallSecondary>
+                </div>
+            </div>
+        </Box >
+    );
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -152,6 +320,44 @@ const RequestQuote = ({ session }) => {
     return (
         <div className="RequestQuote-Page">
             <div>
+                <Modal
+                    open={openDrawer}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={small}>
+                        <div className="modal-title-container">
+                            <div>Request Summary</div>
+                            <div><CloseRoundedIcon onClick={toggleDrawer(false)} /></div>
+                        </div>
+                        <div className="modal-body">
+                            {list()}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
+                <SwipeableDrawer
+                    className="drawer-container"
+                    variant="temporary"
+                    anchor="bottom"
+                    open={openDrawer}
+                    onClose={toggleDrawer(false)}
+                >
+                    <div className="drawer-title-container">
+                        <div>Request Summary</div>
+                        <div><Puller /></div>
+                    </div>
+
+                    <div className="drawer-body">
+                        {list()}
+                    </div>
+                </SwipeableDrawer>
+            </div>
+
+            <div>
                 <div className="request-quote-page-header">
                     <div>{parsedProduct.name}</div>
                     <div>{parsedProduct.description}</div>
@@ -180,7 +386,7 @@ const RequestQuote = ({ session }) => {
                     }}
                     autoComplete="off"
                     className="request-quote-page-form"
-                    onSubmit={handleSubmit}
+                    onSubmit={preSubmission}
                 >
                     <section>
                         <div className="request-quote-section-title">1. Profile Information</div>
@@ -339,7 +545,7 @@ const RequestQuote = ({ session }) => {
                     </section>
 
                     <Stack spacing={2} direction="row">
-                        <GenericPrimaryButton type="submit" loading={state.requestState.loading} variant="contained">Post Quote</GenericPrimaryButton>
+                        <GenericPrimaryButton type="submit" variant="contained">Post Quote</GenericPrimaryButton>
                         <GenericSecondary onClick={() => navigate("/")} variant="text">Back</GenericSecondary>
                     </Stack>
                 </Box>

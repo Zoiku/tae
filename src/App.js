@@ -1,7 +1,6 @@
 import { useEffect, useState, useReducer } from "react";
 import { Routes, Route } from "react-router-dom";
 import AuthService from "./Services/Auth";
-import PageLoadingAnimation from "./Components/PageLoadingAnimation";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import ForgotPassword from "./Pages/ForgotPassword";
@@ -47,7 +46,6 @@ const App = () => {
   const rootDispatch = useDispatch();
   const { session } = useSelector((state) => state);
   const { alert } = useSelector((state) => state);
-  const [pageLoadingAnimation, setPageLoadingAnimation] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(alert.active);
   const handleOpenSnackBar = () => setOpenSnackBar(true);
   const handleCloseSnackBar = (_event, reason) => {
@@ -57,24 +55,6 @@ const App = () => {
     setOpenSnackBar(false);
     rootDispatch(clearAlerts());
   };
-
-  useEffect(() => {
-    const onPageLoad = () => {
-      setPageLoadingAnimation(true);
-    };
-
-    const onCompleteLoad = () => {
-      setPageLoadingAnimation(false);
-    };
-
-    if (document.readyState === "complete") {
-      onCompleteLoad();
-    } else {
-      window.addEventListener("load", onPageLoad);
-    }
-
-    return () => window.removeEventListener("load", onPageLoad);
-  }, []);
 
   useEffect(() => {
     dispatch({ type: SEND_REQUEST });
@@ -89,7 +69,7 @@ const App = () => {
           const profile = data.data.data.at(0);
           dispatch({ type: REQUEST_SUCCESSFUL, payload: profile });
           rootDispatch(initUser(profile));
-        }else {
+        } else {
           dispatch({ type: REQUEST_FAILED });
         }
       } catch (error) {}
@@ -107,8 +87,6 @@ const App = () => {
 
   return (
     <div>
-      {pageLoadingAnimation && <PageLoadingAnimation />}
-
       <SessionTimeout session={session} />
 
       {alert.active && (
@@ -129,7 +107,7 @@ const App = () => {
 
       <Routes>
         <Route element={<DefaultLayout session={session} />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home session={session} />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/buyer/register" element={<BuyerRegistration />} />
