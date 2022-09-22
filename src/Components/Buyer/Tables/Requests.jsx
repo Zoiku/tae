@@ -23,7 +23,10 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useDispatch } from "react-redux";
-import { setAlert } from "../../../Redux/Features/Alert.js"
+import { setAlert } from "../../../Redux/Features/Alert.js";
+import Modal from '@mui/material/Modal';
+import { inAppWide } from "../../../Styles/Modal";
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
@@ -179,119 +182,109 @@ const Requests = () => {
 
     const list = () => (
         selectedRequest &&
-        <Box
-            sx={{ width: "auto", height: "700px" }}
-            role="presentation"
-            className="drawer-container"
-        >
-            <div className="drawer-title-container">
-                <div>Request Details</div>
-                <Puller />
-            </div>
-            <div className="drawer-body">
-                <div className="requests-sections-body">
-                    <div className="requests-title-container">
-                        <div>Request {selectedRequest.requestNo}</div>
-                    </div>
-                    <div className="requests-sections-container">
-                        <section>
-                            <div className="requests-section-title">Product Info</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Product:</span>
-                                    <span>{selectedRequest.product}</span>
-                                </div>
-                                <div>
-                                    <span>Species:</span>
-                                    <span>{selectedRequest.species}</span>
-                                </div>
-                                <div>
-                                    <span>Types of species:</span>
-                                    <span>{selectedRequest.speciesType}</span>
-                                </div>
-                                <div>
-                                    <span>Origin:</span>
-                                    <span>{selectedRequest.origin}</span>
-                                </div>
-                                <div>
-                                    <span>Container size:</span>
-                                    <span>{selectedRequest.containerSize}</span>
-                                </div>
-                                <div>
-                                    <span>Volume per container:</span>
-                                    <span>{selectedRequest.volume} {selectedRequest.volumeUnit}</span>
-                                </div>
+        <Box role="presentation" >
+            <div className="requests-sections-body">
+                <div className="requests-title-container">
+                    <div>Request {selectedRequest.requestNo}</div>
+                </div>
+                <div className="requests-sections-container">
+                    <section>
+                        <div className="requests-section-title">Product Info</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Product:</span>
+                                <span>{selectedRequest.product}</span>
                             </div>
-                        </section>
+                            <div>
+                                <span>Species:</span>
+                                <span>{selectedRequest.species}</span>
+                            </div>
+                            <div>
+                                <span>Types of species:</span>
+                                <span>{selectedRequest.speciesType}</span>
+                            </div>
+                            <div>
+                                <span>Origin:</span>
+                                <span>{selectedRequest.origin}</span>
+                            </div>
+                            <div>
+                                <span>Container size:</span>
+                                <span>{selectedRequest.containerSize}</span>
+                            </div>
+                            <div>
+                                <span>Volume per container:</span>
+                                <span>{selectedRequest.volume} {selectedRequest.volumeUnit}</span>
+                            </div>
+                        </div>
+                    </section>
 
-                        <section>
-                            <div className="requests-section-title">Product Specification</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Length:</span>
-                                    <span>{selectedRequest.length} {selectedRequest.lengthUnit}</span>
-                                </div>
-                                {
-                                    selectedRequest.product === PRODUCTS.TEAK_SQUARE_LOGS &&
-                                    <>
-                                        <div>
-                                            <span>Thickness:</span>
-                                            <span>{selectedRequest.thickness} {selectedRequest.thicknessUnit}</span>
-                                        </div>
-                                        <div>
-                                            <span>Width:</span>
-                                            <span>{selectedRequest.width} {selectedRequest.widthUnit}</span>
-                                        </div>
-                                        <div>
-                                            <span>Drying:</span>
-                                            <span>{selectedRequest.drying}</span>
-                                        </div>
-                                    </>
-                                }
-                                {
-                                    selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS &&
-                                    <>
-                                        <div>
-                                            <span>Diameter:</span>
-                                            <span>{selectedRequest.diameter} {selectedRequest.diameterUnit}</span>
-                                        </div>
-                                    </>
-                                }
-                                <div>
-                                    <span>Quantity:</span>
-                                    <span>{selectedRequest.quantity} {selectedRequest.containerSize}</span>
-                                </div>
+                    <section>
+                        <div className="requests-section-title">Product Specification</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Length:</span>
+                                <span>{selectedRequest.length} {selectedRequest.lengthUnit}</span>
                             </div>
-                        </section>
+                            {
+                                selectedRequest.product === PRODUCTS.TEAK_SQUARE_LOGS &&
+                                <>
+                                    <div>
+                                        <span>Thickness:</span>
+                                        <span>{selectedRequest.thickness} {selectedRequest.thicknessUnit}</span>
+                                    </div>
+                                    <div>
+                                        <span>Width:</span>
+                                        <span>{selectedRequest.width} {selectedRequest.widthUnit}</span>
+                                    </div>
+                                    <div>
+                                        <span>Drying:</span>
+                                        <span>{selectedRequest.drying}</span>
+                                    </div>
+                                </>
+                            }
+                            {
+                                selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS &&
+                                <>
+                                    <div>
+                                        <span>Diameter:</span>
+                                        <span>{selectedRequest.diameter} {selectedRequest.diameterUnit}</span>
+                                    </div>
+                                </>
+                            }
+                            <div>
+                                <span>Quantity:</span>
+                                <span>{selectedRequest.quantity} {selectedRequest.containerSize}</span>
+                            </div>
+                        </div>
+                    </section>
 
-                        <section>
-                            <div className="requests-section-title">Product Delivery Information</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Incoterm:</span>
-                                    <span>{selectedRequest.terms}</span>
-                                </div>
-                                <div>
-                                    <span>Destination:</span>
-                                    <span>{selectedRequest.destination}</span>
-                                </div>
-                                <div>
-                                    <span>Destination Port:</span>
-                                    <span>{selectedRequest.port}</span>
-                                </div>
+                    <section>
+                        <div className="requests-section-title">Product Delivery Information</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Incoterm:</span>
+                                <span>{selectedRequest.terms}</span>
                             </div>
-                        </section>
+                            <div>
+                                <span>Destination:</span>
+                                <span>{selectedRequest.destination}</span>
+                            </div>
+                            <div>
+                                <span>Destination Port:</span>
+                                <span>{selectedRequest.port}</span>
+                            </div>
+                        </div>
+                    </section>
 
-                        <section>
-                            <div className="requests-section-title">Request Settings</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Validity:</span>
-                                    <span>{selectedRequest.validity} days</span>
-                                </div>
+                    <section>
+                        <div className="requests-section-title">Request Settings</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Validity:</span>
+                                <span>{selectedRequest.validity} days</span>
                             </div>
-                        </section>
-                    </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </Box>
@@ -299,134 +292,114 @@ const Requests = () => {
 
     const listOffers = () => (
         selectedOffers &&
-        <Box
-            sx={{ width: "auto", height: "700px" }}
-            role="presentation"
-            className="drawer-container"
-        >
-            <div className="drawer-title-container">
-                <div>View Offers</div>
-                <Puller />
-            </div>
-            <div className="drawer-body">
-                <div className="requests-sections-body">
-                    {
-                        selectedOffers &&
-                            selectedOffers.length > 0 ?
-                            selectedOffers.map((offer) => {
-                                return (
-                                    <div className="request-section-offer-container">
-                                        <div><img src={IMAGES_TO_DISPLAY[offer.product]} alt="" /></div>
-                                        <div className="request-offer-body-container">
-                                            <div>
-                                                <div>Offer {offer.index}</div>
-                                                <div>{offer.merchant.firstName} {offer.merchant.lastName}</div>
-                                                <div>{offer.expiryDate}</div>
-                                                <div>{offer.destination}</div>
-                                            </div>
-                                            <div>
-                                                <SmallPrimary onClick={() => handleSelectRequestOffer(offer)}>View</SmallPrimary>
-                                            </div>
+        <Box role="presentation">
+            <div className="requests-sections-body">
+                {
+                    selectedOffers &&
+                        selectedOffers.length > 0 ?
+                        selectedOffers.map((offer) => {
+                            return (
+                                <div className="request-section-offer-container">
+                                    <div><img src={IMAGES_TO_DISPLAY[offer.product]} alt="" /></div>
+                                    <div className="request-offer-body-container">
+                                        <div>
+                                            <div>Offer {offer.index}</div>
+                                            <div>{offer.merchant.firstName} {offer.merchant.lastName}</div>
+                                            <div>{offer.expiryDate}</div>
+                                            <div>{offer.destination}</div>
+                                        </div>
+                                        <div>
+                                            <SmallPrimary onClick={() => handleSelectRequestOffer(offer)}>View</SmallPrimary>
                                         </div>
                                     </div>
-                                )
-                            }) : <div>No offers yet</div>
-                    }
-                </div>
+                                </div>
+                            )
+                        }) : <div>No offers yet</div>
+                }
             </div>
         </Box>
     );
 
     const listOffer = () => (
         selectedOffer &&
-        <Box
-            sx={{ width: "auto", height: "400px" }}
-            role="presentation"
-            className="drawer-container"
-        >
-            <div className="drawer-title-container">
-                <div>Offer Details</div>
-                <Puller />
-            </div>
-            <div className="drawer-body">
-                <div className="requests-sections-body">
-                    <section>
-                        <div>{selectedOffer.merchant.firstName} {selectedOffer.merchant.lastName}</div>
-                    </section>
-                    <section>
-                        <div>
-                            <div className="incoterm-settings-table-container">
-                                <table>
-                                    <thead>
-                                        <tr className="incoterm-setting-heading-container">
-                                            <th>Number</th>
-                                            {selectedOffer.terms !== "FOB" && <th>Diameter (cm)</th>}
-                                            <th>Pieces/container</th>
-                                            <th>Price/container</th>
-                                            <th>Total price</th>
-                                            {selectedOffer.terms === "CIF" && <th>Insurance</th>}
-                                            {selectedOffer.terms !== "FOB" && <th>Freight</th>}
-                                            <th>Total amount</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        {
-                                            selectedOffer.incotermRows.length > 0 ?
-                                                selectedOffer?.incotermRows.map((incoterm, index) =>
-                                                    <tr key={index + 1}>
-                                                        <td><input disabled value={index + 1} /></td>
-                                                        {selectedOffer.terms !== "FOB" && <td><input value={incoterm.diameter} /></td>}
-                                                        <td><input value={incoterm.noOfPieces} /></td>
-                                                        <td><input value={incoterm.price} /></td>
-                                                        <td><input value={incoterm.totalPrice} /></td>
-                                                        {selectedOffer.terms === "CIF" && <td><input disabled value={incoterm.insurance} /></td>}
-                                                        {selectedOffer.terms !== "FOB" && <td><input disabled value={incoterm.costOfFreight} /></td>}
-                                                        <td><input disabled value={incoterm.totalAmount} /></td>
-                                                    </tr>
-                                                ) :
-                                                <tr>
-                                                    <td><input disabled value="--" /></td>
-                                                    {selectedOffer.terms !== "FOB" && <td><input disabled value="--" /></td>}
-                                                    <td><input disabled name="noOfPieces" value="--" /></td>
-                                                    <td><input disabled name="price" value="--" /></td>
-                                                    <td><input disabled name="totalPrice" value="--" /></td>
-                                                    {selectedOffer.terms === "CIF" && <td><input disabled value="--" /></td>}
-                                                    {selectedOffer.terms !== "FOB" && <td><input disabled value="--" /></td>}
-                                                    <td><input disabled value="--" /></td>
-                                                </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className="incoterm-settings-table-note-container">Kindly note that all prices are quoted in ($)</div>
-                        </div>
-                    </section>
-                    <section className="request-offer-company-profile-section">
-                        <div>
-                            <div>Company Profile</div>
-                            {
-                                !revealCompanyProfile ? <IconButton onClick={toggleCompanyProfile(true)}><ArrowDropDownIcon /></IconButton> : <IconButton onClick={toggleCompanyProfile(false)}><ArrowDropUpIcon /></IconButton>
-                            }
-                        </div>
-
-                        {
-                            revealCompanyProfile &&
-                            companyProfile &&
-                            <div>
-                                <div><span>Business Type</span><span>{companyProfile.businessType}</span></div>
-                                <div><span>Member Since</span><span>{companyProfile.memberSince}</span></div>
-                                <div><span>Year Established</span><span>{companyProfile.yearEstablished}</span></div>
-                                <div><span>No of Employees</span><span>{companyProfile.employees}</span></div>
-                                <div><span>Products</span>{companyProfile.subscription.map((product, index) => <span>{product.product} {companyProfile.subscription.length !== index + 1 && "& "}</span>)}</div>
-                                <div><span>Supply Ability</span><span>{companyProfile.supplyAbility}</span></div>
-                            </div>
-                        }
-                    </section>
-
+        <Box role="presentation">
+            <div className="requests-sections-body">
+                <section>
+                    <div>{selectedOffer.merchant.firstName} {selectedOffer.merchant.lastName}</div>
+                </section>
+                <section>
                     <div>
-                        <SmallSecondary loading={state.requestState.loading} onClick={handleOrderSubmit} variant="contained">Place Order</SmallSecondary>
+                        <div className="incoterm-settings-table-container">
+                            <table>
+                                <thead>
+                                    <tr className="incoterm-setting-heading-container">
+                                        <th>Number</th>
+                                        {selectedOffer.terms !== "FOB" && <th>Diameter (cm)</th>}
+                                        <th>Pieces/container</th>
+                                        <th>Price/container</th>
+                                        <th>Total price</th>
+                                        {selectedOffer.terms === "CIF" && <th>Insurance</th>}
+                                        {selectedOffer.terms !== "FOB" && <th>Freight</th>}
+                                        <th>Total amount</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {
+                                        selectedOffer.incotermRows.length > 0 ?
+                                            selectedOffer?.incotermRows.map((incoterm, index) =>
+                                                <tr key={index + 1}>
+                                                    <td><input disabled value={index + 1} /></td>
+                                                    {selectedOffer.terms !== "FOB" && <td><input value={incoterm.diameter} /></td>}
+                                                    <td><input value={incoterm.noOfPieces} /></td>
+                                                    <td><input value={incoterm.price} /></td>
+                                                    <td><input value={incoterm.totalPrice} /></td>
+                                                    {selectedOffer.terms === "CIF" && <td><input disabled value={incoterm.insurance} /></td>}
+                                                    {selectedOffer.terms !== "FOB" && <td><input disabled value={incoterm.costOfFreight} /></td>}
+                                                    <td><input disabled value={incoterm.totalAmount} /></td>
+                                                </tr>
+                                            ) :
+                                            <tr>
+                                                <td><input disabled value="--" /></td>
+                                                {selectedOffer.terms !== "FOB" && <td><input disabled value="--" /></td>}
+                                                <td><input disabled name="noOfPieces" value="--" /></td>
+                                                <td><input disabled name="price" value="--" /></td>
+                                                <td><input disabled name="totalPrice" value="--" /></td>
+                                                {selectedOffer.terms === "CIF" && <td><input disabled value="--" /></td>}
+                                                {selectedOffer.terms !== "FOB" && <td><input disabled value="--" /></td>}
+                                                <td><input disabled value="--" /></td>
+                                            </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="incoterm-settings-table-note-container">Kindly note that all prices are quoted in ($)</div>
                     </div>
+                </section>
+                <section className="request-offer-company-profile-section">
+                    <div>
+                        <div>Company Profile</div>
+                        {
+                            !revealCompanyProfile ? <IconButton onClick={toggleCompanyProfile(true)}><ArrowDropDownIcon /></IconButton> : <IconButton onClick={toggleCompanyProfile(false)}><ArrowDropUpIcon /></IconButton>
+                        }
+                    </div>
+
+                    {
+                        revealCompanyProfile &&
+                        companyProfile &&
+                        <div>
+                            <div><span>Business Type</span><span>{companyProfile.businessType}</span></div>
+                            <div><span>Member Since</span><span>{companyProfile.memberSince}</span></div>
+                            <div><span>Year Established</span><span>{companyProfile.yearEstablished}</span></div>
+                            <div><span>No of Employees</span><span>{companyProfile.employees}</span></div>
+                            <div><span>Products</span>{companyProfile.subscription.map((product, index) => <span>{product.product} {companyProfile.subscription.length !== index + 1 && "& "}</span>)}</div>
+                            <div><span>Supply Ability</span><span>{companyProfile.supplyAbility}</span></div>
+                        </div>
+                    }
+                </section>
+
+                <div>
+                    <SmallSecondary loading={state.requestState.loading} onClick={handleOrderSubmit} variant="contained">Place Order</SmallSecondary>
                 </div>
             </div>
         </Box>
@@ -499,6 +472,69 @@ const Requests = () => {
     return (
         <div className="Requests-Table">
             <div>
+                <Modal
+                    open={openDrawer}
+                    onClose={handleCloseDrawer}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppWide}>
+                        <div className="modal-title-container">
+                            <div>Request Details</div>
+                            <div><CloseRoundedIcon onClick={handleCloseDrawer} /></div>
+                        </div>
+
+                        <div className="modal-body">
+                            {list()}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
+                <Modal
+                    open={openDrawerOffers}
+                    onClose={handleCloseDrawerOffers}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppWide}>
+                        <div className="modal-title-container">
+                            <div>View Offers</div>
+                            <div><CloseRoundedIcon onClick={handleCloseDrawerOffers} /></div>
+                        </div>
+
+                        <div className="modal-body">
+                            {listOffers()}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
+                <Modal
+                    open={openDrawerOffer}
+                    onClose={handleCloseDrawerOffer}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppWide}>
+                        <div className="modal-title-container">
+                            <div>View Offers</div>
+                            <div><CloseRoundedIcon onClick={handleCloseDrawerOffer} /></div>
+                        </div>
+
+                        <div className="modal-body">
+                            {listOffer()}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
                 <Menu
                     anchorEl={anchorEl}
                     id="account-menu"
@@ -516,7 +552,7 @@ const Requests = () => {
 
             <div>
                 <SwipeableDrawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawer}
@@ -524,11 +560,18 @@ const Requests = () => {
                     onClose={handleCloseDrawer}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
-                    {list()}
+                    <div className="drawer-title-container">
+                        <div>Request Details</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {list()}
+                    </div>
                 </SwipeableDrawer>
 
                 <SwipeableDrawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawerOffers}
@@ -536,11 +579,18 @@ const Requests = () => {
                     onClose={handleCloseDrawerOffers}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
-                    {listOffers()}
+                    <div className="drawer-title-container">
+                        <div>View Offers</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {listOffers()}
+                    </div>
                 </SwipeableDrawer>
 
                 <SwipeableDrawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawerOffer}
@@ -548,7 +598,14 @@ const Requests = () => {
                     onClose={handleCloseDrawerOffer}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
-                    {listOffer()}
+                    <div className="drawer-title-container">
+                        <div>Offer Details</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {listOffer()}
+                    </div>
                 </SwipeableDrawer>
             </div>
 

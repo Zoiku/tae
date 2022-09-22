@@ -19,6 +19,9 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from '@mui/material/IconButton';
+import { inAppWide } from "../../../Styles/Modal";
+import Modal from '@mui/material/Modal';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -111,7 +114,7 @@ const Orders = () => {
     }
 
     const handleConfirmOrder = async () => {
-        const {id} = selectedOrder;
+        const { id } = selectedOrder;
         const merchantService = new MerchantService();
         try {
             const { errors } = await merchantService.orderConfirmation(id);
@@ -125,7 +128,7 @@ const Orders = () => {
     };
 
     const handleCancelOrder = async () => {
-        const {id} = selectedOrder;
+        const { id } = selectedOrder;
         const merchantService = new MerchantService();
         try {
             const { errors } = await merchantService.orderRejection(id);
@@ -184,68 +187,60 @@ const Orders = () => {
         { field: "action", headerName: "", width: 30, renderCell: ({ row }) => <div className="simple-center-div"><More id={row.id} /></div> },
     ];
 
-    const list = () => (
+    const list = (stepperOrientation) => (
         selectedOrder &&
-        <Box
-            sx={{ width: "auto", height: "700px" }}
-            role="presentation"
-            className="drawer-container"
-        >
-            <div className="drawer-title-container">
-                <div>Order Details</div>
-                <Puller />
-            </div>
-            <div className="drawer-body">
-                <div className="requests-sections-body">
-                    <div className="requests-title-container">
-                        <div>Order {selectedOrder.orderNo}</div>
-                    </div>
-                    <div className="requests-sections-container">
-                        <section>
-                            <div className="requests-section-title">Product Info</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Product:</span>
-                                    <span>{selectedOrder.product}</span>
-                                </div>
-                                <div>
-                                    <span>Quantity:</span>
-                                    <span>{selectedOrder.quantity} {selectedOrder.containerSize}</span>
-                                </div>
-                                <div>
-                                    <span>Requested Date:</span>
-                                    <span>{selectedOrder.createdOn}</span>
-                                </div>
+        <Box role="presentation" >
+            <div className="requests-sections-body">
+                <div className="requests-title-container">
+                    <div>Order {selectedOrder.orderNo}</div>
+                </div>
+                <div className="requests-sections-container">
+                    <section>
+                        <div className="requests-section-title">Product Info</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Product:</span>
+                                <span>{selectedOrder.product}</span>
                             </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Track Order</div>
-                            <div className="order-section-body">
-                                <div> <ProgressBar status={selectedOrder.status} /> </div>
+                            <div>
+                                <span>Quantity:</span>
+                                <span>{selectedOrder.quantity} {selectedOrder.containerSize}</span>
                             </div>
-                            <div className="order-section-stepper-container">
-                                <Box fullWidth>
-                                    <Stepper activeStep={ORDER_STATUS_STEPS[selectedOrder.status]} orientation="vertical">
-                                        {steps.map((step) => (
-                                            <Step key={step.label}>
-                                                <StepLabel>
-                                                    {step.label}
-                                                </StepLabel>
+                            <div>
+                                <span>Requested Date:</span>
+                                <span>{selectedOrder.createdOn}</span>
+                            </div>
+                        </div>
+                    </section>
 
+                    <section>
+                        <div className="requests-section-title">Track Order</div>
+                        <div className="order-section-body">
+                            <div> <ProgressBar status={selectedOrder.status} /> </div>
+                        </div>
+                        <div className="order-section-stepper-container">
+                            <Box fullWidth>
+                                <Stepper activeStep={ORDER_STATUS_STEPS[selectedOrder.status]} orientation={stepperOrientation}>
+                                    {steps.map((step) => (
+                                        <Step key={step.label}>
+                                            <StepLabel>
+                                                {step.label}
+                                            </StepLabel>
+                                            {
+                                                stepperOrientation === "vertical" &&
                                                 <StepContent>
                                                     <div>{step.description}</div>
                                                     <Box sx={{ mb: 0 }}>
                                                         <div></div>
                                                     </Box>
                                                 </StepContent>
-                                            </Step>
-                                        ))}
-                                    </Stepper>
-                                </Box>
-                            </div>
-                        </section>
-                    </div>
+                                            }
+                                        </Step>
+                                    ))}
+                                </Stepper>
+                            </Box>
+                        </div>
+                    </section>
                 </div>
             </div>
         </Box>
@@ -284,6 +279,26 @@ const Orders = () => {
     return (
         <div className="Orders-Table">
             <div>
+                <Modal
+                    open={openDrawer}
+                    onClose={handleCloseDrawer}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppWide}>
+                        <div className="modal-title-container">
+                            <div>Order Details</div>
+                            <div><CloseRoundedIcon onClick={handleCloseDrawer} /></div>
+                        </div>
+                        <div className="modal-body">
+                            {list()}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
                 <Menu
                     anchorEl={anchorEl}
                     id="account-menu"
@@ -313,7 +328,7 @@ const Orders = () => {
 
             <div>
                 <SwipeableDrawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawer}
@@ -321,7 +336,14 @@ const Orders = () => {
                     onClose={handleCloseDrawer}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
-                    {list()}
+                    <div className="drawer-title-container">
+                        <div>Order Details</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {list()}
+                    </div>
                 </SwipeableDrawer>
             </div>
 

@@ -26,6 +26,9 @@ import { INPUTING, SEND_REQUEST, REQUEST_SUCCESSFUL, REQUEST_FAILED } from "../.
 import { INITIAL_STATE, formReducer } from "../../../Reducers/FormReducer";
 import { SmallSecondary } from "../../../Material/Button";
 import { setAlert } from "../../../Redux/Features/Alert.js"
+import Modal from '@mui/material/Modal';
+import { inAppStandard, inAppWide } from "../../../Styles/Modal";
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -184,68 +187,60 @@ const Orders = () => {
         { field: "action", headerName: "", width: 30, renderCell: ({ row }) => <div className="simple-center-div"><More id={row.id} /></div> },
     ];
 
-    const list = () => (
+    const list = (stepperOrientation) => (
         selectedOrder &&
-        <Box
-            sx={{ width: "auto", height: "700px" }}
-            role="presentation"
-            className="drawer-container"
-        >
-            <div className="drawer-title-container">
-                <div>Order Details</div>
-                <Puller />
-            </div>
-            <div className="drawer-body">
-                <div className="requests-sections-body">
-                    <div className="requests-title-container">
-                        <div>Order {selectedOrder.orderNo}</div>
-                    </div>
-                    <div className="requests-sections-container">
-                        <section>
-                            <div className="requests-section-title">Product Info</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Product:</span>
-                                    <span>{selectedOrder.product}</span>
-                                </div>
-                                <div>
-                                    <span>Quantity:</span>
-                                    <span>{selectedOrder.quantity} {selectedOrder.containerSize}</span>
-                                </div>
-                                <div>
-                                    <span>Requested Date:</span>
-                                    <span>{selectedOrder.createdOn}</span>
-                                </div>
+        <Box role="presentation" >
+            <div className="requests-sections-body">
+                <div className="requests-title-container">
+                    <div>Order {selectedOrder.orderNo}</div>
+                </div>
+                <div className="requests-sections-container">
+                    <section>
+                        <div className="requests-section-title">Product Info</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Product:</span>
+                                <span>{selectedOrder.product}</span>
                             </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Track Order</div>
-                            <div className="order-section-body">
-                                <div> <ProgressBar status={selectedOrder.status} /> </div>
+                            <div>
+                                <span>Quantity:</span>
+                                <span>{selectedOrder.quantity} {selectedOrder.containerSize}</span>
                             </div>
-                            <div className="order-section-stepper-container">
-                                <Box fullWidth>
-                                    <Stepper activeStep={ORDER_STATUS_STEPS[selectedOrder.status]} orientation="vertical">
-                                        {steps.map((step) => (
-                                            <Step key={step.label}>
-                                                <StepLabel>
-                                                    {step.label}
-                                                </StepLabel>
+                            <div>
+                                <span>Requested Date:</span>
+                                <span>{selectedOrder.createdOn}</span>
+                            </div>
+                        </div>
+                    </section>
 
+                    <section>
+                        <div className="requests-section-title">Track Order</div>
+                        <div className="order-section-body">
+                            <div> <ProgressBar status={selectedOrder.status} /> </div>
+                        </div>
+                        <div className="order-section-stepper-container">
+                            <Box fullWidth>
+                                <Stepper activeStep={ORDER_STATUS_STEPS[selectedOrder.status]} orientation={stepperOrientation}>
+                                    {steps.map((step) => (
+                                        <Step key={step.label}>
+                                            <StepLabel>
+                                                {step.label}
+                                            </StepLabel>
+                                            {
+                                                stepperOrientation === "vertical" &&
                                                 <StepContent>
                                                     <div>{step.description}</div>
                                                     <Box sx={{ mb: 0 }}>
                                                         <div></div>
                                                     </Box>
                                                 </StepContent>
-                                            </Step>
-                                        ))}
-                                    </Stepper>
-                                </Box>
-                            </div>
-                        </section>
-                    </div>
+                                            }
+                                        </Step>
+                                    ))}
+                                </Stepper>
+                            </Box>
+                        </div>
+                    </section>
                 </div>
             </div>
         </Box>
@@ -254,52 +249,44 @@ const Orders = () => {
     const listConfirm = () => (
         selectedOrder &&
         <Box
-            sx={{ width: "auto", height: "650px" }}
             role="presentation"
-            className="drawer-container"
             component="form"
             onSubmit={handleConfirm}
         >
-            <div className="drawer-title-container">
-                <div>Confirm Order</div>
-                <Puller />
-            </div>
-            <div className="drawer-body">
-                <div className="requests-sections-body">
-                    <div className="orders-confirmation-sections-container">
-                        <section>
-                            <div>A. Kindly choose one of the payment options below</div>
+            <div className="requests-sections-body">
+                <div className="orders-confirmation-sections-container">
+                    <section>
+                        <div>A. Kindly choose one of the payment options below</div>
+                        <div>
+                            <FormControl>
+                                <RadioGroup
+                                    aria-labelledby="demo-radio-buttons-group-label"
+                                    name="orderPayment"
+                                    onChange={handleChange}
+                                    required
+                                >
+                                    <FormControlLabel value="Cash against documents (10%) Escrow deposit required" control={<Radio size="small" />} label="Cash against documents (10%) Escrow deposit required" />
+                                    <FormControlLabel value="Letter of credit" control={<Radio size="small" />} label="Letter of credit" />
+                                    <FormControlLabel value="Bank transfer" control={<Radio size="small" />} label="Bank transfer" />
+                                </RadioGroup>
+                            </FormControl>
+                        </div>
+                    </section>
+                    <section>
+                        <div>B. Please provide your shipping address below</div>
+                        <div>
+                            <TextField required sx={{ background: "white" }} multiline rows={3} fullWidth onChange={handleChange} type="text" name="shippingAddress" variant="outlined" />
+                        </div>
+                    </section>
+                    <section className="sales-and-purchase-agreement-container">
+                        <div>C. Sales and purchanse agreement</div>
+                        <div>
+                            <div>Click to open sales and purchase agreement</div>
                             <div>
-                                <FormControl>
-                                    <RadioGroup
-                                        aria-labelledby="demo-radio-buttons-group-label"
-                                        name="orderPayment"
-                                        onChange={handleChange}
-                                        required
-                                    >
-                                        <FormControlLabel value="Cash against documents (10%) Escrow deposit required" control={<Radio size="small" />} label="Cash against documents (10%) Escrow deposit required" />
-                                        <FormControlLabel value="Letter of credit" control={<Radio size="small" />} label="Letter of credit" />
-                                        <FormControlLabel value="Bank transfer" control={<Radio size="small" />} label="Bank transfer" />
-                                    </RadioGroup>
-                                </FormControl>
+                                <SmallSecondary type="submit" loading={state.requestState.loading} variant="contained">Confirm Order</SmallSecondary>
                             </div>
-                        </section>
-                        <section>
-                            <div>B. Please provide your shipping address below</div>
-                            <div>
-                                <TextField required sx={{ background: "white" }} multiline rows={3} fullWidth onChange={handleChange} type="text" name="shippingAddress" variant="outlined" />
-                            </div>
-                        </section>
-                        <section className="sales-and-purchase-agreement-container">
-                            <div>C. Sales and purchanse agreement</div>
-                            <div>
-                                <div>Click to open sales and purchase agreement</div>
-                                <div>
-                                    <SmallSecondary type="submit" loading={state.requestState.loading} variant="contained">Confirm Order</SmallSecondary>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </Box>
@@ -338,6 +325,48 @@ const Orders = () => {
     return (
         <div className="Orders-Table">
             <div>
+                <Modal
+                    open={openDrawer}
+                    onClose={toggleDrawer(false)}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppWide}>
+                        <div className="modal-title-container">
+                            <div>Order Details</div>
+                            <div><CloseRoundedIcon onClick={toggleDrawer(false)} /></div>
+                        </div>
+
+                        <div className="modal-body">
+                            {list("horizontal")}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
+                <Modal
+                    open={openDrawerConfirm}
+                    onClose={toggleDrawerConfirm(false)}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppWide}>
+                        <div className="modal-title-container">
+                            <div>Confirm Order</div>
+                            <div><CloseRoundedIcon onClick={toggleDrawerConfirm(false)} /></div>
+                        </div>
+
+                        <div className="modal-body">
+                            {listConfirm()}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
                 <Menu
                     anchorEl={anchorEl}
                     id="account-menu"
@@ -364,7 +393,7 @@ const Orders = () => {
 
             <div>
                 <SwipeableDrawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawer}
@@ -372,13 +401,20 @@ const Orders = () => {
                     onClose={toggleDrawer(false)}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
-                    {list()}
+                    <div className="drawer-title-container">
+                        <div>Order Details</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {list("vertical")}
+                    </div>
                 </SwipeableDrawer>
             </div>
 
             <div>
                 <SwipeableDrawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawerConfirm}
@@ -386,7 +422,14 @@ const Orders = () => {
                     onClose={toggleDrawerConfirm(false)}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
-                    {listConfirm()}
+                    <div className="drawer-title-container">
+                        <div>Confirm Order</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {listConfirm()}
+                    </div>
                 </SwipeableDrawer>
             </div>
 

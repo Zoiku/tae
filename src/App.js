@@ -4,6 +4,7 @@ import AuthService from "./Services/Auth";
 import PageLoadingAnimation from "./Components/PageLoadingAnimation";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
+import ForgotPassword from "./Pages/ForgotPassword";
 import RequestQuote from "./Pages/RequestQuote";
 import AdminDashboard from "./Pages/Admin/Dashboard";
 import AdminUsers from "./Pages/Admin/Users";
@@ -130,6 +131,7 @@ const App = () => {
         <Route element={<DefaultLayout session={session} />}>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/buyer/register" element={<BuyerRegistration />} />
           <Route path="/merchant/register" element={<MerchantRegistration />} />
           <Route

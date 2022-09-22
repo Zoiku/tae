@@ -113,4 +113,19 @@ export default class MerchantService {
       data
     };
   }
+
+  async update(payload) {
+    let errors = [];
+    const url = `/user/${payload.id}`;
+
+    try {
+      await AxiosInstance().put(url, payload);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
 }

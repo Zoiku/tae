@@ -8,6 +8,9 @@ import Box from '@mui/material/Box';
 import { Puller } from "../../../Material/Drawer";
 import MerchantService from "../../../Services/Merchant";
 import Countdown from "../../Countdown";
+import { inAppWide } from "../../../Styles/Modal";
+import Modal from '@mui/material/Modal';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
@@ -47,173 +50,163 @@ const Quotations = () => {
 
     const list = () => (
         selectedQuote &&
-        <Box
-            sx={{ width: "auto", height: "700px" }}
-            role="presentation"
-            className="drawer-container"
-        >
-            <div className="drawer-title-container">
-                <div>Request Details</div>
-                <Puller />
-            </div>
-            <div className="drawer-body">
-                <div className="requests-sections-body">
-                    <div className="requests-title-container">
-                        <div>Request {selectedQuote.requestNo}</div>
-                    </div>
-                    <div className="requests-sections-container">
-                        <section>
-                            <div className="requests-section-title">Product Info</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Product:</span>
-                                    <span>{selectedQuote.product}</span>
-                                </div>
-                                <div>
-                                    <span>Species:</span>
-                                    <span>{selectedQuote.species}</span>
-                                </div>
-                                <div>
-                                    <span>Types of species:</span>
-                                    <span>{selectedQuote.speciesType}</span>
-                                </div>
-                                <div>
-                                    <span>Origin:</span>
-                                    <span>{selectedQuote.origin}</span>
-                                </div>
-                                <div>
-                                    <span>Container size:</span>
-                                    <span>{selectedQuote.containerSize}</span>
-                                </div>
-                                <div>
-                                    <span>Volume per container:</span>
-                                    <span>{selectedQuote.volume} {selectedQuote.volumeUnit}</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Product Specification</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Length:</span>
-                                    <span>{selectedQuote.length} {selectedQuote.lengthUnit}</span>
-                                </div>
-                                {
-                                    selectedQuote.product === PRODUCTS.TEAK_SQUARE_LOGS &&
-                                    <>
-                                        <div>
-                                            <span>Thickness:</span>
-                                            <span>{selectedQuote.thickness} {selectedQuote.thicknessUnit}</span>
-                                        </div>
-                                        <div>
-                                            <span>Width:</span>
-                                            <span>{selectedQuote.width} {selectedQuote.widthUnit}</span>
-                                        </div>
-                                        <div>
-                                            <span>Drying:</span>
-                                            <span>{selectedQuote.drying}</span>
-                                        </div>
-                                    </>
-                                }
-                                {
-                                    selectedQuote.product === PRODUCTS.TEAK_ROUND_LOGS &&
-                                    <>
-                                        <div>
-                                            <span>Diameter:</span>
-                                            <span>{selectedQuote.diameter} {selectedQuote.diameterUnit}</span>
-                                        </div>
-                                    </>
-                                }
-                                <div>
-                                    <span>Quantity:</span>
-                                    <span>{selectedQuote.quantity} {selectedQuote.containerSize}</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Product Delivery Information</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Incoterm:</span>
-                                    <span>{selectedQuote.terms}</span>
-                                </div>
-                                <div>
-                                    <span>Destination:</span>
-                                    <span>{selectedQuote.destination}</span>
-                                </div>
-                                <div>
-                                    <span>Destination Port:</span>
-                                    <span>{selectedQuote.port}</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Request Settings</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Validity:</span>
-                                    <span>{selectedQuote.validity} days</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <div className="requests-section-title">Incoterm Settings</div>
+        <Box role="presentation" >
+            <div className="requests-sections-body">
+                <div className="requests-title-container">
+                    <div>Request {selectedQuote.requestNo}</div>
+                </div>
+                <div className="requests-sections-container">
+                    <section>
+                        <div className="requests-section-title">Product Info</div>
+                        <div className="request-section-body">
                             <div>
-                                <div className="incoterm-settings-table-container">
-                                    <table>
-                                        <thead>
-                                            <tr className="incoterm-setting-heading-container">
-                                                <th>Number</th>
-                                                {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <th>Diameter (cm)</th>}
-                                                <th>Pieces/container</th>
-                                                <th>Price/container</th>
-                                                <th>Total price</th>
-                                                {selectedQuote.terms === "CIF" && <th>Insurance</th>}
-                                                {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <th>Freight</th>}
-                                                <th>Total amount</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            {
-                                                selectedQuote.incotermRows.length > 0 ?
-                                                    selectedQuote?.incotermRows.map((incoterm, index) =>
-                                                        <tr key={index + 1}>
-                                                            <td><input disabled value={index + 1} /></td>
-                                                            {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input name="diameter" value={incoterm.diameter} /></td>}
-                                                            <td><input name="noOfPieces" value={incoterm.noOfPieces} /></td>
-                                                            <td><input name="price" value={incoterm.price} /></td>
-                                                            <td><input name="totalPrice" value={incoterm.totalPrice} /></td>
-                                                            {selectedQuote.terms === "CIF" && <td><input disabled name="insurance" /></td>}
-                                                            {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input disabled name="freight" value={incoterm.costOfFreight} /></td>}
-                                                            <td><input type="number" disabled value={incoterm.totalAmount} /></td>
-                                                        </tr>
-                                                    ) :
-                                                    <tr>
-                                                        <td><input disabled value="--" /></td>
-                                                        {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input disabled name="diameter" value="--" /></td>}
-                                                        <td><input disabled name="noOfPieces" value="--" /></td>
-                                                        <td><input disabled name="price" value="--" /></td>
-                                                        <td><input disabled name="totalPrice" value="--" /></td>
-                                                        {selectedQuote.terms === "CIF" && <td><input disabled name="insurance" value="--" /></td>}
-                                                        {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input disabled name="freight" value="--" /></td>}
-                                                        <td><input disabled value="--" /></td>
-                                                    </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div className="incoterm-settings-table-note-container">Kindly note that all prices are quoted in ($)</div>
+                                <span>Product:</span>
+                                <span>{selectedQuote.product}</span>
                             </div>
-                        </section>
-                    </div>
+                            <div>
+                                <span>Species:</span>
+                                <span>{selectedQuote.species}</span>
+                            </div>
+                            <div>
+                                <span>Types of species:</span>
+                                <span>{selectedQuote.speciesType}</span>
+                            </div>
+                            <div>
+                                <span>Origin:</span>
+                                <span>{selectedQuote.origin}</span>
+                            </div>
+                            <div>
+                                <span>Container size:</span>
+                                <span>{selectedQuote.containerSize}</span>
+                            </div>
+                            <div>
+                                <span>Volume per container:</span>
+                                <span>{selectedQuote.volume} {selectedQuote.volumeUnit}</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div className="requests-section-title">Product Specification</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Length:</span>
+                                <span>{selectedQuote.length} {selectedQuote.lengthUnit}</span>
+                            </div>
+                            {
+                                selectedQuote.product === PRODUCTS.TEAK_SQUARE_LOGS &&
+                                <>
+                                    <div>
+                                        <span>Thickness:</span>
+                                        <span>{selectedQuote.thickness} {selectedQuote.thicknessUnit}</span>
+                                    </div>
+                                    <div>
+                                        <span>Width:</span>
+                                        <span>{selectedQuote.width} {selectedQuote.widthUnit}</span>
+                                    </div>
+                                    <div>
+                                        <span>Drying:</span>
+                                        <span>{selectedQuote.drying}</span>
+                                    </div>
+                                </>
+                            }
+                            {
+                                selectedQuote.product === PRODUCTS.TEAK_ROUND_LOGS &&
+                                <>
+                                    <div>
+                                        <span>Diameter:</span>
+                                        <span>{selectedQuote.diameter} {selectedQuote.diameterUnit}</span>
+                                    </div>
+                                </>
+                            }
+                            <div>
+                                <span>Quantity:</span>
+                                <span>{selectedQuote.quantity} {selectedQuote.containerSize}</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div className="requests-section-title">Product Delivery Information</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Incoterm:</span>
+                                <span>{selectedQuote.terms}</span>
+                            </div>
+                            <div>
+                                <span>Destination:</span>
+                                <span>{selectedQuote.destination}</span>
+                            </div>
+                            <div>
+                                <span>Destination Port:</span>
+                                <span>{selectedQuote.port}</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div className="requests-section-title">Request Settings</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Validity:</span>
+                                <span>{selectedQuote.validity} days</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div className="requests-section-title">Incoterm Settings</div>
+                        <div>
+                            <div className="incoterm-settings-table-container">
+                                <table>
+                                    <thead>
+                                        <tr className="incoterm-setting-heading-container">
+                                            <th>Number</th>
+                                            {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <th>Diameter (cm)</th>}
+                                            <th>Pieces/container</th>
+                                            <th>Price/container</th>
+                                            <th>Total price</th>
+                                            {selectedQuote.terms === "CIF" && <th>Insurance</th>}
+                                            {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <th>Freight</th>}
+                                            <th>Total amount</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {
+                                            selectedQuote.incotermRows.length > 0 ?
+                                                selectedQuote?.incotermRows.map((incoterm, index) =>
+                                                    <tr key={index + 1}>
+                                                        <td><input disabled value={index + 1} /></td>
+                                                        {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input name="diameter" value={incoterm.diameter} /></td>}
+                                                        <td><input name="noOfPieces" value={incoterm.noOfPieces} /></td>
+                                                        <td><input name="price" value={incoterm.price} /></td>
+                                                        <td><input name="totalPrice" value={incoterm.totalPrice} /></td>
+                                                        {selectedQuote.terms === "CIF" && <td><input disabled name="insurance" /></td>}
+                                                        {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input disabled name="freight" value={incoterm.costOfFreight} /></td>}
+                                                        <td><input type="number" disabled value={incoterm.totalAmount} /></td>
+                                                    </tr>
+                                                ) :
+                                                <tr>
+                                                    <td><input disabled value="--" /></td>
+                                                    {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input disabled name="diameter" value="--" /></td>}
+                                                    <td><input disabled name="noOfPieces" value="--" /></td>
+                                                    <td><input disabled name="price" value="--" /></td>
+                                                    <td><input disabled name="totalPrice" value="--" /></td>
+                                                    {selectedQuote.terms === "CIF" && <td><input disabled name="insurance" value="--" /></td>}
+                                                    {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input disabled name="freight" value="--" /></td>}
+                                                    <td><input disabled value="--" /></td>
+                                                </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="incoterm-settings-table-note-container">Kindly note that all prices are quoted in ($)</div>
+                        </div>
+                    </section>
                 </div>
             </div>
-        </Box>
+        </Box >
     );
 
     useEffect(() => {
@@ -257,9 +250,7 @@ const Quotations = () => {
 
                     setRows(filteredData);
                 }
-            } catch (error) {
-                //
-            }
+            } catch (error) { }
             setRowsLoading(false);
         }
 
@@ -270,8 +261,28 @@ const Quotations = () => {
     return (
         <div className="Quotes-Table">
             <div>
+                <Modal
+                    open={openDrawer}
+                    onClose={handleCloseDrawer}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppWide}>
+                        <div className="modal-title-container">
+                            <div>Request Details</div>
+                            <div><CloseRoundedIcon onClick={handleCloseDrawer} /></div>
+                        </div>
+                        <div className="modal-body">
+                            {list()}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
                 <SwipeableDrawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawer}
@@ -279,7 +290,14 @@ const Quotations = () => {
                     onClose={handleCloseDrawer}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
-                    {list()}
+                    <div className="drawer-title-container">
+                        <div>Request Details</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {list()}
+                    </div>
                 </SwipeableDrawer>
             </div>
 

@@ -205,13 +205,19 @@
     border-bottom: 1px solid #efefef;
   }
 
-  .request-offer-company-profile-section > div:nth-child(2) > div > span:nth-child(1) {
+  .request-offer-company-profile-section
+    > div:nth-child(2)
+    > div
+    > span:nth-child(1) {
     color: gray;
     margin-bottom: 5px;
     display: block;
   }
 
-  .request-offer-company-profile-section > div:nth-child(2) > div > span:nth-child(2) {
+  .request-offer-company-profile-section
+    > div:nth-child(2)
+    > div
+    > span:nth-child(2) {
     font-weight: 600;
   }
 }

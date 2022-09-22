@@ -17,6 +17,9 @@ import StepLabel from '@mui/material/StepLabel';
 import StepContent from '@mui/material/StepContent';
 import { setAlert } from "../../../Redux/Features/Alert.js"
 import { useDispatch } from "react-redux";
+import Modal from '@mui/material/Modal';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { inAppWide } from "../../../Styles/Modal";
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -125,7 +128,7 @@ const Orders = () => {
             if (errors.length === 0) {
                 setRefreshTable(prev => !prev);
                 handleSuccessfullRequest("Success", 3000);
-            }else {
+            } else {
                 handleFailedRequest("Could not process your order", 5000);
             }
         } catch (error) { }
@@ -176,124 +179,117 @@ const Orders = () => {
         { field: "more", headerName: "", width: 30, renderCell: ({ row }) => <div className="simple-center-div"><More id={row.id} /></div> },
     ];
 
-    const list = () => (
+    const list = (stepperOrientation) => (
         selectedOrder &&
         <Box
-            sx={{ width: "auto", height: "700px" }}
             role="presentation"
-            className="drawer-container"
         >
-            <div className="drawer-title-container">
-                <div>Order Details</div>
-                <Puller />
-            </div>
-            <div className="drawer-body">
-                <div className="requests-sections-body">
-                    <div className="requests-title-container">
-                        <div>Order {selectedOrder.orderNo}</div>
-                    </div>
-                    <div className="requests-sections-container">
-                        <section>
-                            <div className="requests-section-title">Track Order</div>
-                            <div className="order-section-body">
-                                <div> <ProgressBar status={selectedOrder.status} /> </div>
-                            </div>
-                            <div className="order-section-stepper-container">
-                                <Box fullWidth>
-                                    <Stepper activeStep={ORDER_STATUS_STEPS[selectedOrder.status]} orientation="vertical">
-                                        {steps.map((step) => (
-                                            <Step key={step.label}>
-                                                <StepLabel>
-                                                    {step.label}
-                                                </StepLabel>
-
+            <div className="requests-sections-body">
+                <div className="requests-title-container">
+                    <div>Order {selectedOrder.orderNo}</div>
+                </div>
+                <div className="requests-sections-container">
+                    <section>
+                        <div className="requests-section-title">Track Order</div>
+                        <div className="order-section-body">
+                            <div> <ProgressBar status={selectedOrder.status} /> </div>
+                        </div>
+                        <div className="order-section-stepper-container">
+                            <Box fullWidth>
+                                <Stepper activeStep={ORDER_STATUS_STEPS[selectedOrder.status]} orientation={stepperOrientation}>
+                                    {steps.map((step) => (
+                                        <Step key={step.label}>
+                                            <StepLabel>
+                                                {step.label}
+                                            </StepLabel>
+                                            {
+                                                stepperOrientation === "vertical" &&
                                                 <StepContent>
                                                     <div>{step.description}</div>
                                                     <Box sx={{ mb: 0 }}>
                                                         <div></div>
                                                     </Box>
                                                 </StepContent>
-                                            </Step>
-                                        ))}
-                                    </Stepper>
-                                </Box>
-                            </div>
-                        </section>
+                                            }
+                                        </Step>
+                                    ))}
+                                </Stepper>
+                            </Box>
+                        </div>
+                    </section>
 
+                    <section>
+                        <div className="requests-section-title">Product Info</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Product:</span>
+                                <span>{selectedOrder.product}</span>
+                            </div>
+                            <div>
+                                <span>Species:</span>
+                                <span>{selectedOrder.species}</span>
+                            </div>
+                            <div>
+                                <span>Species Type:</span>
+                                <span>{selectedOrder.speciesType}</span>
+                            </div>
+                            <div>
+                                <span>Origin:</span>
+                                <span>{selectedOrder.origin}</span>
+                            </div>
+                            <div>
+                                <span>Container Size:</span>
+                                <span>{selectedOrder.containerSize}</span>
+                            </div>
+                            <div>
+                                <span>Volume:</span>
+                                <span>{selectedOrder.volume} {selectedOrder.volumeUnit}</span>
+                            </div>
+                            <div>
+                                <span>Quantity:</span>
+                                <span>{selectedOrder.quantity} {selectedOrder.containerSize}</span>
+                            </div>
+                            <div>
+                                <span>Requested Date:</span>
+                                <span>{selectedOrder.createdOn}</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div className="requests-section-title">Pricing ad Delivery Details</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Shipping Address:</span>
+                                <span>{selectedOrder.shippingAddress}</span>
+                            </div>
+                            <div>
+                                <span>Terms:</span>
+                                <span>{selectedOrder.terms}</span>
+                            </div>
+                            <div>
+                                <span>Destination:</span>
+                                <span>{selectedOrder.destination}</span>
+                            </div>
+                            <div>
+                                <span>Destination port:</span>
+                                <span>{selectedOrder.port}</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    {
+                        selectedOrder?.paymentMode &&
                         <section>
-                            <div className="requests-section-title">Product Info</div>
+                            <div className="requests-section-title">Payment Details</div>
                             <div className="request-section-body">
                                 <div>
-                                    <span>Product:</span>
-                                    <span>{selectedOrder.product}</span>
-                                </div>
-                                <div>
-                                    <span>Species:</span>
-                                    <span>{selectedOrder.species}</span>
-                                </div>
-                                <div>
-                                    <span>Species Type:</span>
-                                    <span>{selectedOrder.speciesType}</span>
-                                </div>
-                                <div>
-                                    <span>Origin:</span>
-                                    <span>{selectedOrder.origin}</span>
-                                </div>
-                                <div>
-                                    <span>Container Size:</span>
-                                    <span>{selectedOrder.containerSize}</span>
-                                </div>
-                                <div>
-                                    <span>Volume:</span>
-                                    <span>{selectedOrder.volume} {selectedOrder.volumeUnit}</span>
-                                </div>
-                                <div>
-                                    <span>Quantity:</span>
-                                    <span>{selectedOrder.quantity} {selectedOrder.containerSize}</span>
-                                </div>
-                                <div>
-                                    <span>Requested Date:</span>
-                                    <span>{selectedOrder.createdOn}</span>
+                                    <span>Payment Mode:</span>
+                                    <span>{selectedOrder.paymentMode}</span>
                                 </div>
                             </div>
                         </section>
-
-                        <section>
-                            <div className="requests-section-title">Pricing ad Delivery Details</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Shipping Address:</span>
-                                    <span>{selectedOrder.shippingAddress}</span>
-                                </div>
-                                <div>
-                                    <span>Terms:</span>
-                                    <span>{selectedOrder.terms}</span>
-                                </div>
-                                <div>
-                                    <span>Destination:</span>
-                                    <span>{selectedOrder.destination}</span>
-                                </div>
-                                <div>
-                                    <span>Destination port:</span>
-                                    <span>{selectedOrder.port}</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        {
-                            selectedOrder?.paymentMode &&
-                            <section>
-                                <div className="requests-section-title">Payment Details</div>
-                                <div className="request-section-body">
-                                    <div>
-                                        <span>Payment Mode:</span>
-                                        <span>{selectedOrder.paymentMode}</span>
-                                    </div>
-                                </div>
-                            </section>
-                        }
-
-                    </div>
+                    }
                 </div>
             </div>
         </Box>
@@ -345,6 +341,26 @@ const Orders = () => {
     return (
         <div className="Orders-Table">
             <div>
+                <Modal
+                    open={openDrawer}
+                    onClose={toggleDrawer(false)}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppWide}>
+                        <div className="modal-title-container">
+                            <div>Order Details</div>
+                            <div><CloseRoundedIcon onClick={toggleDrawer(false)} /></div>
+                        </div>
+                        <div className="modal-body">
+                            {list("horizontal")}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
                 <Menu
                     anchorEl={anchorEl}
                     id="account-menu"
@@ -388,7 +404,7 @@ const Orders = () => {
 
             <div>
                 <SwipeableDrawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawer}
@@ -396,7 +412,14 @@ const Orders = () => {
                     onClose={toggleDrawer(false)}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
-                    {list()}
+                    <div className="drawer-title-container">
+                        <div>Order Details</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {list("vertical")}
+                    </div>
                 </SwipeableDrawer>
             </div>
 

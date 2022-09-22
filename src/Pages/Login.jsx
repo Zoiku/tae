@@ -9,7 +9,7 @@ import AuthService from "../Services/Auth";
 import { useDispatch, useSelector } from "react-redux";
 import { startSession } from "../Redux/Features/Session.js";
 import { setAlert, clearAlerts } from "../Redux/Features/Alert.js"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 
 const ROLES = {
     ADMIN: "/admin/dashboard",
@@ -18,11 +18,22 @@ const ROLES = {
 }
 
 const Login = () => {
+    const navLinkStyle = {
+        fontWeight: 700,
+        textDecoration: "none",
+        color: "var(--tae-orange)"
+    };
+    const navLinkStyle2 = {
+        fontWeight: 700,
+        textDecoration: "none",
+        color: "#c5c5c5",
+        fontSize: 11,
+    };
     const navigate = useNavigate();
     const rootDispatch = useDispatch();
     const { session } = useSelector(state => state);
     const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
-    
+
     const handleChange = (e) => { dispatch({ type: INPUTING, prop: e.target.name, value: e.target.value }); }
     const handleFailedRequest = (message, timeOut) => {
         const payload = {
@@ -54,10 +65,6 @@ const Login = () => {
         }
     }
 
-    const handleForgotPassword = () => {
-        // code goes here
-    }
-
     useEffect(() => {
         if (session.isLogged && Object.keys(session.user).length > 0) {
             const role = session.user.role;
@@ -83,10 +90,10 @@ const Login = () => {
                         onSubmit={handleSubmit}
                     >
                         <TextField error={state.requestState.error != null} onChange={handleChange} type="text" name="username" label="Email" variant="outlined" />
-                        <TextField InputProps={{ endAdornment: <div onClick={handleForgotPassword} style={{ width: "200px", textAlign: "right", fontSize: "12px", color: "gray" }}>Forgot Password?</div> }} sx={{ width: "100%" }} error={state.requestState.error != null} onChange={handleChange} type="password" name="password" label="Password" variant="outlined" />
+                        <TextField InputProps={{ endAdornment: <div style={{ width: "160px", textAlign: "right" }}><NavLink style={navLinkStyle2} to="/forgotpassword">Forgot Password?</NavLink></div> }} error={state.requestState.error != null} onChange={handleChange} type="password" name="password" label="Password" variant="outlined" />
                         <div style={{ fontSize: "small", color: "gray" }}>
                             <span>Don't have an account? </span>
-                            <span style={{ fontWeight: 600, color: "var(--tae-orange)", cursor: "pointer" }}>Click here to register</span>
+                            <span><NavLink style={navLinkStyle} to="/buyer/register">Click here to register</NavLink></span>
                         </div>
                         <div className="captcha-container">
                         </div>

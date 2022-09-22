@@ -24,9 +24,18 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import background from "../../Assets/background-1.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
+import Modal from '@mui/material/Modal';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { inAppStandard } from "../../Styles/Modal";
 
 const Register = () => {
+    const navLinkStyle = {
+        color: "var(--tae-orange)",
+        textDecoration: "underline",
+        fontSize: "small",
+        fontWeight: 700,
+    };
     const resendCodeTimerInterval = useRef(null);
     const [resendCodeTimer, setResendCodeTimer] = useState({ seconds: 60 });
     const defaultCountryData = { country: "Ghana", countryCode: "233" };
@@ -93,7 +102,7 @@ const Register = () => {
             resendCodeTimerInterval.current = setInterval(() => {
                 if (resendCodeTimer.seconds > 0) {
                     setResendCodeTimer(({ seconds }) => ({ ...resendCodeTimer, seconds: seconds - 1 }))
-                }else {
+                } else {
                     console.log('Hmm')
                 }
             }, 1000);
@@ -192,42 +201,60 @@ const Register = () => {
     const list = () => (
         <Box
             component="form"
-            sx={{ width: "auto", minHeight: "500px" }}
             role="presentation"
-            className="drawer-container"
             onSubmit={handleCodeVerification}
             autoComplete="off"
         >
-            <div className="drawer-title-container">
-                <div>Verify Account</div>
-                <div><CloseIcon className="close-icon" onClick={toggleDrawer(false)} /></div>
+            <div className="drawer-desc">
+                <div>Almost Done!</div>
+                <div>We've sent the code to <span style={{ color: "#ee9b00", fontWeight: 500 }}>{state.payload.email}</span></div>
             </div>
-            <div className="drawer-body">
-                <div className="drawer-desc">
-                    <div>Almost Done!</div>
-                    <div>We've sent the code to <span style={{ color: "#ee9b00", fontWeight: 500 }}>{state.payload.email}</span></div>
+            <div className="drawer-form-controller-container">
+                <div className="form-controller-input">
+                    <TextField required error={state.requestState.error !== null} InputProps={{ endAdornment: <IconButton className="registration-resend-container" onClick={handleResend} size="small">resend ({resendCodeTimer.seconds})</IconButton> }} name="verificationCode" onChange={handleChange} fullWidth label="Enter Code" variant="standard" />
+                    <span style={{ fontSize: "12px", color: "gray" }}>Verifying the code and activate your account</span>
                 </div>
-                <div className="drawer-form-controller-container">
-                    <div className="form-controller-input">
-                        <TextField required error={state.requestState.error !== null} InputProps={{ endAdornment: <IconButton className="registration-resend-container" onClick={handleResend} size="small">resend ({resendCodeTimer.seconds})</IconButton> }} name="verificationCode" onChange={handleChange} fullWidth label="Enter Code" variant="standard" />
-                        <span style={{ fontSize: "12px", color: "gray" }}>Verifying the code and activate your account</span>
-                    </div>
-                </div>
-                <div><PrimaryButton loading={state.requestState.loading} type="submit" variant="contained" sx={{ width: "100%" }}>Verify</PrimaryButton></div>
             </div>
+            <div><PrimaryButton loading={state.requestState.loading} type="submit" variant="contained" sx={{ width: "100%" }}>Verify</PrimaryButton></div>
         </Box >
     );
 
     return (
         <div className="Register">
             <div>
+                <Modal
+                    open={openDrawer}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppStandard}>
+                        <div className="modal-title-container">
+                            <div>Verify Account</div>
+                            <div><CloseRoundedIcon onClick={toggleDrawer(false)} /></div>
+                        </div>
+                        <div className="modal-body-container">
+                            {list()}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
                 <Drawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawer}
                 >
-                    {list()}
+                    <div className="drawer-title-container">
+                        <div>Verify Account</div>
+                        <div><CloseIcon className="close-icon" onClick={toggleDrawer(false)} /></div>
+                    </div>
+
+                    <div className="drawer-body">
+                        {list()}
+                    </div>
                 </Drawer>
             </div>
 
@@ -238,7 +265,7 @@ const Register = () => {
                 <div className="right-container">
                     <div className="register-form-desc">
                         <div>Sign Up</div>
-                        <div>Merchant</div>
+                        <div>Buyer</div>
                     </div>
                     <Box
                         component="form"
@@ -277,7 +304,7 @@ const Register = () => {
                         <div className="form-controller-input">
                             <TextField required helperText="Name of Company" fullWidth onChange={handleChange} type="text" name="companyName" label="Company Name" variant="outlined" />
                         </div>
-                        
+
                         <div className="form-controller-input">
                             <FormControl fullWidth>
                                 <InputLabel id="demo-multiple-chip-label">Country</InputLabel>
@@ -296,7 +323,7 @@ const Register = () => {
                                 </FormHelperText>
                             </FormControl>
                         </div>
-                        
+
                         <div className="form-controller-duo-input">
                             <div>
                                 <Select fullWidth disabled value={defaultCountryData.countryCode}>
@@ -316,7 +343,14 @@ const Register = () => {
                         </div>
 
                         <div className="captcha-container"></div>
+
                         <PrimaryButton disabled={!consent} type="submit" variant="contained" loading={state.requestState.loading}>Sign up</PrimaryButton>
+
+                        <div className="quick-links-container">
+                            <div><NavLink style={navLinkStyle} to="/login">Login</NavLink> </div>
+                            <div><NavLink style={navLinkStyle} to="/">Privacy Policy</NavLink> </div>
+                            <div><NavLink style={navLinkStyle} to="/">Terms of Service</NavLink> </div>
+                        </div>
                     </Box>
                 </div>
             </div>

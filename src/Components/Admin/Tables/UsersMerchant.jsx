@@ -20,6 +20,9 @@ import { useDispatch } from "react-redux";
 import { useReducer } from "react";
 import { formReducer, INITIAL_STATE } from "../../../Reducers/FormReducer";
 import { SEND_REQUEST, REQUEST_FAILED } from "../../../Reducers/Actions";
+import Modal from '@mui/material/Modal';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { inAppWide } from "../../../Styles/Modal";
 
 const UsersMerchant = () => {
     const [paging, setPaging] = useState({
@@ -112,89 +115,69 @@ const UsersMerchant = () => {
 
     const list = () => (
         selectedUser &&
-        <Box
-            sx={{ width: "auto", height: "700px" }}
-            role="presentation"
-            className="drawer-container"
-        >
-            <div className="drawer-title-container">
-                <div>User Information</div>
-                <Puller />
-            </div>
-            <div className="drawer-body">
-                <div className="users-sections-body">
-                    <div className="users-title-container">
-                        <div></div>
-                    </div>
-                    <div className="users-sections-container">
-                        <div className="user-profile-container">
-                            <StyledBadge
-                                overlap="circular"
-                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                                variant="dot"
-                            >
-                                <Avatar className="user-avatar" alt="User" src="/" />
-                            </StyledBadge>
-                            <div className="user-short-desc-container">
-                                <div>{selectedUser.fullName}</div>
-                                <div>{selectedUser.email}</div>
-                            </div>
+        <Box role="presentation" >
+            <div className="users-sections-body">
+                <div className="users-title-container">
+                    <div></div>
+                </div>
+                <div className="users-sections-container">
+                    <div className="user-profile-container">
+                        <StyledBadge
+                            overlap="circular"
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                            variant="dot"
+                        >
+                            <Avatar className="user-avatar" alt="User" src="/" />
+                        </StyledBadge>
+                        <div className="user-short-desc-container">
+                            <div>{selectedUser.fullName}</div>
+                            <div>{selectedUser.email}</div>
                         </div>
+                    </div>
 
-                        <div className="user-profile-sections-container Admin-Settings-Page">
-                            <Box
-                                component="form"
-                                sx={{
-                                    '& > :not(style)': { width: '100%', margin: "50px 0" },
-                                }}
-                                autoComplete="off"
-                            >
+                    <div className="user-profile-sections-container Admin-Settings-Page">
+                        <Box
+                            component="form"
+                            sx={{
+                                '& > :not(style)': { width: '100%', margin: "50px 0" },
+                            }}
+                            autoComplete="off"
+                        >
+                            <section>
+                                <div className="user-profile-section-title">Personal Details</div>
+                                <div className="form-controller-input-duo form-controller">
+                                    <TextField disabled value={selectedUser.user.firstName} fullWidth label="Full Name" variant="standard" />
+                                    <TextField disabled value={selectedUser.user.lastName} fullWidth label="Full Name" variant="standard" />
+                                </div>
+                                <div className="form-controller-input form-controller">
+                                    <TextField disabled value={selectedUser.email} fullWidth label="Email" variant="standard" />
+                                </div>
+                            </section>
+
+                            {
+                                selectedUser.company &&
                                 <section>
-                                    <div className="user-profile-section-title">Personal Details</div>
+                                    <div className="user-profile-section-title">Company Details</div>
+                                    <div className="form-controller-input form-controller">
+                                        <TextField disabled value={selectedUser.company.introduction} multiline fullWidth type="text" label="Company Introduction" variant="standard" />
+                                    </div>
                                     <div className="form-controller-input-duo form-controller">
-                                        <TextField disabled value={selectedUser.user.firstName} fullWidth label="Full Name" variant="standard" />
-                                        <TextField disabled value={selectedUser.user.lastName} fullWidth label="Full Name" variant="standard" />
+                                        <TextField disabled value={selectedUser.user.companyName} fullWidth label="Company Name" variant="standard" />
+                                        <TextField disabled value={selectedUser.address} fullWidth label="Company Address" variant="standard" />
+                                    </div>
+                                    <div className="form-controller-input-duo form-controller">
+                                        <TextField disabled value={new Date(selectedUser.type.createdOn).getFullYear()} fullWidth label="Company Year" variant="standard" />
+                                        <TextField disabled value={selectedUser.company.noOfEmployees} fullWidth label="Number of Employees" variant="standard" />
                                     </div>
                                     <div className="form-controller-input form-controller">
-                                        <TextField disabled value={selectedUser.email} fullWidth label="Email" variant="standard" />
+                                        <TextField disabled value={selectedUser.businessType} fullWidth label="Business Type" variant="standard" />
+                                    </div>
+                                    <div className="form-controller-input form-controller">
+                                        <TextField disabled value={selectedUser.company.supplyAbility} fullWidth label="Supply Ability" variant="standard" />
                                     </div>
                                 </section>
-
-                                {
-                                    selectedUser.company &&
-                                    <section>
-                                        <div className="user-profile-section-title">Company Details</div>
-                                        <div className="form-controller-input form-controller">
-                                            <TextField disabled value={selectedUser.company.introduction} multiline fullWidth type="text" label="Company Introduction" variant="standard" />
-                                        </div>
-                                        <div className="form-controller-input-duo form-controller">
-                                            <TextField disabled value={selectedUser.user.companyName} fullWidth label="Company Name" variant="standard" />
-                                            <TextField disabled value={selectedUser.address} fullWidth label="Company Address" variant="standard" />
-                                        </div>
-                                        <div className="form-controller-input-duo form-controller">
-                                            <TextField disabled value={new Date(selectedUser.type.createdOn).getFullYear()} fullWidth label="Company Year" variant="standard" />
-                                            <TextField disabled value={selectedUser.company.noOfEmployees} fullWidth label="Number of Employees" variant="standard" />
-                                        </div>
-                                        <div className="form-controller-input form-controller">
-                                            <TextField disabled value={selectedUser.businessType} fullWidth label="Business Type" variant="standard" />
-                                        </div>
-                                        <div className="form-controller-input form-controller">
-                                            <TextField disabled value={selectedUser.company.supplyAbility} fullWidth label="Supply Ability" variant="standard" />
-                                        </div>
-                                    </section>
-                                }
-
-                                {/* <section>
-                                    <div className="user-profile-section-title">Subscription</div>
-                                    <div className="form-controller-input form-controller">
-                                        <TextField disabled value={selectedUser} fullWidth label="Company Introduction" variant="outlined" />
-                                    </div>
-                                    <div className="form-controller-input form-controller">
-                                        <TextField disabled value={selectedUser} fullWidth label="Company Introduction" variant="outlined" />
-                                    </div>
-                                </section> */}
-                            </Box>
-                        </div>
+                            }
+                        </Box>
                     </div>
                 </div>
             </div>
@@ -237,6 +220,28 @@ const UsersMerchant = () => {
     return (
         <div className="UsersMerchant-Table">
             <div>
+                <Modal
+                    open={openDrawer}
+                    onClose={toggleDrawer(false)}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppWide}>
+                        <div className="modal-title-container">
+                            <div>User Information</div>
+                            <div><CloseRoundedIcon onClick={toggleDrawer(false)} /></div>
+                        </div>
+
+                        <div className="modal-body">
+                            {list()}
+                        </div>
+                        
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
                 <Menu
                     anchorEl={anchorEl}
                     id="account-menu"
@@ -257,7 +262,7 @@ const UsersMerchant = () => {
 
             <div>
                 <SwipeableDrawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawer}
@@ -265,7 +270,14 @@ const UsersMerchant = () => {
                     onClose={toggleDrawer(false)}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
-                    {list()}
+                    <div className="drawer-title-container">
+                        <div>User Information</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {list()}
+                    </div>
                 </SwipeableDrawer>
             </div>
 

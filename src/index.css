@@ -89,14 +89,49 @@ html {
   border: none !important;
 }
 
-.drawer-container,
-.drawer {
+.drawer-container {
   display: none;
 }
 
+.modal-container {
+  display: block;
+  position: relative;
+}
+
+.modal-title-container {
+  border-bottom: 1px solid #c5c5c5;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: white;
+}
+
+.modal-title-container > div {
+  display: grid;
+  place-content: center;
+}
+
+.modal-title-container > div:nth-child(1) {
+  font-weight: 600;
+  font-size: large;
+}
+
+.modal-title-container > div:nth-child(2) {
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 10px;
+}
+
 @media screen and (max-width: 1000px) {
-  .drawer-container,
-  .drawer {
+  .modal-container {
+    display: none;
+  }
+
+  .drawer-container {
     position: relative;
     display: block;
     height: 100%;
@@ -153,32 +188,32 @@ html {
     width: 48%;
   }
 
-  .drawer .requests-title-container {
+  .drawer-body .requests-title-container {
     margin: 10px 0;
     font-weight: 700;
     font-size: medium;
   }
 
-  .drawer .requests-sections-container {
+  .drawer-body .requests-sections-container {
     margin: 30px 0;
   }
 
-  .drawer .requests-sections-container > section {
+  .drawer-body .requests-sections-container > section {
     margin: 0 0 40px 0;
   }
 
-  .drawer .requests-sections-container > section:nth-last-child(1) {
+  .drawer-body .requests-sections-container > section:nth-last-child(1) {
     margin: 0;
   }
 
-  .drawer .requests-section-title {
+  .drawer-body .requests-section-title {
     font-weight: 600;
     display: flex;
     align-items: center;
     margin-bottom: 5px;
   }
 
-  .drawer .requests-section-title::before {
+  .drawer-body .requests-section-title::before {
     content: "";
     border-radius: 10px;
     width: 5px;
@@ -188,23 +223,23 @@ html {
     margin-right: 10px;
   }
 
-  .drawer .request-section-body > div {
+  .drawer-body .request-section-body > div {
     padding: 10px 0;
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid var(--tae-gray-faded);
   }
 
-  .drawer .request-section-body > div > span {
+  .drawer-body .request-section-body > div > span {
     display: block;
     width: 50%;
   }
 
-  .drawer .request-section-body > div > span:nth-child(1) {
+  .drawer-body .request-section-body > div > span:nth-child(1) {
     color: gray;
   }
 
-  .drawer .request-section-body > div > span:nth-child(2) {
+  .drawer-body .request-section-body > div > span:nth-child(2) {
     font-weight: 600;
     text-align: left;
   }

@@ -8,6 +8,9 @@ import Box from '@mui/material/Box';
 import { Puller } from "../../../Material/Drawer";
 import AdminService from "../../../Services/Admin";
 import Countdown from "../../Countdown";
+import Modal from '@mui/material/Modal';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { inAppWide } from "../../../Styles/Modal";
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
@@ -60,118 +63,110 @@ const Requests = () => {
     const list = () => (
         selectedRequest &&
         <Box
-            sx={{ width: "auto", height: "700px" }}
             role="presentation"
-            className="drawer-container"
         >
-            <div className="drawer-title-container">
-                <div>Request Details</div>
-                <Puller />
-            </div>
-            <div className="drawer-body">
-                <div className="requests-sections-body">
-                    <div className="requests-title-container">
-                        <div>Request {selectedRequest.requestNo}</div>
-                    </div>
-                    <div className="requests-sections-container">
-                        <section>
-                            <div className="requests-section-title">Product Info</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Product:</span>
-                                    <span>{selectedRequest.product}</span>
-                                </div>
-                                <div>
-                                    <span>Species:</span>
-                                    <span>{selectedRequest.species}</span>
-                                </div>
-                                <div>
-                                    <span>Types of species:</span>
-                                    <span>{selectedRequest.speciesType}</span>
-                                </div>
-                                <div>
-                                    <span>Origin:</span>
-                                    <span>{selectedRequest.origin}</span>
-                                </div>
-                                <div>
-                                    <span>Container size:</span>
-                                    <span>{selectedRequest.containerSize}</span>
-                                </div>
-                                <div>
-                                    <span>Volume per container:</span>
-                                    <span>{selectedRequest.volume} {selectedRequest.volumeUnit}</span>
-                                </div>
+            <div className="requests-sections-body">
+                <div className="requests-title-container">
+                    <div>Request {selectedRequest.requestNo}</div>
+                </div>
+                <div className="requests-sections-container">
+                    <section>
+                        <div className="requests-section-title">Product Info</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Product:</span>
+                                <span>{selectedRequest.product}</span>
                             </div>
-                        </section>
+                            <div>
+                                <span>Species:</span>
+                                <span>{selectedRequest.species}</span>
+                            </div>
+                            <div>
+                                <span>Types of species:</span>
+                                <span>{selectedRequest.speciesType}</span>
+                            </div>
+                            <div>
+                                <span>Origin:</span>
+                                <span>{selectedRequest.origin}</span>
+                            </div>
+                            <div>
+                                <span>Container size:</span>
+                                <span>{selectedRequest.containerSize}</span>
+                            </div>
+                            <div>
+                                <span>Volume per container:</span>
+                                <span>{selectedRequest.volume} {selectedRequest.volumeUnit}</span>
+                            </div>
+                        </div>
+                    </section>
 
-                        <section>
-                            <div className="requests-section-title">Product Specification</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Length:</span>
-                                    <span>{selectedRequest.length} {selectedRequest.lengthUnit}</span>
-                                </div>
-                                {
-                                    selectedRequest.product === PRODUCTS.TEAK_SQUARE_LOGS &&
-                                    <>
-                                        <div>
-                                            <span>Thickness:</span>
-                                            <span>{selectedRequest.thickness} {selectedRequest.thicknessUnit}</span>
-                                        </div>
-                                        <div>
-                                            <span>Width:</span>
-                                            <span>{selectedRequest.width} {selectedRequest.widthUnit}</span>
-                                        </div>
-                                        <div>
-                                            <span>Drying:</span>
-                                            <span>{selectedRequest.drying}</span>
-                                        </div>
-                                    </>
-                                }
-                                {
-                                    selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS &&
-                                    <>
-                                        <div>
-                                            <span>Diameter:</span>
-                                            <span>{selectedRequest.diameter} {selectedRequest.diameterUnit}</span>
-                                        </div>
-                                    </>
-                                }
-                                <div>
-                                    <span>Quantity:</span>
-                                    <span>{selectedRequest.quantity} {selectedRequest.containerSize}</span>
-                                </div>
+                    <section>
+                        <div className="requests-section-title">Product Specification</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Length:</span>
+                                <span>{selectedRequest.length} {selectedRequest.lengthUnit}</span>
                             </div>
-                        </section>
+                            {
+                                selectedRequest.product === PRODUCTS.TEAK_SQUARE_LOGS &&
+                                <>
+                                    <div>
+                                        <span>Thickness:</span>
+                                        <span>{selectedRequest.thickness} {selectedRequest.thicknessUnit}</span>
+                                    </div>
+                                    <div>
+                                        <span>Width:</span>
+                                        <span>{selectedRequest.width} {selectedRequest.widthUnit}</span>
+                                    </div>
+                                    <div>
+                                        <span>Drying:</span>
+                                        <span>{selectedRequest.drying}</span>
+                                    </div>
+                                </>
+                            }
+                            {
+                                selectedRequest.product === PRODUCTS.TEAK_ROUND_LOGS &&
+                                <>
+                                    <div>
+                                        <span>Diameter:</span>
+                                        <span>{selectedRequest.diameter} {selectedRequest.diameterUnit}</span>
+                                    </div>
+                                </>
+                            }
+                            <div>
+                                <span>Quantity:</span>
+                                <span>{selectedRequest.quantity} {selectedRequest.containerSize}</span>
+                            </div>
+                        </div>
+                    </section>
 
-                        <section>
-                            <div className="requests-section-title">Product Delivery Information</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Incoterm:</span>
-                                    <span>{selectedRequest.terms}</span>
-                                </div>
-                                <div>
-                                    <span>Destination:</span>
-                                    <span>{selectedRequest.destination}</span>
-                                </div>
-                                <div>
-                                    <span>Destination Port:</span>
-                                    <span>{selectedRequest.port}</span>
-                                </div>
+                    <section>
+                        <div className="requests-section-title">Product Delivery Information</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Incoterm:</span>
+                                <span>{selectedRequest.terms}</span>
                             </div>
-                        </section>
+                            <div>
+                                <span>Destination:</span>
+                                <span>{selectedRequest.destination}</span>
+                            </div>
+                            <div>
+                                <span>Destination Port:</span>
+                                <span>{selectedRequest.port}</span>
+                            </div>
+                        </div>
+                    </section>
 
-                        <section>
-                            <div className="requests-section-title">Request Settings</div>
-                            <div className="request-section-body">
-                                <div>
-                                    <span>Validity:</span>
-                                    <span>{selectedRequest.validity} days</span>
-                                </div>
+                    <section>
+                        <div className="requests-section-title">Request Settings</div>
+                        <div className="request-section-body">
+                            <div>
+                                <span>Validity:</span>
+                                <span>{selectedRequest.validity} days</span>
                             </div>
-                        </section>
-                    </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </Box>
@@ -227,8 +222,29 @@ const Requests = () => {
     return (
         <div className="Requests-Table">
             <div>
+                <Modal
+                    open={openDrawer}
+                    onClose={handleCloseDrawer}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppWide}>
+                        <div className="modal-title-container">
+                            <div>Request Details</div>
+                            <div><CloseRoundedIcon onClick={handleCloseDrawer} /></div>
+                        </div>
+                        
+                        <div className="modal-body">
+                            {list()}
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+
+            <div>
                 <SwipeableDrawer
-                    className="drawer"
+                    className="drawer-container"
                     variant="temporary"
                     anchor="bottom"
                     open={openDrawer}
@@ -236,7 +252,14 @@ const Requests = () => {
                     onClose={handleCloseDrawer}
                     disableBackdropTransition={!iOS} disableDiscovery={iOS}
                 >
-                    {list()}
+                    <div className="drawer-title-container">
+                        <div>Request Details</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {list()}
+                    </div>
                 </SwipeableDrawer>
             </div>
 
@@ -252,7 +275,6 @@ const Requests = () => {
                 density="compact"
                 rowsPerPageOptions={[10, 20, 30, 40, 50]}
                 loading={rowsLoading}
-
                 rowCount={paging.totalCount}
                 paginationMode="server"
                 onPageChange={handlePageChange}
