@@ -5,6 +5,8 @@ import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import ForgotPassword from "./Pages/ForgotPassword";
 import RequestQuote from "./Pages/RequestQuote";
+import AboutPage from "./Pages/About";
+import LegalPage from "./Pages/Legal";
 import AdminDashboard from "./Pages/Admin/Dashboard";
 import AdminUsers from "./Pages/Admin/Users";
 import AdminRequests from "./Pages/Admin/Requests";
@@ -116,6 +118,8 @@ const App = () => {
             path="/requestquote"
             element={<RequestQuote session={session} />}
           />
+          <Route exact path="/about" element={<AboutPage />} />
+          <Route exact path="/legal" element={<LegalPage />} />
         </Route>
 
         <Route element={<ProtectedAdminRoutes session={session} />}>
@@ -141,7 +145,7 @@ const App = () => {
         </Route>
 
         <Route element={<ProtectedBuyerRoutes session={session} />}>
-          <Route element={<BuyerLayout />}>
+          <Route element={<BuyerLayout session={session} />}>
             <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
             <Route path="/buyer/requests" element={<BuyerRequests />} />
             <Route path="/buyer/orders" element={<BuyerOrders />} />

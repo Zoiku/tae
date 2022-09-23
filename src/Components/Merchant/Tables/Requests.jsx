@@ -1,6 +1,6 @@
 import "../../../Styles/Requests.css";
 import "../../../Styles/Pagination.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useReducer } from "react";
 import MerchantService from "../../../Services/Merchant";
 import CircularProgress from '@mui/material/CircularProgress';
 import Pagination from '@mui/material/Pagination';
@@ -12,12 +12,19 @@ import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRou
 import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded';
 import { INITIAL_STATE, formReducer } from "../../../Reducers/FormReducer.js";
 import { REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST } from "../../../Reducers/Actions";
-import { useReducer } from "react";
 import { setAlert } from "../../../Redux/Features/Alert.js"
 import { useDispatch } from "react-redux";
 import { inAppWider } from "../../../Styles/Modal";
 import Modal from '@mui/material/Modal';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Transition } from "../../../Material/Dialog";
+import { GenericSecondary, GenericPrimaryButton } from "../../../Material/Button";
+import { dialogStyle } from "../../../Styles/Dialog";
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
@@ -83,6 +90,15 @@ const Requests = () => {
     const [openDrawer, setOpenDrawer] = useState(false);
     const toggleDrawer = (open) => (_event) => {
         setOpenDrawer(open);
+    };
+
+    const [openDialogConfirm, setOpenDialogConfirm] = useState(false);
+    const handleClickOpenDialogConfirm = (e) => {
+        e.preventDefault();
+        setOpenDialogConfirm(true);
+    };
+    const handleCloseDialogConfirm = () => {
+        setOpenDialogConfirm(false);
     };
 
     const handleCloseDrawer = () => {
@@ -164,7 +180,8 @@ const Requests = () => {
             if (errors.length === 0) {
                 dispatch({ type: REQUEST_SUCCESSFUL });
                 handleCloseDrawer();
-                handleSuccessfulRequest("Offer posted successfully", 3000);
+                handleSuccessfulRequest("You will be notified immediately the buyer accepts your quotation", 3000);
+                handleCloseDialogConfirm();
                 setRefreshTable(prev => !prev);
             } else {
                 dispatch({ type: REQUEST_FAILED });
@@ -203,7 +220,7 @@ const Requests = () => {
         <Box
             component="form"
             role="presentation"
-            onSubmit={handleSubmit}
+            onSubmit={handleClickOpenDialogConfirm}
             autoComplete="off"
         >
             <div className="requests-sections-body">
@@ -375,7 +392,7 @@ const Requests = () => {
 
                     <section>
                         <div>
-                            <div className="button-controller"><SmallSecondary loading={state.requestState.loading} type="submit" variant="contained" >Post Quote</SmallSecondary></div>
+                            <div className="button-controller"><SmallSecondary type="submit" variant="contained" >Post Quote</SmallSecondary></div>
                         </div>
                     </section>
                 </div>
@@ -435,6 +452,28 @@ const Requests = () => {
     return (
         <div className="Requests-Tables">
             <div>
+                <Dialog
+                    open={openDialogConfirm}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    onClose={handleCloseDialogConfirm}
+                    aria-describedby="alert-dialog-slide-description"
+                    sx={dialogStyle}
+                >
+                    <DialogTitle>{"Agree to post the offer?"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            Do you post this offer to the buyer?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <GenericSecondary variant="text" onClick={handleCloseDialogConfirm}>Disagree</GenericSecondary>
+                        <GenericPrimaryButton variant="contained" loading={state.requestState.loading} onClick={handleSubmit}>Agree</GenericPrimaryButton>
+                    </DialogActions>
+                </Dialog>
+            </div>
+
+            <div>
                 <Modal
                     open={openDrawer}
                     onClose={handleCloseDrawer}
@@ -491,7 +530,7 @@ const Requests = () => {
                                         </section>
                                     )}
                                 <div className="pagination-container">
-                                    <Pagination showFirstButton showLastButton onChange={handlePaginationChange} count={paginationCount} size="large" />
+                                    <Pagination showFirstButton showLastButton onChange={handlePaginationChange} siblingCount={2} boundaryCount={0} count={paginationCount} />
                                 </div>
                             </div>
                             : <div className="dash-item-no-data-container">No data</div>
@@ -502,3 +541,5 @@ const Requests = () => {
 }
 
 export default Requests;
+
+// count={paginationCount}

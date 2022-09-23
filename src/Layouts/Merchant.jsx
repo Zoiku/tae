@@ -150,7 +150,7 @@ const MerchantLayout = ({ session }) => {
                 </Drawer>
             </div>
 
-            <Nav />
+            <Nav session={session} />
             <div className="app-container">
                 <div className="app-menu-container">
                     <Menu />

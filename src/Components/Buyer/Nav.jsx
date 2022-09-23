@@ -10,10 +10,10 @@ import Tooltip from "@mui/material/Tooltip";
 import Logout from "@mui/icons-material/Logout";
 import { endSession } from "../../Redux/Features/Session";
 import { useDispatch } from "react-redux";
-import logo from "../../Assets/tae-logo-1.png";
+import logo from "../../Assets/logo.png";
 import { useNavigate } from "react-router-dom";
 
-const BuyerNav = () => {
+const BuyerNav = ({ session }) => {
     const navigate = useNavigate();
     const rootDispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -38,9 +38,9 @@ const BuyerNav = () => {
             </div>
             <div>
                 <Box
-                    sx={{ display: "flex", alignItems: "center", textAlign: "center" }}
+                    sx={{ display: "flex", alignItems: "center", textAlign: "center", textTransform: "capitalize" }}
                 >
-                    <div style={{ marginLeft: 10, fontWeight: 650, fontSize: 14 }}><span>Hello, User</span> </div>
+                    <div style={{ marginLeft: 10, fontWeight: 650, fontSize: 14 }}><span>Hello, {session.user?.profile?.firstName}</span> </div>
                     <Tooltip title="Account settings">
                         <IconButton
                             onClick={handleClick}
@@ -50,7 +50,7 @@ const BuyerNav = () => {
                             aria-haspopup="true"
                             aria-expanded={open ? "true" : undefined}
                         >
-                            <Avatar src="/" alt="Admin" sx={{ background: "#ee9b00" }}>
+                            <Avatar src="/" alt={session.user?.profile?.firstName} sx={{ background: "#ee9b00" }}>
                             </Avatar>
                         </IconButton>
                     </Tooltip>

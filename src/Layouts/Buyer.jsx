@@ -4,10 +4,10 @@ import Nav from "../Components/Buyer/Nav";
 import Menu from "../Components/Buyer/Menu";
 import AppNav from "../Components/Buyer/AppNav";
 
-const BuyerLayout = () => {
+const BuyerLayout = ({ session }) => {
     return (
         <div className="Buyer-Layout App-Layout">
-            <Nav />
+            <Nav session={session} />
             <div className="app-container">
                 <div className="app-menu-container">
                     <Menu />

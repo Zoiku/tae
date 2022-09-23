@@ -10,7 +10,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Logout from "@mui/icons-material/Logout";
 import { endSession } from "../../Redux/Features/Session";
 import { useDispatch } from "react-redux";
-import logo from "../../Assets/tae-logo-1.png";
+import logo from "../../Assets/logo.png";
 import { useNavigate } from "react-router-dom";
 
 const AdminNav = () => {

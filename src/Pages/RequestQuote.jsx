@@ -32,12 +32,12 @@ import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 const SPECIFICATION_DETAILS = {
     "Teak Round Logs": [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "diameter", label: "Diameter", units: [{ name: "diameterUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }],
     "Teak Square Logs": [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "thickness", label: "Thickness", units: [{ name: "thicknessUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }, { name: "width", label: "Width", units: [{ name: "widthUnit", values: ["mm", "cm"] }] }, { name: "dryingLabel", label: "Drying", menu: ["Air Drying", "Kiln Drying", "Fresh Sawn"] },],
-}
+};
 
 const IMAGES_TO_DISPLAY = {
     "Teak Round Logs": log,
     "Teak Square Logs": log1
-}
+};
 
 const RequestQuote = ({ session }) => {
     const { isLogged } = session;
@@ -88,7 +88,7 @@ const RequestQuote = ({ session }) => {
                     removePendingQuote();
                     dispatch({ type: REQUEST_SUCCESSFUL });
                     setOpenDrawer(false);
-                    handleSuccessfullRequest("Request successfull, merchants will respond shortly", 6000);
+                    handleSuccessfullRequest("Request successful, merchants will respond shortly", 6000);
                 } else {
                     dispatch({ type: REQUEST_FAILED });
                     handleFailedRequest("Could not process request", 5000);

@@ -51,11 +51,9 @@ const AdminDashboard = () => {
                 if (errors.length === 0) {
                     dispatchCategories({ type: REQUEST_SUCCESSFUL, payload: data });
                 } else {
-                    dispatchCategories({ type: REQUEST_FAILED, error: errors });
+                    dispatchCategories({ type: REQUEST_FAILED });
                 }
-            } catch (error) {
-                dispatchCategories({ type: REQUEST_FAILED, error: error });
-            }
+            } catch (error) { }
         };
 
         fecthData();
@@ -71,13 +69,11 @@ const AdminDashboard = () => {
             try {
                 const { errors, data } = await adminService.getUnactivatedUsers(abortController.signal);
                 if (errors.length === 0) {
-                    dispatchUnactivatedUsers({ type: REQUEST_SUCCESSFUL, payload: data.data.totalCount });
+                    dispatchUnactivatedUsers({ type: REQUEST_SUCCESSFUL, payload: { value: data.data.totalCount } });
                 } else {
                     dispatchUnactivatedUsers({ type: REQUEST_FAILED, error: errors[0] });
                 }
-            } catch (error) {
-                dispatchUnactivatedUsers({ type: REQUEST_FAILED, error: error });
-            }
+            } catch (error) { }
         };
 
         fecthData();
@@ -93,13 +89,11 @@ const AdminDashboard = () => {
             try {
                 const { errors, data } = await adminService.getDeliveredOrders(abortController.signal);
                 if (errors.length === 0) {
-                    dispatchDeliveredOrders({ type: REQUEST_SUCCESSFUL, payload: data.data.totalCount });
+                    dispatchDeliveredOrders({ type: REQUEST_SUCCESSFUL, payload: { value: data.data.totalCount } });
                 } else {
                     dispatchDeliveredOrders({ type: REQUEST_FAILED, error: errors[0] });
                 }
-            } catch (error) {
-                dispatchDeliveredOrders({ type: REQUEST_FAILED, error: error });
-            }
+            } catch (error) { }
         };
 
         fecthData();
@@ -115,13 +109,11 @@ const AdminDashboard = () => {
             try {
                 const { errors, data } = await adminService.getPendingOrders(abortController.signal);
                 if (errors.length === 0) {
-                    dispatchPendingOrders({ type: REQUEST_SUCCESSFUL, payload: data.data.totalCount });
+                    dispatchPendingOrders({ type: REQUEST_SUCCESSFUL, payload: { value: data.data.totalCount } });
                 } else {
                     dispatchPendingOrders({ type: REQUEST_FAILED, error: errors[0] });
                 }
-            } catch (error) {
-                dispatchPendingOrders({ type: REQUEST_FAILED, error: error });
-            }
+            } catch (error) { }
         };
 
         fecthData();
@@ -142,7 +134,7 @@ const AdminDashboard = () => {
                         <div>A positive merchant to buyers ratio should be at least 0.5</div>
                     </div>
                     <div className="dash-item-value-container">
-                        <div>1.0</div>
+                        <div>0.15</div>
                     </div>
                 </div>
                 <Swiper
@@ -163,11 +155,10 @@ const AdminDashboard = () => {
                         </div>
                         <div className="dash-item-value-container">
                             <div>
-                                0
                                 {
-                                    // unactivatedUsers.requestState.error === null ?
-                                    //     unactivatedUsers.requestState.loading ? <CircularProgress size="small" color="inherit" /> : unactivatedUsers.requestState.data
-                                    //     : <div className="dash-item-no-data-container">...</div>
+                                    !unactivatedUsers.requestState.error ?
+                                        unactivatedUsers.requestState.loading ? <CircularProgress size="small" color="inherit" /> : unactivatedUsers.requestState.data?.value
+                                        : <div className="dash-item-no-data-container">...</div>
                                 }
                             </div>
                         </div>
@@ -179,11 +170,10 @@ const AdminDashboard = () => {
                         </div>
                         <div className="dash-item-value-container">
                             <div>
-                                0
                                 {
-                                    // pendingOrders.requestState.error === null ?
-                                    //     pendingOrders.requestState.loading ? <CircularProgress size="small" color="inherit" /> : pendingOrders.requestState.data
-                                    //     : <div className="dash-item-no-data-container">...</div>
+                                    !pendingOrders.requestState.error ?
+                                        pendingOrders.requestState.loading ? <CircularProgress size="small" color="inherit" /> : pendingOrders.requestState.data?.value
+                                        : <div className="dash-item-no-data-container">...</div>
                                 }
                             </div>
                         </div>
@@ -195,11 +185,10 @@ const AdminDashboard = () => {
                         </div>
                         <div className="dash-item-value-container">
                             <div>
-                                0
                                 {
-                                    // deliveredOrders.requestState.error === null ?
-                                    //     deliveredOrders.requestState.loading ? <CircularProgress size="small" color="inherit" /> : deliveredOrders.requestState.data
-                                    //     : <div className="dash-item-no-data-container">...</div>
+                                    !deliveredOrders.requestState.error ?
+                                        deliveredOrders.requestState.loading ? <CircularProgress size="small" color="inherit" /> : deliveredOrders.requestState.data?.value
+                                        : <div className="dash-item-no-data-container">...</div>
                                 }
                             </div>
                         </div>

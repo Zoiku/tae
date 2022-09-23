@@ -155,7 +155,7 @@ const Requests = () => {
             const { errors } = await buyerService.acceptOffer(state.payload);
             if (errors.length === 0) {
                 dispatch({ type: REQUEST_SUCCESSFUL });
-                handleSuccessfullRequest("Successfull", 3000);
+                handleSuccessfullRequest("Your order was successfully placed", 3000);
                 setRefreshTable(prev => !prev);
                 handleCloseDrawerOffers();
                 handleCloseDrawerOffer();
@@ -328,9 +328,15 @@ const Requests = () => {
         selectedOffer &&
         <Box role="presentation">
             <div className="requests-sections-body">
-                <section>
-                    <div>{selectedOffer.merchant.firstName} {selectedOffer.merchant.lastName}</div>
+                <section className="view-offer-company-profile-section">
+                    <div><span>Request:</span> <span>Request {selectedOffer.requestNo}</span></div>
+                    <div><span>Product:</span> <span>{selectedOffer.product}</span></div>
+                    <div><span>Terms:</span> <span>{selectedOffer.terms}</span></div>
+                    <div><span>Merchant:</span> <span>{selectedOffer.merchant.firstName} {selectedOffer.merchant.lastName}</span></div>
+                    <div><span>Company:</span> <span>{selectedOffer.merchant.companyName}</span></div>
+                    <div><span>Destination:</span> <span>{selectedOffer.destination}</span></div>
                 </section>
+
                 <section>
                     <div>
                         <div className="incoterm-settings-table-container">

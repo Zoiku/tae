@@ -287,6 +287,7 @@ const Register = () => {
                         <div className="form-controller-input">
                             <TextField
                                 required
+                                inputProps={{ pattern: ".{8,}" }}
                                 InputProps={{
                                     endAdornment: <InputAdornment position="end">
                                         <IconButton

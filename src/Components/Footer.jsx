@@ -1,35 +1,49 @@
 import "../Styles/Footer.css";
+import { NavLink } from "react-router-dom";
 
 const Footer = () => {
+    const navStyle = {
+        color: "inherit",
+        textDecoration: "none"
+    }
+
+    const handleWhatsapp = () => {
+        window.open("https://wa.me/233508556755?text=Hello there!", "_blank");
+    };
+
+    const handleMail = () => {
+        window.open("mailto:hello@theafricanexporter.com");
+    };
+
     return (
         <footer className="Footer">
             <div>
                 <div>About</div>
                 <ul>
-                    <li>Company</li>
-                    <li>How it works</li>
-                    <li>Payment Options</li>
-                    <li>Buyers</li>
-                    <li>Merchant</li>
+                    <li><NavLink style={navStyle} to="/about#company">Company</NavLink></li>
+                    <li><NavLink style={navStyle} to="/about#how-it-works">How it works</NavLink></li>
+                    <li><NavLink style={navStyle} to="/about#payment-options">Payment Options</NavLink></li>
+                    <li><NavLink style={navStyle} to="/about#buyers">Buyers</NavLink></li>
+                    <li><NavLink style={navStyle} to="/about#merchants">Merchants</NavLink></li>
                 </ul>
             </div>
 
             <div>
                 <div>Legal</div>
                 <ul>
-                    <li>Terms of Service</li>
-                    <li>Payment Terms</li>
-                    <li>Privacy Policy</li>
-                    <li>Cookie Policy</li>
-                    <li>Sale and Purchase Agreement</li>
+                    <li><NavLink style={navStyle} to="/legal#tos">Terms of Service</NavLink></li>
+                    <li><NavLink style={navStyle} to="/legal#payment-tos">Payment Terms</NavLink></li>
+                    <li><NavLink style={navStyle} to="/legal#payment-tos">Privacy Policy</NavLink></li>
+                    <li><NavLink style={navStyle} to="/legal#cookie-policy">Cookie Policy</NavLink></li>
+                    <li><NavLink style={navStyle} to="/legal#sales-and-purchase-agreement">Sales and Purchase Agreement</NavLink></li>
                 </ul>
             </div>
 
             <div>
                 <div>Contact</div>
                 <ul>
-                    <li>hello@theafricanexporter.com</li>
-                    <li>00233508556755</li>
+                    <li onClick={handleMail}>hello@theafricanexporter.com</li>
+                    <li onClick={handleWhatsapp}>00233508556755</li>
                 </ul>
             </div>
 

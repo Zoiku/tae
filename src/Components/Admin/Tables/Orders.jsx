@@ -272,7 +272,7 @@ const Orders = () => {
                                 <span>{selectedOrder.destination}</span>
                             </div>
                             <div>
-                                <span>Destination port:</span>
+                                <span>Destination Port:</span>
                                 <span>{selectedOrder.port}</span>
                             </div>
                         </div>
@@ -387,14 +387,14 @@ const Orders = () => {
                             {
                                 selectedOrder.status === "PROOF OF PAYMENT APPROVED" &&
                                 <MenuItem onClick={() => updateOrder("SHIPPED")}>
-                                    Ship
+                                    Shipped
                                 </MenuItem>
                             }
 
                             {
                                 selectedOrder.status === "SHIPPED" &&
                                 <MenuItem onClick={() => updateOrder("DELIVERED")}>
-                                    Deliver
+                                    Delivered
                                 </MenuItem>
                             }
                         </div>

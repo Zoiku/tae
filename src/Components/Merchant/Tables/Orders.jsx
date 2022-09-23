@@ -2,7 +2,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import LinearProgress from '@mui/material/LinearProgress';
 import Toolbar from "../../../Material/Toolbar";
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import Box from '@mui/material/Box';
 import { Puller } from "../../../Material/Drawer";
 import MerchantService from "../../../Services/Merchant";
@@ -22,12 +22,22 @@ import IconButton from '@mui/material/IconButton';
 import { inAppWider } from "../../../Styles/Modal";
 import Modal from '@mui/material/Modal';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Transition } from "../../../Material/Dialog";
+import { GenericSecondary, GenericPrimaryButton } from "../../../Material/Button";
+import { INITIAL_STATE, formReducer } from "../../../Reducers/FormReducer";
+import { REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST } from "../../../Reducers/Actions";
+import { dialogStyle } from "../../../Styles/Dialog";
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
     CONFIRMED: 30,
-    "PROOF OF PAYMENT APPROVED": 30,
-    APPROVED: 40,
+    "AWAITING PROOF OF PAYMENT": 30,
+    "PROOF OF PAYMENT APPROVED": 40,
     PROCESSING: 60,
     SHIPPED: 80,
     DELIVERED: 100
@@ -36,8 +46,8 @@ const ORDER_STATUS_LEVELS = {
 const ORDER_STATUS_STEPS = {
     RECEIVED: 0,
     CONFIRMED: 2,
-    "PROOF OF PAYMENT APPROVED": 2,
-    APPROVED: 3,
+    "AWAITING PROOF OF PAYMENT": 2,
+    "PROOF OF PAYMENT APPROVED": 3,
     PROCESSING: 4,
     SHIPPED: 5,
     DELIVERED: 6,
@@ -54,7 +64,7 @@ const steps = [
     },
     {
         label: "Order Approved",
-        description: "Order awaiting approval",
+        description: "Order is pending approvial",
     },
     {
         label: "Processing",
@@ -84,6 +94,7 @@ const ProgressBar = ({ status }) => {
 };
 
 const Orders = () => {
+    const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const [refreshTable, setRefreshTable] = useState(false);
@@ -94,6 +105,22 @@ const Orders = () => {
     const [selectedOrderId, setSelectedOrderId] = useState(null);
     const selectOrder = (id) => setSelectedOrderId(id);
     const selectedOrder = rows && rows.find(row => row.id === selectedOrderId);
+
+    const [openDialogConfirm, setOpenDialogConfirm] = useState(false);
+    const handleClickOpenDialogConfirm = () => {
+        setOpenDialogConfirm(true);
+    };
+    const handleCloseDialogConfirm = () => {
+        setOpenDialogConfirm(false);
+    };
+
+    const [openDialogReject, setOpenDialogReject] = useState(false);
+    const handleClickOpenDialogReject = () => {
+        setOpenDialogReject(true);
+    };
+    const handleCloseDialogReject = () => {
+        setOpenDialogReject(false);
+    };
 
     const handleClick = (event, id) => {
         setAnchorEl(event.currentTarget);
@@ -114,28 +141,36 @@ const Orders = () => {
     }
 
     const handleConfirmOrder = async () => {
+        dispatch({ type: SEND_REQUEST });
         const { id } = selectedOrder;
         const merchantService = new MerchantService();
         try {
             const { errors } = await merchantService.orderConfirmation(id);
             if (errors.length === 0) {
+                dispatch({ type: REQUEST_SUCCESSFUL });
                 setRefreshTable(prev => !prev);
-                handleSuccessfulRequest("Successfully confirmed your order", 3000);
+                handleSuccessfulRequest("You will be notified immediately the buyer confirms the order", 3000);
+                handleCloseDialogConfirm();
             } else {
+                dispatch({ type: REQUEST_FAILED });
                 handleFailedRequest("Could not process your request", 5000);
             }
         } catch (error) { }
     };
 
     const handleCancelOrder = async () => {
+        dispatch({ type: SEND_REQUEST });
         const { id } = selectedOrder;
         const merchantService = new MerchantService();
         try {
             const { errors } = await merchantService.orderRejection(id);
             if (errors.length === 0) {
+                dispatch({ type: REQUEST_SUCCESSFUL });
                 setRefreshTable(prev => !prev);
-                handleSuccessfulRequest("Successfully cancelled your order", 3000);
+                handleSuccessfulRequest("Order rejected, the buyer will be notified.", 3000);
+                handleCloseDialogReject();
             } else {
+                dispatch({ type: REQUEST_FAILED });
                 handleFailedRequest("Could not process your request", 5000);
             }
         } catch (error) { }
@@ -199,9 +234,20 @@ const Orders = () => {
                     <section>
                         <div className="requests-section-title">Product Information</div>
                         <div className="request-section-body">
+                            {
+                                selectedOrder.status === "CONFIRMED" &&
+                                <div>
+                                    <span>Buyer:</span>
+                                    <span>{selectedOrder?.user?.firstName ? selectedOrder?.user?.firstName : "--"} {selectedOrder?.user?.lastName}</span>
+                                </div>
+                            }
                             <div>
                                 <span>Product:</span>
                                 <span>{selectedOrder.product}</span>
+                            </div>
+                            <div>
+                                <span>Terms:</span>
+                                <span>{selectedOrder.terms}</span>
                             </div>
                             <div>
                                 <span>Quantity:</span>
@@ -280,6 +326,47 @@ const Orders = () => {
     return (
         <div className="Orders-Table">
             <div>
+                <Dialog
+                    open={openDialogConfirm}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    onClose={handleCloseDialogConfirm}
+                    aria-describedby="alert-dialog-slide-description"
+                    sx={dialogStyle}
+                >
+                    <DialogTitle>{"Agree to accept the order?"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            Do you agree to accept the buyer's order?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <GenericSecondary variant="text" onClick={handleCloseDialogConfirm}>Disagree</GenericSecondary>
+                        <GenericPrimaryButton variant="contained" loading={state.requestState.loading} onClick={handleConfirmOrder}>Agree</GenericPrimaryButton>
+                    </DialogActions>
+                </Dialog>
+
+                <Dialog
+                    open={openDialogReject}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    onClose={handleCloseDialogReject}
+                    aria-describedby="alert-dialog-slide-description"
+                >
+                    <DialogTitle>{"Agree to reject the order?"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            Do you agree to reject the buyer's order?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <GenericSecondary variant="text" onClick={handleCloseDialogReject}>Disagree</GenericSecondary>
+                        <GenericPrimaryButton variant="contained" loading={state.requestState.loading} onClick={handleCancelOrder}>Agree</GenericPrimaryButton>
+                    </DialogActions>
+                </Dialog>
+            </div>
+
+            <div>
                 <Modal
                     open={openDrawer}
                     onClose={handleCloseDrawer}
@@ -316,11 +403,11 @@ const Orders = () => {
                         selectedOrder &&
                         !selectedOrder.isConfirmed &&
                         <div>
-                            <MenuItem onClick={handleConfirmOrder}>
+                            <MenuItem onClick={handleClickOpenDialogConfirm}>
                                 Confirm
                             </MenuItem>
-                            <MenuItem onClick={handleCancelOrder}>
-                                Cancel
+                            <MenuItem onClick={handleClickOpenDialogReject}>
+                                Reject
                             </MenuItem>
                         </div>
                     }

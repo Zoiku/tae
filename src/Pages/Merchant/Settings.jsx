@@ -133,7 +133,7 @@ const Settings = () => {
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                     variant="dot"
                 >
-                    <Avatar className="user-avatar" alt="User" src="/" />
+                    <Avatar className="user-avatar" alt={profile.user.firstName} src="/" />
                 </StyledBadge>
                 <div className="user-short-desc-container">
                     <div>{profile.user.firstName} {profile.user.lastName}</div>

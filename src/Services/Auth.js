@@ -1,5 +1,6 @@
 import AxiosInstance from "./AxiosInstance";
 import { JSEncrypt } from "jsencrypt";
+import decode from "jwt-decode";
 
 const setSessionToken = (token) => {
   sessionStorage.setItem("token", token);
@@ -99,6 +100,29 @@ export default class AuthService {
 
     try {
       data = await AxiosInstance().get(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors,
+      data
+    };
+  }
+
+  async verifyToken(token) {
+    return decode(token);
+  }
+
+  async submitNewPassword(email, password) {
+    let errors = [];
+    let data = {};
+    const url = `/user/password/new/${email}`;
+
+    try {
+      data = await AxiosInstance().post(url, {
+        password: password
+      });
     } catch (error) {
       errors.push(error);
     }

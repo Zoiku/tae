@@ -15,7 +15,7 @@ const Settings = () => {
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                     variant="dot"
                 >
-                    <Avatar className="user-avatar" alt="User" src="/" />
+                    <Avatar className="user-avatar" alt={profile.firstName} src="/" />
                 </StyledBadge>
                 <div className="user-short-desc-container">
                     <div>{profile.firstName} {profile.lastName}</div>
@@ -36,7 +36,7 @@ const Settings = () => {
                         <div className="user-profile-section-title">Personal Details</div>
                         <div className="form-controller-input-duo form-controller">
                             <TextField disabled value={profile.firstName} fullWidth label="First Name" variant="outlined" />
-                            <TextField disabled value={profile.firstName} fullWidth label="Last Name" variant="outlined" />
+                            <TextField disabled value={profile.lastName} fullWidth label="Last Name" variant="outlined" />
                         </div>
                         <div className="form-controller-input form-controller">
                             <TextField disabled value={profile.email} fullWidth label="Email" variant="outlined" />

@@ -19,10 +19,10 @@ import { setAlert, clearAlerts } from "../../../Redux/Features/Alert.js"
 import { useDispatch } from "react-redux";
 import { useReducer } from "react";
 import { formReducer, INITIAL_STATE } from "../../../Reducers/FormReducer";
-import { SEND_REQUEST, REQUEST_FAILED } from "../../../Reducers/Actions";
+import { SEND_REQUEST, REQUEST_FAILED, REQUEST_SUCCESSFUL } from "../../../Reducers/Actions";
 import Modal from '@mui/material/Modal';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { inAppWide } from "../../../Styles/Modal";
+import { inAppSmall } from "../../../Styles/Modal";
 
 const UsersMerchant = () => {
     const [paging, setPaging] = useState({
@@ -37,6 +37,7 @@ const UsersMerchant = () => {
         setPaging({ ...paging, size: size })
     }
 
+    const [refreshTable, setRefreshTable] = useState(false);
     const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
     const rootDispatch = useDispatch();
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -68,6 +69,8 @@ const UsersMerchant = () => {
                 dispatch({ type: REQUEST_FAILED });
                 handleFailedToggleActivate("Could not process request, please try again", 3000);
             } else {
+                dispatch({ type: REQUEST_SUCCESSFUL });
+                setRefreshTable(prev => !prev);
                 rootDispatch(clearAlerts());
             }
         } catch (error) {
@@ -215,7 +218,7 @@ const UsersMerchant = () => {
         fetchData();
         return () => abortController.abort();
         // eslint-disable-next-line
-    }, [paging.page, paging.size]);
+    }, [paging.page, paging.size, refreshTable]);
 
     return (
         <div className="UsersMerchant-Table">
@@ -227,7 +230,7 @@ const UsersMerchant = () => {
                     aria-describedby="modal-modal-description"
                     className="modal-container"
                 >
-                    <Box sx={inAppWide}>
+                    <Box sx={inAppSmall}>
                         <div className="modal-title-container">
                             <div>User Information</div>
                             <div><CloseRoundedIcon onClick={toggleDrawer(false)} /></div>

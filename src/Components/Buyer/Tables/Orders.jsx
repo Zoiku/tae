@@ -29,12 +29,20 @@ import { setAlert } from "../../../Redux/Features/Alert.js"
 import Modal from '@mui/material/Modal';
 import { inAppStandard, inAppWider } from "../../../Styles/Modal";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Transition } from "../../../Material/Dialog";
+import { GenericSecondary, GenericPrimaryButton } from "../../../Material/Button";
+import { dialogStyle } from "../../../Styles/Dialog";
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
     CONFIRMED: 20,
-    "PROOF OF PAYMENT APPROVED": 30,
-    APPROVED: 40,
+    "AWAITING PROOF OF PAYMENT": 30,
+    "PROOF OF PAYMENT APPROVED": 40,
     PROCESSING: 60,
     SHIPPED: 80,
     DELIVERED: 100
@@ -43,8 +51,8 @@ const ORDER_STATUS_LEVELS = {
 const ORDER_STATUS_STEPS = {
     RECEIVED: 0,
     CONFIRMED: 1,
-    "PROOF OF PAYMENT APPROVED": 2,
-    APPROVED: 3,
+    "AWAITING PROOF OF PAYMENT": 2,
+    "PROOF OF PAYMENT APPROVED": 3,
     PROCESSING: 4,
     SHIPPED: 5,
     DELIVERED: 6,
@@ -61,7 +69,7 @@ const steps = [
     },
     {
         label: "Order Approved",
-        description: "Your order has been approved and will be processed shortly",
+        description: "Your order is pending approvial",
     },
     {
         label: "Processing",
@@ -107,6 +115,15 @@ const Orders = () => {
         setOpenDrawer(open);
     };
 
+    const [openDialogConfirm, setOpenDialogConfirm] = useState(false);
+    const handleClickOpenDialogConfirm = (e) => {
+        e.preventDefault();
+        setOpenDialogConfirm(true);
+    };
+    const handleCloseDialogConfirm = () => {
+        setOpenDialogConfirm(false);
+    };
+
     const [openDrawerConfirm, setOpenDrawerConfirm] = useState(false);
     const toggleDrawerConfirm = (open) => (_event) => {
         setOpenDrawerConfirm(open);
@@ -132,8 +149,8 @@ const Orders = () => {
             if (errors.length === 0) {
                 dispatch({ type: REQUEST_SUCCESSFUL });
                 setRefreshTable(prev => !prev);
-                handleSuccessfullRequest("Successfully confirmed your order", 3000);
-                setOpenDrawerConfirm(false);
+                handleSuccessfullRequest("Merchant will commence fulfillment of your order once payment is confirmed", 3000);
+                handleCloseDialogConfirm();
             } else {
                 dispatch({ type: REQUEST_FAILED });
                 handleFailedRequest("Could not process your request", 5000);
@@ -204,6 +221,18 @@ const Orders = () => {
                                 <span>{selectedOrder.product}</span>
                             </div>
                             <div>
+                                <span>Merchant:</span>
+                                <span>{selectedOrder.merchant.firstName} {selectedOrder.merchant.lastName}</span>
+                            </div>
+                            <div>
+                                <span>Comapny:</span>
+                                <span>{selectedOrder.merchant.companyName}</span>
+                            </div>
+                            <div>
+                                <span>Terms:</span>
+                                <span>{selectedOrder.terms}</span>
+                            </div>
+                            <div>
                                 <span>Quantity:</span>
                                 <span>{selectedOrder.quantity} {selectedOrder.containerSize}</span>
                             </div>
@@ -252,7 +281,7 @@ const Orders = () => {
         <Box
             role="presentation"
             component="form"
-            onSubmit={handleConfirm}
+            onSubmit={handleClickOpenDialogConfirm}
         >
             <div className="requests-sections-body">
                 <div className="orders-confirmation-sections-container">
@@ -325,6 +354,28 @@ const Orders = () => {
 
     return (
         <div className="Orders-Table">
+            <div>
+                <Dialog
+                    open={openDialogConfirm}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    onClose={handleCloseDialogConfirm}
+                    aria-describedby="alert-dialog-slide-description"
+                    sx={dialogStyle}
+                >
+                    <DialogTitle>{"Agree to accept the order?"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            Do you agree to confirm this order?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <GenericSecondary variant="text" onClick={handleCloseDialogConfirm}>Disagree</GenericSecondary>
+                        <GenericPrimaryButton variant="contained" loading={state.requestState.loading} onClick={handleConfirm}>Agree</GenericPrimaryButton>
+                    </DialogActions>
+                </Dialog>
+            </div>
+
             <div>
                 <Modal
                     open={openDrawer}

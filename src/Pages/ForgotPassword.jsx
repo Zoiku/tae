@@ -2,10 +2,10 @@ import "../Styles/ForgotPassword.css";
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { PrimaryButton } from "../Material/Button";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AuthService from "../Services/Auth";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, useMemo } from "react";
 import { INITIAL_STATE, formReducer } from "../Reducers/FormReducer";
 import { INPUTING, REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST } from "../Reducers/Actions";
 import { useDispatch } from "react-redux";
@@ -21,6 +21,8 @@ const ForgotPassword = () => {
         color: "var(--tae-orange)",
         textDecoration: "none",
     }
+
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const toggleShowPassword = () => {
         setShowPassword(prev => !prev);
@@ -28,7 +30,10 @@ const ForgotPassword = () => {
     const [resetView, setResetView] = useState(false);
     const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
     const rootDispatch = useDispatch();
-    const { token } = useParams();
+
+    const { search } = useLocation();
+    const { token } = useMemo(() => Object.fromEntries([...new URLSearchParams(search)]), [search]);
+
 
     const handleChange = (e) => { dispatch({ type: INPUTING, prop: e.target.name, value: e.target.value }); }
 
@@ -58,19 +63,47 @@ const ForgotPassword = () => {
             const { errors } = await authService.sendResetPasswordLink(state.payload.email);
             if (errors.length === 0) {
                 dispatch({ type: REQUEST_SUCCESSFUL });
-                handleSuccessfullRequest("Password link sent to your email", 4000);
+                handleSuccessfullRequest("A password reset link has been sent to your account", 4000);
                 e.target.reset();
             } else {
                 dispatch({ type: REQUEST_FAILED });
-                handleFailedRequest("Please enter a valid email link", 6000);
+                handleFailedRequest("The email submited is not a registered account", 7000);
+            }
+        } catch (error) { }
+    }
+
+    const handleSubmitPassword = async (e) => {
+        e.preventDefault();
+        dispatch({ type: SEND_REQUEST });
+        const authService = new AuthService();
+        const { email, password } = state.payload;
+
+        try {
+            const { errors } = await authService.submitNewPassword(email, password);
+            if (errors.length === 0) {
+                dispatch({ type: REQUEST_SUCCESSFUL });
+                handleSuccessfullRequest("Your password has been reset successfully", 4000);
+                e.target.reset();
+                navigate("/login");
+            } else {
+                dispatch({ type: REQUEST_FAILED });
+                handleFailedRequest("Problem resetting your password, please try again", 7000);
             }
         } catch (error) { }
     }
 
     useEffect(() => {
-        if (token) {
-            setResetView(true);
+        const fetchData = async () => {
+            const authService = new AuthService();
+            try {
+                const { data } = await authService.verifyToken(token);
+                state.payload.email = data;
+                data && setResetView(true);
+            } catch (error) { }
         }
+
+        token && fetchData();
+        // eslint-disable-next-line
     }, [token]);
 
     return (
@@ -96,7 +129,7 @@ const ForgotPassword = () => {
                                 autoComplete="off"
                                 onSubmit={handleSendPasswordLink}
                             >
-                                <TextField error={state.requestState.error != null} onChange={handleChange} type="email" name="email" label="Email" variant="outlined" />
+                                <TextField required error={state.requestState.error != null} onChange={handleChange} type="email" name="email" label="Email" variant="outlined" />
                                 <PrimaryButton loading={state.requestState.loading} variant="contained" type="submit">Send Reset Link</PrimaryButton>
                             </Box>
                             :
@@ -106,10 +139,11 @@ const ForgotPassword = () => {
                                     '& > :not(style)': { width: '100%', margin: "10px 0" },
                                 }}
                                 autoComplete="off"
-                                onSubmit={handleSendPasswordLink}
+                                onSubmit={handleSubmitPassword}
                             >
                                 <TextField
                                     required
+                                    inputProps={{ pattern: ".{8,}" }}
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end">
                                             <IconButton

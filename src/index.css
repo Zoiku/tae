@@ -161,7 +161,7 @@ html {
 
 .requests-title-container {
   margin: 10px 0;
-  font-weight: 800;
+  font-weight: 700;
   font-size: larger;
 }
 
@@ -204,6 +204,7 @@ html {
 .request-section-body > div > span {
   display: block;
   width: 50%;
+  text-transform: capitalize;
 }
 
 .request-section-body > div > span:nth-child(1) {

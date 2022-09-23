@@ -179,13 +179,13 @@ const Quotations = () => {
                                                 selectedQuote?.incotermRows.map((incoterm, index) =>
                                                     <tr key={index + 1}>
                                                         <td><input disabled value={index + 1} /></td>
-                                                        {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input name="diameter" value={incoterm.diameter} /></td>}
-                                                        <td><input name="noOfPieces" value={incoterm.noOfPieces} /></td>
-                                                        <td><input name="price" value={incoterm.price} /></td>
-                                                        <td><input name="totalPrice" value={incoterm.totalPrice} /></td>
-                                                        {selectedQuote.terms === "CIF" && <td><input disabled name="insurance" /></td>}
+                                                        {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input disabled name="diameter" value={incoterm.diameter} /></td>}
+                                                        <td><input disabled name="noOfPieces" value={incoterm.noOfPieces} /></td>
+                                                        <td><input disabled name="price" value={incoterm.price} /></td>
+                                                        <td><input disabled name="totalPrice" value={incoterm.totalPrice} /></td>
+                                                        {selectedQuote.terms === "CIF" && <td><input disabled name="insurance" value={incoterm.insurance} /></td>}
                                                         {(selectedQuote.terms === "CIF" || selectedQuote.terms === "CFR") && <td><input disabled name="freight" value={incoterm.costOfFreight} /></td>}
-                                                        <td><input type="number" disabled value={incoterm.totalAmount} /></td>
+                                                        <td><input disabled type="number" value={incoterm.totalAmount} /></td>
                                                     </tr>
                                                 ) :
                                                 <tr>
