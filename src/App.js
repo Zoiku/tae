@@ -133,7 +133,7 @@ const App = () => {
 
         <Route element={<ProtectedMerchantRoutes session={session} />}>
           <Route element={<MerchantLayout session={session} />}>
-            <Route path="/merchant/dashboard" element={<MerchantDashboard />} />
+            <Route path="/merchant/dashboard" element={<MerchantDashboard session={session} />} />
             <Route path="/merchant/requests" element={<MerchantRequests />} />
             <Route
               path="/merchant/quotations"
@@ -146,7 +146,7 @@ const App = () => {
 
         <Route element={<ProtectedBuyerRoutes session={session} />}>
           <Route element={<BuyerLayout session={session} />}>
-            <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
+            <Route path="/buyer/dashboard" element={<BuyerDashboard session={session} />} />
             <Route path="/buyer/requests" element={<BuyerRequests />} />
             <Route path="/buyer/orders" element={<BuyerOrders />} />
             <Route path="/buyer/settings" element={<BuyerSettings />} />

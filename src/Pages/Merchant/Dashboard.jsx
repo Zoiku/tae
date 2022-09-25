@@ -1,15 +1,16 @@
 import "../../Styles/DashboardMerchant.css";
 import Salutation from "../../Components/Salutation";
-
 import Orders from "../../Components/Merchant/Tables/Orders";
 import Quotations from "../../Components/Merchant/Tables/Quotations";
 import Requests from "../../Components/Merchant/Tables/Requests";
 
-const Dashboard = () => {
+const Dashboard = ({ session }) => {
+    const { user } = session;
+
     return (
         <div className="Merchant-Dashboard">
             <div>
-                <Salutation name={'Merchant'} />
+                <Salutation name={user?.profile?.user?.firstName} />
             </div>
 
             <div className="merchant-dashboard-body-container">

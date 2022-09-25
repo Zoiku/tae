@@ -92,18 +92,18 @@ const Quotations = () => {
                         <div className="request-section-body">
                             <div>
                                 <span>Length:</span>
-                                <span>{selectedQuote.length} {selectedQuote.lengthUnit}</span>
+                                <span className="toLower">{selectedQuote.length} {selectedQuote.lengthUnit}</span>
                             </div>
                             {
                                 selectedQuote.product === PRODUCTS.TEAK_SQUARE_LOGS &&
                                 <>
                                     <div>
                                         <span>Thickness:</span>
-                                        <span>{selectedQuote.thickness} {selectedQuote.thicknessUnit}</span>
+                                        <span className="toLower">{selectedQuote.thickness} {selectedQuote.thicknessUnit}</span>
                                     </div>
                                     <div>
                                         <span>Width:</span>
-                                        <span>{selectedQuote.width} {selectedQuote.widthUnit}</span>
+                                        <span className="toLower">{selectedQuote.width} {selectedQuote.widthUnit}</span>
                                     </div>
                                     <div>
                                         <span>Drying:</span>
@@ -116,7 +116,7 @@ const Quotations = () => {
                                 <>
                                     <div>
                                         <span>Diameter:</span>
-                                        <span>{selectedQuote.diameter} {selectedQuote.diameterUnit}</span>
+                                        <span className="toLower">{selectedQuote.diameter} {selectedQuote.diameterUnit}</span>
                                     </div>
                                 </>
                             }
@@ -156,7 +156,7 @@ const Quotations = () => {
                     </section>
 
                     <section>
-                        <div className="requests-section-title">Incoterm Settings</div>
+                        <div className="requests-section-title">Incoterm</div>
                         <div>
                             <div className="incoterm-settings-table-container">
                                 <table>

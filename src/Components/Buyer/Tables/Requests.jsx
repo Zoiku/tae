@@ -25,7 +25,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../../../Redux/Features/Alert.js";
 import Modal from '@mui/material/Modal';
-import { inAppWide } from "../../../Styles/Modal";
+import { inAppStandard, inAppWide } from "../../../Styles/Modal";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const PRODUCTS = {
@@ -227,18 +227,18 @@ const Requests = () => {
                         <div className="request-section-body">
                             <div>
                                 <span>Length:</span>
-                                <span>{selectedRequest.length} {selectedRequest.lengthUnit}</span>
+                                <span className="toLower">{selectedRequest.length} {selectedRequest.lengthUnit}</span>
                             </div>
                             {
                                 selectedRequest.product === PRODUCTS.TEAK_SQUARE_LOGS &&
                                 <>
                                     <div>
                                         <span>Thickness:</span>
-                                        <span>{selectedRequest.thickness} {selectedRequest.thicknessUnit}</span>
+                                        <span className="toLower">{selectedRequest.thickness} {selectedRequest.thicknessUnit}</span>
                                     </div>
                                     <div>
                                         <span>Width:</span>
-                                        <span>{selectedRequest.width} {selectedRequest.widthUnit}</span>
+                                        <span className="toLower">{selectedRequest.width} {selectedRequest.widthUnit}</span>
                                     </div>
                                     <div>
                                         <span>Drying:</span>
@@ -251,7 +251,7 @@ const Requests = () => {
                                 <>
                                     <div>
                                         <span>Diameter:</span>
-                                        <span>{selectedRequest.diameter} {selectedRequest.diameterUnit}</span>
+                                        <span className="toLower">{selectedRequest.diameter} {selectedRequest.diameterUnit}</span>
                                     </div>
                                 </>
                             }
@@ -328,6 +328,7 @@ const Requests = () => {
         selectedOffer &&
         <Box role="presentation">
             <div className="requests-sections-body">
+                <div className="requests-section-title">Request Summary</div>
                 <section className="view-offer-company-profile-section">
                     <div><span>Request:</span> <span>Request {selectedOffer.requestNo}</span></div>
                     <div><span>Product:</span> <span>{selectedOffer.product}</span></div>
@@ -339,6 +340,7 @@ const Requests = () => {
 
                 <section>
                     <div>
+                        <div className="requests-section-title">Incoterm</div>
                         <div className="incoterm-settings-table-container">
                             <table>
                                 <thead>
@@ -510,7 +512,7 @@ const Requests = () => {
                     aria-describedby="modal-modal-description"
                     className="modal-container"
                 >
-                    <Box sx={inAppWide}>
+                    <Box sx={inAppStandard}>
                         <div className="modal-title-container">
                             <div>View Offers</div>
                             <div><CloseRoundedIcon onClick={handleCloseDrawerOffers} /></div>

@@ -232,10 +232,10 @@ const Orders = () => {
                 </div>
                 <div className="requests-sections-container">
                     <section>
-                        <div className="requests-section-title">Product Information</div>
+                        <div className="requests-section-title">Order Summary</div>
                         <div className="request-section-body">
                             {
-                                selectedOrder.status === "CONFIRMED" &&
+                                selectedOrder.status === "DELIVERED" &&
                                 <div>
                                     <span>Buyer:</span>
                                     <span>{selectedOrder?.user?.firstName ? selectedOrder?.user?.firstName : "--"} {selectedOrder?.user?.lastName}</span>

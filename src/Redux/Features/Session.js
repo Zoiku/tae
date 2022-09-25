@@ -22,7 +22,10 @@ const sessionReducer = createSlice({
         ...state,
         user: {
           ...state.user,
-          profile: action.payload
+          profile: {
+            ...state.profile,
+            ...action.payload
+          }
         }
       };
     },
@@ -42,7 +45,8 @@ const sessionReducer = createSlice({
 
     endSession: () => {
       return {
-        isLogged: false
+        isLogged: false,
+        user: {}
       };
     }
   }

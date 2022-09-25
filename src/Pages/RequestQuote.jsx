@@ -30,7 +30,7 @@ import { Puller } from "../Material/Drawer";
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 
 const SPECIFICATION_DETAILS = {
-    "Teak Round Logs": [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "diameter", label: "Diameter", units: [{ name: "diameterUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }],
+    "Teak Round Logs": [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "diameter", label: "Diameter", defaultUnit: "cm", units: [{ name: "diameterUnit", values: ["cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }],
     "Teak Square Logs": [{ name: "length", label: "Length", units: [{ name: "lengthUnit", values: ["cm", "m"] }] }, { name: "thickness", label: "Thickness", units: [{ name: "thicknessUnit", values: ["mm", "cm"] }] }, { name: "quantity", label: "Quantity", defaultUnit: "20ft Container", units: [{ name: "quantityUnit", values: ["20ft Container"] }] }, { name: "width", label: "Width", units: [{ name: "widthUnit", values: ["mm", "cm"] }] }, { name: "dryingLabel", label: "Drying", menu: ["Air Drying", "Kiln Drying", "Fresh Sawn"] },],
 };
 
@@ -55,7 +55,7 @@ const RequestQuote = ({ session }) => {
 
     const handleChange = (e) => { dispatch({ type: INPUTING, prop: e.target.name, value: e.target.value }); }
 
-    const removePendingQuote = async () => {
+    const removePendingQuote = async (e) => {
         const id = sessionStorage.getItem(`${parsedProduct.name}_pqid`);
         if (id) {
             const buyerService = new BuyerService();
@@ -85,7 +85,7 @@ const RequestQuote = ({ session }) => {
             if (isLogged) {
                 const { errors } = await buyerService.postQuote(state.payload);
                 if (errors.length === 0) {
-                    removePendingQuote();
+                    removePendingQuote(e);
                     dispatch({ type: REQUEST_SUCCESSFUL });
                     setOpenDrawer(false);
                     handleSuccessfullRequest("Request successful, merchants will respond shortly", 6000);
@@ -138,10 +138,10 @@ const RequestQuote = ({ session }) => {
         >
             <div className="request-summary-container">
                 <div>
-                    <div>1. Profile Introduction</div>
+                    <div>1. Product Introduction</div>
                     <div>
                         <div>
-                            <span>Types of Species: </span>
+                            <span>Type of Species: </span>
                             <span>{parsedProduct.speciesType}</span>
                         </div>
                     </div>
@@ -389,7 +389,7 @@ const RequestQuote = ({ session }) => {
                     onSubmit={preSubmission}
                 >
                     <section>
-                        <div className="request-quote-section-title">1. Profile Information</div>
+                        <div className="request-quote-section-title">1. Product Information</div>
                         <div className="request-quote-section-body profile-information-body">
                             <div>Types of Species: {parsedProduct.speciesType}</div>
                             <div>Container Size: {parsedProduct.containerSize}</div>

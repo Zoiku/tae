@@ -18,8 +18,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import { INITIAL_STATE, formReducer } from "../../Reducers/FormReducer";
 import { INPUTING, SEND_REQUEST, REQUEST_SUCCESSFUL, REQUEST_FAILED, PUSH_FORM_DATA } from "../../Reducers/Actions";
 import MerchantService from "../../Services/Merchant";
-import { setAlert } from "../../Redux/Features/Alert.js"
-// import { initUser } from "../../Redux/Features/Session"
+import { setAlert } from "../../Redux/Features/Alert.js";
 
 const Settings = () => {
     const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
@@ -30,6 +29,10 @@ const Settings = () => {
     const [updateProfileButton, setUpdateProfileButton] = useState(false);
     const toggleUpdate = (open) => (_event) => {
         setUpdateProfileButton(open);
+    };
+
+    const refreshPage = () => {
+        window.location.reload(false);
     }
 
     useEffect(() => {
@@ -48,8 +51,8 @@ const Settings = () => {
 
     // subscriptions
     const [selectedSubscriptions, setSelectedSubscription] = useState([]);
-    const [products, setProducts] = useState([]);
     const [subscriptions, setSubscriptions] = useState([]);
+    const [products, setProducts] = useState([]);
     const handleMultipleSelectChange = (event) => {
         const { target: { value }, } = event;
         setSelectedSubscription(typeof value === 'string' ? value.split(',') : value,);
@@ -73,13 +76,15 @@ const Settings = () => {
                     const _products = data.data.data.map(data => {
                         return {
                             category: data.category.label,
-                            name: data.name
+                            product: data.name
                         };
                     });
+
                     setProducts(_products);
-                    const _subscriptions = profile.subscription.map(subscription => subscription.product);
+                    const _subscriptions = _products.map(product => product.product);
                     setSubscriptions(_subscriptions);
-                    setSelectedSubscription(_subscriptions);
+                    const _selectedSubscriptions = profile.subscription.map(subscription => subscription.product);
+                    setSelectedSubscription(_selectedSubscriptions);
                 }
             } catch (error) { }
         }
@@ -92,14 +97,15 @@ const Settings = () => {
         e.preventDefault();
         dispatch({ type: SEND_REQUEST });
         const merchantService = new MerchantService();
-        state.payload.subscription = products.filter(product => selectedSubscriptions.includes(product.name));
+        state.payload.subscription = products.filter(product => selectedSubscriptions.includes(product.product));
+
         try {
             const { errors } = await merchantService.update(state.payload);
             if (errors.length === 0) {
                 dispatch({ type: REQUEST_SUCCESSFUL });
-                handleSuccessfullRequest("Successful", 3000);
+                handleSuccessfullRequest("Successfully updated your profile", 3000);
                 setUpdateProfileButton(false);
-                // rootDispatch(initUser(state.payload));
+                refreshPage();
             } else {
                 dispatch({ type: REQUEST_FAILED });
                 handleFailedRequest("Could not process your order", 5000);

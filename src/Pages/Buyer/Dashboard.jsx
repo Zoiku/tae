@@ -3,11 +3,13 @@ import Salutation from "../../Components/Salutation";
 import Orders from "../../Components/Buyer/Tables/Orders";
 import Requests from "../../Components/Buyer/Tables/Requests";
 
-const Dashboard = () => {
+const Dashboard = ({ session }) => {
+    const { user } = session;
+
     return (
         <div className="Buyer-Dashboard">
             <div>
-                <Salutation name={'Buyer'} />
+                <Salutation name={user?.profile?.firstName} />
             </div>
 
             <div className="buyer-dashboard-body-container">

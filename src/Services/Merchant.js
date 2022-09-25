@@ -116,16 +116,18 @@ export default class MerchantService {
 
   async update(payload) {
     let errors = [];
+    let data = {};
     const url = `/user/${payload.id}`;
 
     try {
-      await AxiosInstance().put(url, payload);
+      data = await AxiosInstance().put(url, payload);
     } catch (error) {
       errors.push(error);
     }
 
     return {
-      errors
+      errors,
+      data
     };
   }
 }

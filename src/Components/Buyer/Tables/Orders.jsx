@@ -24,10 +24,10 @@ import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import { INPUTING, SEND_REQUEST, REQUEST_SUCCESSFUL, REQUEST_FAILED } from "../../../Reducers/Actions";
 import { INITIAL_STATE, formReducer } from "../../../Reducers/FormReducer";
-import { SmallSecondary } from "../../../Material/Button";
+import { SmallSecondary, SmallPrimary } from "../../../Material/Button";
 import { setAlert } from "../../../Redux/Features/Alert.js"
 import Modal from '@mui/material/Modal';
-import { inAppStandard, inAppWider } from "../../../Styles/Modal";
+import { inAppStandard, inAppWider, inAppSmaller } from "../../../Styles/Modal";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -37,6 +37,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Transition } from "../../../Material/Dialog";
 import { GenericSecondary, GenericPrimaryButton } from "../../../Material/Button";
 import { dialogStyle } from "../../../Styles/Dialog";
+import Stack from '@mui/material/Stack';
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -99,6 +100,11 @@ const ProgressBar = ({ status }) => {
 };
 
 const Orders = () => {
+    const [acceptTerms, setAcceptTerms] = useState(false);
+    const toggleAcceptTerms = (open) => (_event) => {
+        setOpenDrawerPromptConfirm(false);
+        setAcceptTerms(open);
+    }
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const [refreshTable, setRefreshTable] = useState(false);
@@ -129,6 +135,11 @@ const Orders = () => {
         setOpenDrawerConfirm(open);
     };
 
+    const [openDrawerPromptConfirm, setOpenDrawerPromptConfirm] = useState(false);
+    const toggleDrawerPromptConfirm = (open) => (_event) => {
+        setOpenDrawerPromptConfirm(open);
+    };
+
     const handleClick = (event, id) => {
         setAnchorEl(event.currentTarget);
         selectOrder(id);
@@ -151,6 +162,8 @@ const Orders = () => {
                 setRefreshTable(prev => !prev);
                 handleSuccessfullRequest("Merchant will commence fulfillment of your order once payment is confirmed", 3000);
                 handleCloseDialogConfirm();
+                setOpenDrawerConfirm(false);
+                state.payload = {};
             } else {
                 dispatch({ type: REQUEST_FAILED });
                 handleFailedRequest("Could not process your request", 5000);
@@ -311,12 +324,126 @@ const Orders = () => {
                     <section className="sales-and-purchase-agreement-container">
                         <div>C. Sales and purchanse agreement</div>
                         <div>
-                            <div>Click to open sales and purchase agreement</div>
+                            <div style={{ cursor: "pointer" }} onClick={toggleDrawerPromptConfirm(true)}>Click to open sales and purchase agreement</div>
                             <div>
-                                <SmallSecondary type="submit" loading={state.requestState.loading} variant="contained">Confirm Order</SmallSecondary>
+                                <SmallSecondary disabled={!acceptTerms} type="submit" loading={state.requestState.loading} variant="contained">Confirm Order</SmallSecondary>
                             </div>
                         </div>
                     </section>
+                </div>
+            </div>
+        </Box>
+    );
+
+    const listPromptConfirm = () => (
+        <Box
+            role="presentation"
+            component="form"
+        >
+            <div className="requests-sections-body">
+                <div style={{ fontSize: "13px", height: "300px", marginBottom: 25, fontWeight: 500, overflowY: "auto" }} className="terms-and-conditions-container-order-confirmation">
+                    <div>
+                        This document is a binding legal agreement between the two parties, Buyer and Merchant, who are users (<b>Members</b>) on the websites and applications of Afrigateway Limited (collectively, <b>the Afrigateway Platform</b>). The Afrigateway Platform facilitates transactions between Members. Members who post requests for quotations are “<b>Buyers</b>” and Members who provide quotations to these requests are “<b>Merchants</b>”. The Buyers and Merchants also purchase and supply physical products requested and quoted for, respectively.
+                        <div className="margin-bottom-20"></div>
+                        This legal agreement emanates from a transactional arrangement between both parties on the Afrigateway Platform, guided by the <a href="#tos">Terms of Service</a>.
+                        <div className="margin-bottom-20"></div>
+                        Afrigateway’s role in this agreement is to act as the Merchant’s Payment Collection agent solely for the purpose of accepting and processing funds from Buyer on the Merchant’s behalf. This role is adequately spelt out in the <a href="#payment-tos">Payment Terms</a>.
+                    </div>
+
+                    <div className="margin-bottom-30"></div>
+
+                    <div className="sandpa-sub-section-containers">
+                        <div className="large-large-large-heading">Bank Details</div>
+                        <div>
+                            <div><span>Company Name</span>: <em style={{ fontWeight: 500 }}>AFRIGATEWAY LIMITED</em></div>
+                            <div><span>Branch Name</span>: <em style={{ fontWeight: 500 }}>FIDELITY BANK GHANA</em></div>
+                            <div><span>Bank Account Number</span>: <em style={{ fontWeight: 500 }}>1951191585112</em></div>
+                            <div><span>Bank Branch</span>: <em style={{ fontWeight: 500 }}>HAATSO</em></div>
+                            <div><span>Swift Code</span>: <em style={{ fontWeight: 500 }}>FBLIGHAC</em></div>
+                        </div>
+                    </div>
+
+                    <div className="sandpa-sub-section-containers">
+                        <div className="large-large-large-heading">Date</div>
+                        <div>
+                            This agreement entered into force on the date that the Buyer and Merchant confirmed and accepted the order respectively.
+                        </div>
+                    </div>
+
+                    <div className="sandpa-sub-section-containers">
+                        <div className="large-large-large-heading">Address</div>
+                        <div>
+                            The addresses of both parties are those linked to their respective Afrigateway accounts.
+                        </div>
+                    </div>
+
+                    <div className="sandpa-sub-section-containers">
+                        <div className="large-large-large-heading">Description of the Product</div>
+                        <div>
+                            The specifications of the product being purchased and supplied are those captured in the order agreed upon by both parties on the Afrigateway Platform.
+                            <div className="margin-bottom-10"></div>
+                            The quantity of the product is also captured in the order agreed upon by both parties on the Afrigateway Platform.
+                        </div>
+                    </div>
+
+                    <div className="sandpa-sub-section-containers">
+                        <div className="large-large-large-heading">Contract Price and Delivery Terms (Incoterm)</div>
+                        <div>
+                            The Total amount (including Freight and Insurance) to be paid is captured in the order agreed upon by both parties on the Afrigateway Platform.
+                            <div className="margin-bottom-10"></div>
+                            The delivery term to be applied is captured in the order agreed upon by both parties on the Afrigateway Platform.
+                        </div>
+                    </div>
+
+                    <div className="sandpa-sub-section-containers">
+                        <div className="large-large-large-heading">Payment Options and Conditions</div>
+                        <div>
+                            One of the Payment Options coupled with their respective conditions, below will be used in this agreement:
+                        </div>
+                        <div>
+                            <ol className="order-lists-legal">
+                                <li>Documentary Collection and Escrow: Proof of Payment will require deposit of ten percent (10%) of the Total amount in an agreed Escrow account. The Merchant will only be notified to commence fulfilment of the order once agreed upon deposit has been made by the Buyer.</li>
+                                <li>Irrevocable Letters of Credit with Payment at Sight: The presentation of the Letter of Credit to Afrigateway’s bank will constitute Proof of Payment. The Merchant will then be notified to commence fulfilment of the order. </li>
+                                <li>Bank Transfer: The Buyer is required to pay an initial deposit of thirty percent (30%) of the Total amount (including Freight and Insurance) into the bank account of Afrigateway. The initial deposit will constitute Proof of Payment; the Merchant will be notified to commence fulfilment of the order.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div className="sandpa-sub-section-containers">
+                        <div className="large-large-large-heading">Insurance</div>
+                        <div>
+                            The product being purchased and supplied has been insured under Product Liability / Guarantee policy. In the event the product supplied do not meet the agreed terms or standards, the Buyer is assured of 100% returns of their funds, once the claims have been verified and approved by the Insurance company.
+                        </div>
+                    </div>
+
+                    <div className="sandpa-sub-section-containers">
+                        <div className="large-large-large-heading">Documents</div>
+                        <div>
+                            Some or all of the following documents will provided by the Merchant to the Buyer
+                        </div>
+                        <div>
+                            <ul className="order-lists-legal">
+                                <li>Original Bill of Landing</li>
+                                <li>Commercial invoice</li>
+                                <li>Packing List</li>
+                                <li>Certificate of Origin  </li>
+                                <li>Certificate of Phytosanitary </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="sandpa-sub-section-containers">
+                        <div className="large-large-large-heading">Acceptance</div>
+                        <div>
+                            Both parties accept all of the terms and conditions contained herein, which become effective, and binding herein after. This agreement duly entered into force by both parties shall have validity, significance and implication.
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <Stack spacing={1}>
+                        <SmallPrimary onClick={toggleAcceptTerms(true)}>Accept</SmallPrimary>
+                        <SmallSecondary onClick={toggleAcceptTerms(false)}>Cancel</SmallSecondary>
+                    </Stack>
                 </div>
             </div>
         </Box>
@@ -374,6 +501,27 @@ const Orders = () => {
                         <GenericPrimaryButton variant="contained" loading={state.requestState.loading} onClick={handleConfirm}>Agree</GenericPrimaryButton>
                     </DialogActions>
                 </Dialog>
+            </div>
+
+            <div>
+                <Modal
+                    open={openDrawerPromptConfirm}
+                    onClose={toggleDrawerPromptConfirm(false)}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    className="modal-container"
+                >
+                    <Box sx={inAppSmaller}>
+                        <div className="modal-title-container">
+                            <div>Please read and accept the terms and conditions</div>
+                            <div><CloseRoundedIcon onClick={toggleDrawerPromptConfirm(false)} /></div>
+                        </div>
+
+                        <div className="modal-body">
+                            {listPromptConfirm()}
+                        </div>
+                    </Box>
+                </Modal>
             </div>
 
             <div>
@@ -441,6 +589,27 @@ const Orders = () => {
                         </div>
                     }
                 </Menu>
+            </div>
+
+            <div>
+                <SwipeableDrawer
+                    className="drawer-container"
+                    variant="temporary"
+                    anchor="bottom"
+                    open={openDrawerPromptConfirm}
+                    onOpen={toggleDrawerPromptConfirm(true)}
+                    onClose={toggleDrawerPromptConfirm(false)}
+                    disableBackdropTransition={!iOS} disableDiscovery={iOS}
+                >
+                    <div className="drawer-title-container">
+                        <div>Please read and accept the terms and conditions</div>
+                        <Puller />
+                    </div>
+
+                    <div className="drawer-body">
+                        {listPromptConfirm()}
+                    </div>
+                </SwipeableDrawer>
             </div>
 
             <div>

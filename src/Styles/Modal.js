@@ -50,6 +50,19 @@ export const inAppSmall = {
   overflowY: "auto",
 };
 
+export const inAppSmaller = {
+  position: "relative",
+  top: "50%",
+  left: "59%",
+  transform: "translate(-50%, -50%)",
+  width: 450,
+  background: "white",
+  borderRadius: "5px",
+  outline: 0,
+  maxHeight: "500px",
+  overflowY: "auto",
+};
+
 
 export const standard = {
   position: "relative",

@@ -55,6 +55,10 @@ html {
   display: none;
 }
 
+.toLower {
+  text-transform: lowercase !important;
+}
+
 .simple-center-div {
   display: flex;
   justify-content: center;

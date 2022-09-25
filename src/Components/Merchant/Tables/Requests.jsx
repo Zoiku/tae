@@ -263,18 +263,18 @@ const Requests = () => {
                         <div className="request-section-body">
                             <div>
                                 <span>Length:</span>
-                                <span>{selectedRequest.length} {selectedRequest.lengthUnit}</span>
+                                <span className="toLower">{selectedRequest.length} {selectedRequest.lengthUnit}</span>
                             </div>
                             {
                                 selectedRequest.product === PRODUCTS.TEAK_SQUARE_LOGS &&
                                 <>
                                     <div>
                                         <span>Thickness:</span>
-                                        <span>{selectedRequest.thickness} {selectedRequest.thicknessUnit}</span>
+                                        <span className="toLower">{selectedRequest.thickness} {selectedRequest.thicknessUnit}</span>
                                     </div>
                                     <div>
                                         <span>Width:</span>
-                                        <span>{selectedRequest.width} {selectedRequest.widthUnit}</span>
+                                        <span className="toLower">{selectedRequest.width} {selectedRequest.widthUnit}</span>
                                     </div>
                                     <div>
                                         <span>Drying:</span>
@@ -287,7 +287,7 @@ const Requests = () => {
                                 <>
                                     <div>
                                         <span>Diameter:</span>
-                                        <span>{selectedRequest.diameter} {selectedRequest.diameterUnit}</span>
+                                        <span className="toLower">{selectedRequest.diameter} {selectedRequest.diameterUnit}</span>
                                     </div>
                                 </>
                             }

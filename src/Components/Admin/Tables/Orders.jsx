@@ -190,36 +190,7 @@ const Orders = () => {
                 </div>
                 <div className="requests-sections-container">
                     <section>
-                        <div className="requests-section-title">Track Order</div>
-                        <div className="order-section-body">
-                            <div> <ProgressBar status={selectedOrder.status} /> </div>
-                        </div>
-                        <div className="order-section-stepper-container">
-                            <Box fullWidth>
-                                <Stepper activeStep={ORDER_STATUS_STEPS[selectedOrder.status]} orientation={stepperOrientation}>
-                                    {steps.map((step) => (
-                                        <Step key={step.label}>
-                                            <StepLabel>
-                                                {step.label}
-                                            </StepLabel>
-                                            {
-                                                stepperOrientation === "vertical" &&
-                                                <StepContent>
-                                                    <div>{step.description}</div>
-                                                    <Box sx={{ mb: 0 }}>
-                                                        <div></div>
-                                                    </Box>
-                                                </StepContent>
-                                            }
-                                        </Step>
-                                    ))}
-                                </Stepper>
-                            </Box>
-                        </div>
-                    </section>
-
-                    <section>
-                        <div className="requests-section-title">Product Information</div>
+                        <div className="requests-section-title">Order Summary</div>
                         <div className="request-section-body">
                             <div>
                                 <span>Product:</span>
@@ -290,6 +261,35 @@ const Orders = () => {
                             </div>
                         </section>
                     }
+
+                    <section>
+                        <div className="requests-section-title">Track Order</div>
+                        <div className="order-section-body">
+                            <div> <ProgressBar status={selectedOrder.status} /> </div>
+                        </div>
+                        <div className="order-section-stepper-container">
+                            <Box fullWidth>
+                                <Stepper activeStep={ORDER_STATUS_STEPS[selectedOrder.status]} orientation={stepperOrientation}>
+                                    {steps.map((step) => (
+                                        <Step key={step.label}>
+                                            <StepLabel>
+                                                {step.label}
+                                            </StepLabel>
+                                            {
+                                                stepperOrientation === "vertical" &&
+                                                <StepContent>
+                                                    <div>{step.description}</div>
+                                                    <Box sx={{ mb: 0 }}>
+                                                        <div></div>
+                                                    </Box>
+                                                </StepContent>
+                                            }
+                                        </Step>
+                                    ))}
+                                </Stepper>
+                            </Box>
+                        </div>
+                    </section>
                 </div>
             </div>
         </Box>

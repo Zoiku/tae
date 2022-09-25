@@ -37,8 +37,14 @@ const Register = () => {
         fontWeight: 700,
     };
     const resendCodeTimerInterval = useRef(null);
-    const [resendCodeTimer, setResendCodeTimer] = useState({ seconds: 60 });
-    const defaultCountryData = { country: "Ghana", countryCode: "233" };
+    const [resendCodeTimer, setResendCodeTimer] = useState({
+        minutes: 5,
+        seconds: 0
+    });
+    const resendCodeTimerRef = useRef(resendCodeTimer);
+    resendCodeTimerRef.current = resendCodeTimer;
+
+    const defaultCountryData = { country: "India", countryCode: "91" };
     const navigate = useNavigate();
     const [consent, setConsent] = useState(false);
     const rootDispatch = useDispatch();
@@ -56,7 +62,7 @@ const Register = () => {
     const handleChange = (e) => {
         if (e.target.name === "country") {
             countries.map(country => {
-                if (country.name === state.payload.country) {
+                if (country.name === e.target.value) {
                     const callingCode = country.callingCodes[0];
                     handleManualChange("countryCode", callingCode);
                 }
@@ -87,23 +93,32 @@ const Register = () => {
                 setOpenDrawer(true);
                 dispatch({ type: REQUEST_SUCCESSFUL });
                 handleSuccessfulRequest("Successful", 5000);
+                initCounddown();
             } else {
                 dispatch({ type: REQUEST_FAILED, error: errors[0].response.data.message });
                 handleFailedRequest(errors[0].response.data.message, 5000);
             }
-        } catch (error) {
-            dispatch({ type: REQUEST_FAILED, error: error });
-            // handleFailedRequest(error, 2000);
-        }
+        } catch (error) { }
     };
 
     const initCounddown = () => {
         if (!resendCodeTimerInterval.current) {
             resendCodeTimerInterval.current = setInterval(() => {
-                if (resendCodeTimer.seconds > 0) {
-                    setResendCodeTimer(({ seconds }) => ({ ...resendCodeTimer, seconds: seconds - 1 }))
-                } else {
-                    console.log('Hmm')
+                if (resendCodeTimerRef.current.seconds > 0) {
+                    setResendCodeTimer(({ seconds }) => ({ ...resendCodeTimerRef.current, seconds: seconds - 1 }));
+                };
+
+                if (resendCodeTimerRef.current.seconds === 0) {
+                    if (resendCodeTimerRef.current.minutes === 0) {
+                        setResendCodeTimer({ minutes: 5, seconds: 0 });
+                        clearInterval(resendCodeTimerInterval.current);
+                        resendCodeTimerInterval.current = null;
+                    } else {
+                        setResendCodeTimer(({ minutes }) => ({
+                            minutes: minutes - 1,
+                            seconds: 59,
+                        }));
+                    }
                 }
             }, 1000);
         }
@@ -133,15 +148,10 @@ const Register = () => {
                 dispatch({ type: REQUEST_SUCCESSFUL });
                 navigate("/login");
             } else {
-                initCounddown();
                 handleVerificationFailed("Could not verify code", 5000);
                 dispatch({ type: REQUEST_FAILED, error: "Could not verify code" });
             }
-        } catch (_error) {
-            initCounddown();
-            handleVerificationFailed("Could not verify code", 5000);
-            dispatch({ type: REQUEST_FAILED, error: "Could not verify code" });
-        }
+        } catch (error) { }
     }
 
     const handleVerificationSuccessfull = (message, timeOut) => {
@@ -211,7 +221,7 @@ const Register = () => {
             </div>
             <div className="form-controller-container">
                 <div className="form-controller-input">
-                    <TextField required error={state.requestState.error !== null} InputProps={{ endAdornment: <IconButton className="registration-resend-container" onClick={handleResend} size="small">resend ({resendCodeTimer.seconds})</IconButton> }} name="verificationCode" onChange={handleChange} fullWidth label="Enter Code" variant="standard" />
+                    <TextField required error={state.requestState.error !== null} InputProps={{ endAdornment: <IconButton disabled={resendCodeTimerInterval.current} className="registration-resend-container" onClick={handleResend} size="small">resend ({resendCodeTimer.minutes > 10 ? resendCodeTimer.minutes : `0${resendCodeTimer.minutes}`}m {resendCodeTimer.seconds > 10 ? resendCodeTimer.seconds : `0${resendCodeTimer.seconds}`}s )</IconButton> }} name="verificationCode" onChange={handleChange} fullWidth label="Enter Code" variant="standard" />
                     <span style={{ fontSize: "12px", color: "gray" }}>Verify with the code and activate your account</span>
                 </div>
             </div>
@@ -303,7 +313,7 @@ const Register = () => {
                                 helperText="Your password must be at least 8 characters long" fullWidth onChange={handleChange} type={showPassword ? "text" : "password"} name="password" label="Password" variant="outlined" />
                         </div>
                         <div className="form-controller-input">
-                            <TextField required helperText="Name of Company" fullWidth onChange={handleChange} type="text" name="companyName" label="Company Name" variant="outlined" />
+                            <TextField required helperText="Enter your Company Name" fullWidth onChange={handleChange} type="text" name="companyName" label="Company Name" variant="outlined" />
                         </div>
 
                         <div className="form-controller-input">
@@ -327,14 +337,14 @@ const Register = () => {
 
                         <div className="form-controller-duo-input">
                             <div>
-                                <Select fullWidth disabled value={defaultCountryData.countryCode}>
-                                    <MenuItem value={defaultCountryData.countryCode}>+{defaultCountryData.countryCode}</MenuItem>
+                                <Select fullWidth disabled value={state.payload.countryCode ? state.payload.countryCode : defaultCountryData.countryCode}>
+                                    <MenuItem value={state.payload.countryCode ? state.payload.countryCode : defaultCountryData.countryCode}>+{state.payload.countryCode ? state.payload.countryCode : defaultCountryData.countryCode}</MenuItem>
                                 </Select>
                                 <FormHelperText sx={{ marginLeft: "20px" }}>
                                     Country Code
                                 </FormHelperText>
                             </div>
-                            <TextField required helperText="8-15 characters" onChange={handleChange} type="number" name="telephone" label="Phone Number" variant="outlined" />
+                            <TextField required helperText="8-15 characters (without 0 prefix)" onChange={handleChange} inputProps={{ pattern: '[^0][0-9]{8,15}' }} name="telephone" label="Phone Number" variant="outlined" />
                         </div>
 
                         <div>
@@ -349,8 +359,8 @@ const Register = () => {
 
                         <div className="quick-links-container">
                             <div><NavLink style={navLinkStyle} to="/login">Login</NavLink> </div>
-                            <div><NavLink style={navLinkStyle} to="/">Privacy Policy</NavLink> </div>
-                            <div><NavLink style={navLinkStyle} to="/">Terms of Service</NavLink> </div>
+                            <div><NavLink style={navLinkStyle} to="/legal#privacy-policy">Privacy Policy</NavLink> </div>
+                            <div><NavLink style={navLinkStyle} to="/legal#tos">Terms of Service</NavLink> </div>
                         </div>
                     </Box>
                 </div>
