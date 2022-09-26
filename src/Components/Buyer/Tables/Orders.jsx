@@ -238,7 +238,7 @@ const Orders = () => {
                                 <span>{selectedOrder.merchant.firstName} {selectedOrder.merchant.lastName}</span>
                             </div>
                             <div>
-                                <span>Comapny:</span>
+                                <span>Company:</span>
                                 <span>{selectedOrder.merchant.companyName}</span>
                             </div>
                             <div>

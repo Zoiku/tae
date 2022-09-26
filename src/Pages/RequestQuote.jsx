@@ -148,7 +148,7 @@ const RequestQuote = ({ session }) => {
 
                     <div>
                         <div>
-                            <span>Container Size: </span>
+                            <span>Container size: </span>
                             <span>20ft Container</span>
                         </div>
                     </div>
@@ -392,9 +392,9 @@ const RequestQuote = ({ session }) => {
                         <div className="request-quote-section-title">1. Product Information</div>
                         <div className="request-quote-section-body profile-information-body">
                             <div>Types of Species: {parsedProduct.speciesType}</div>
-                            <div>Container Size: {parsedProduct.containerSize}</div>
+                            <div>Container size: {parsedProduct.containerSize}</div>
                             <div>Species: {parsedProduct.species}</div>
-                            <div>Volume Per Container: {parsedProduct.volume} {parsedProduct.volumeUnit}</div>
+                            <div>Volume per Container: {parsedProduct.volume} {parsedProduct.volumeUnit}</div>
                             <div>Origin: {parsedProduct.origin}</div>
                         </div>
                     </section>

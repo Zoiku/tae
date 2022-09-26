@@ -5,6 +5,8 @@
 
 .menu-links-container {
   position: relative;
+  position: sticky;
+  top: 130px;
 }
 
 .menu-links {

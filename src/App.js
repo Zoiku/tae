@@ -1,5 +1,5 @@
-import { useEffect, useState, useReducer } from "react";
-import { Routes, Route } from "react-router-dom";
+import { useEffect, useState, useReducer, useMemo } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import AuthService from "./Services/Auth";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
@@ -32,7 +32,7 @@ import ProtectedBuyerRoutes from "./Protected/BuyerRoutes";
 import ProtectedMerchantRoutes from "./Protected/MerchantRoutes";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAlerts } from "./Redux/Features/Alert";
-import { initUser } from "./Redux/Features/Session";
+import { initPath, initUser } from "./Redux/Features/Session";
 import { MaterialAlert } from "./Material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import { formReducer, INITIAL_STATE } from "./Reducers/FormReducer";
@@ -46,6 +46,11 @@ const App = () => {
   // eslint-disable-next-line
   const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
   const rootDispatch = useDispatch();
+  const { search } = useLocation();
+  const { redirect } = useMemo(
+    () => Object.fromEntries([...new URLSearchParams(search)]),
+    [search]
+  );
   const { session } = useSelector((state) => state);
   const { alert } = useSelector((state) => state);
   const [openSnackBar, setOpenSnackBar] = useState(alert.active);
@@ -57,6 +62,11 @@ const App = () => {
     setOpenSnackBar(false);
     rootDispatch(clearAlerts());
   };
+
+  useEffect(() => {
+    redirect && rootDispatch(initPath(redirect));
+    // eslint-disable-next-line
+  }, [redirect]);
 
   useEffect(() => {
     dispatch({ type: SEND_REQUEST });
@@ -133,7 +143,10 @@ const App = () => {
 
         <Route element={<ProtectedMerchantRoutes session={session} />}>
           <Route element={<MerchantLayout session={session} />}>
-            <Route path="/merchant/dashboard" element={<MerchantDashboard session={session} />} />
+            <Route
+              path="/merchant/dashboard"
+              element={<MerchantDashboard session={session} />}
+            />
             <Route path="/merchant/requests" element={<MerchantRequests />} />
             <Route
               path="/merchant/quotations"
@@ -146,7 +159,10 @@ const App = () => {
 
         <Route element={<ProtectedBuyerRoutes session={session} />}>
           <Route element={<BuyerLayout session={session} />}>
-            <Route path="/buyer/dashboard" element={<BuyerDashboard session={session} />} />
+            <Route
+              path="/buyer/dashboard"
+              element={<BuyerDashboard session={session} />}
+            />
             <Route path="/buyer/requests" element={<BuyerRequests />} />
             <Route path="/buyer/orders" element={<BuyerOrders />} />
             <Route path="/buyer/settings" element={<BuyerSettings />} />

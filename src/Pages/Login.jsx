@@ -7,7 +7,7 @@ import { INITIAL_STATE, formReducer } from "../Reducers/FormReducer";
 import { INPUTING, SEND_REQUEST, REQUEST_SUCCESSFUL, REQUEST_FAILED } from "../Reducers/Actions";
 import AuthService from "../Services/Auth";
 import { useDispatch, useSelector } from "react-redux";
-import { startSession } from "../Redux/Features/Session.js";
+import { clearPath, startSession } from "../Redux/Features/Session.js";
 import { setAlert, clearAlerts } from "../Redux/Features/Alert.js"
 import { useNavigate, NavLink } from "react-router-dom";
 
@@ -16,6 +16,8 @@ const ROLES = {
     MERCHANT: "/merchant/dashboard",
     BUYER: "/",
 }
+
+const toLowerCase = (string) => string.toLowerCase();
 
 const Login = () => {
     const navLinkStyle = {
@@ -66,6 +68,15 @@ const Login = () => {
     }
 
     useEffect(() => {
+        if (session.path) {
+            const to = `/${toLowerCase(session.user.role)}/${session.path}`;
+            rootDispatch(clearPath());
+            navigate(to);
+        }
+        // eslint-disable-next-line
+    }, [session]);
+
+    useEffect(() => {
         if (session.isLogged && Object.keys(session.user).length > 0) {
             const role = session.user.role;
             navigate(ROLES[role]);
@@ -90,7 +101,7 @@ const Login = () => {
                         onSubmit={handleSubmit}
                     >
                         <TextField required error={state.requestState.error != null} onChange={handleChange} type="email" name="username" label="Email" variant="outlined" />
-                        <TextField required InputProps={{ endAdornment: <div style={{ width: "160px", textAlign: "right" }}><NavLink style={navLinkStyle2} to="/forgotpassword">Forgot Password?</NavLink></div> }} error={state.requestState.error != null} onChange={handleChange} type="password" name="password" label="Password" variant="outlined" />
+                        <TextField required InputProps={{ endAdornment: <div style={{ width: "160px", textAlign: "right", background: "inherit" }}><NavLink style={navLinkStyle2} to="/forgotpassword">Forgot Password?</NavLink></div> }} error={state.requestState.error != null} onChange={handleChange} type="password" name="password" label="Password" variant="outlined" />
                         <div style={{ fontSize: "small", color: "gray" }}>
                             <span>Don't have an account? </span>
                             <span><NavLink style={navLinkStyle} to="/buyer/register">Click here to register</NavLink></span>

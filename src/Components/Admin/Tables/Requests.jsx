@@ -82,7 +82,7 @@ const Requests = () => {
                                 <span>{selectedRequest.species}</span>
                             </div>
                             <div>
-                                <span>Types of species:</span>
+                                <span>Type Of Species:</span>
                                 <span>{selectedRequest.speciesType}</span>
                             </div>
                             <div>

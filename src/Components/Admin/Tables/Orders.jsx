@@ -201,7 +201,7 @@ const Orders = () => {
                                 <span>{selectedOrder.species}</span>
                             </div>
                             <div>
-                                <span>Species Type:</span>
+                                <span>Type of Species:</span>
                                 <span>{selectedOrder.speciesType}</span>
                             </div>
                             <div>
@@ -209,7 +209,7 @@ const Orders = () => {
                                 <span>{selectedOrder.origin}</span>
                             </div>
                             <div>
-                                <span>Container Size:</span>
+                                <span>Container size:</span>
                                 <span>{selectedOrder.containerSize}</span>
                             </div>
                             <div>

@@ -69,7 +69,7 @@ const Quotations = () => {
                                 <span>{selectedQuote.species}</span>
                             </div>
                             <div>
-                                <span>Types of species:</span>
+                                <span>Type Of Species:</span>
                                 <span>{selectedQuote.speciesType}</span>
                             </div>
                             <div>

@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isLogged: false,
+  path: null,
   user: {}
 };
 
@@ -43,6 +44,20 @@ const sessionReducer = createSlice({
       };
     },
 
+    initPath: (state, action) => {
+      return {
+        ...state,
+        path: action.payload
+      };
+    },
+
+    clearPath: (state) => {
+      return {
+        ...state,
+        path: null
+      };
+    },
+
     endSession: () => {
       return {
         isLogged: false,
@@ -52,6 +67,12 @@ const sessionReducer = createSlice({
   }
 });
 
-export const { startSession, endSession, initUser, initCompany } =
-  sessionReducer.actions;
+export const {
+  startSession,
+  endSession,
+  initUser,
+  initCompany,
+  initPath,
+  clearPath
+} = sessionReducer.actions;
 export default sessionReducer.reducer;
