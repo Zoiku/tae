@@ -66,7 +66,7 @@ const UsersMerchant = () => {
             dispatch({ type: SEND_REQUEST });
             const adminService = new AdminService();
             try {
-                const { errors } = await adminService.approveMerchant(selectedUserId);
+                const { errors } = await adminService.approveMerchant(selectedUser.id);
                 if (errors.length > 0) {
                     dispatch({ type: REQUEST_FAILED });
                     handleFailedActivate("Could not process request, please try again", 3000);
@@ -208,6 +208,7 @@ const UsersMerchant = () => {
                         user.businessType = user.type.label;
                         user.status = user.user.isVerified;
                         user.activated = user.user.enabled;
+                        user.id = user.user.id;
                         return 1;
                     });
                     setRows(filteredData);
