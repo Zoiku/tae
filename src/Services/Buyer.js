@@ -35,6 +35,23 @@ export default class AdminService {
     };
   }
 
+  async getOrder(id) {
+    let errors = [];
+    let data = null;
+    const url = `/order/${id}`;
+
+    try {
+      data = await AxiosInstance().get(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors,
+      data
+    };
+  }
+
   async getQuote(id, signal) {
     let errors = [];
     let data = null;
