@@ -32,7 +32,7 @@ import { small } from "../../Styles/Modal";
 const Register = () => {
     const navLinkStyle = {
         color: "var(--tae-orange)",
-        textDecoration: "underline",
+        textDecoration: "none",
         fontSize: "small",
         fontWeight: 700,
     };

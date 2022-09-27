@@ -74,7 +74,17 @@
 
 .quick-links-container {
   display: flex;
-  justify-content: space-around;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-links-container > div {
+  padding: 0 8px;
+}
+
+.quick-links-container > div:nth-child(2) {
+  border-left: 1px solid #c5c5c5;
+  border-right: 1px solid #c5c5c5;
 }
 
 @media screen and (max-width: 1000px) {

@@ -68,20 +68,18 @@ const Login = () => {
     }
 
     useEffect(() => {
-        if (session.path) {
-            const to = `/${toLowerCase(session.user.role)}/${session.path}`;
-            rootDispatch(clearPath());
-            navigate(to);
+        if (session.isLogged) {
+            const role = session.user.role;
+            if (session.path) {
+                const to = `/${toLowerCase(role)}/${session.path}`;
+                rootDispatch(clearPath());
+                navigate(to);
+            } else {
+                navigate(ROLES[role]);
+            }
         }
         // eslint-disable-next-line
-    }, [session]);
-
-    useEffect(() => {
-        if (session.isLogged && Object.keys(session.user).length > 0) {
-            const role = session.user.role;
-            navigate(ROLES[role]);
-        }
-    }, [session, navigate]);
+    }, [session.isLogged, navigate]);
 
     return (
         <div className="Login">
