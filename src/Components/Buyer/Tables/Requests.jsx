@@ -39,20 +39,6 @@ const IMAGES_TO_DISPLAY = {
 }
 
 const Requests = () => {
-
-    useEffect(() => {
-        const fetch = async () => {
-            const buyerService = new BuyerService();
-            try {
-                const { errors, data } = await buyerService.getOrder("632f6e6d30a875495d816b17");
-                if (errors.length === 0) {
-                    console.log(data);
-                }
-            } catch (error) { }
-        }
-        fetch();
-    }, [])
-
     const [viewOfferLoading, setViewOfferLoading] = useState(false);
     const rootDispatch = useDispatch();
     const [refreshTable, setRefreshTable] = useState(false);
@@ -478,7 +464,7 @@ const Requests = () => {
                                 mobileNo: offer.merchant.mobileNo,
                                 companyName: offer.merchant.companyName,
                                 role: offer.merchant.role,
-                                id: offer?.merchant?._id
+                                id: offer?.merchant?.id
                             };
                             return offer;
                         });
