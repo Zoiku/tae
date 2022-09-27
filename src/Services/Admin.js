@@ -221,6 +221,21 @@ export default class AdminService {
     };
   }
 
+  async approveOrder(id) {
+    let errors = [];
+    const url = `/order/confirm/${id}`;
+
+    try {
+      await AxiosInstance().patch(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
+
   async updateOrder(id, status) {
     let errors = [];
     const url = `/order/${id}/${status}`;

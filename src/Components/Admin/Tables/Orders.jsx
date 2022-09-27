@@ -68,7 +68,7 @@ const steps = [
     },
     {
         label: "Delivered",
-        description: "Your order has been delivered.",
+        description: "Your order is being delivery.",
     },
 ];
 
@@ -120,6 +120,19 @@ const Orders = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const approveOrder = async () => {
+        const adminService = new AdminService();
+        try {
+            const { errors } = await adminService.approveOrder(selectedOrderId);
+            if (errors.length === 0) {
+                setRefreshTable(prev => !prev);
+                handleSuccessfullRequest("Success", 3000);
+            } else {
+                handleFailedRequest("Could not process your order", 5000);
+            }
+        } catch (error) { }
+    }
 
     const updateOrder = async (status) => {
         const adminService = new AdminService();
@@ -228,7 +241,7 @@ const Orders = () => {
                     </section>
 
                     <section>
-                        <div className="requests-section-title">Pricing ad Delivery Details</div>
+                        <div className="requests-section-title">Pricing and Delivery Information</div>
                         <div className="request-section-body">
                             <div>
                                 <span>Shipping Address:</span>
@@ -379,7 +392,7 @@ const Orders = () => {
                         <div>
                             {
                                 selectedOrder.status === "AWAITING PROOF OF PAYMENT" &&
-                                <MenuItem onClick={() => updateOrder("APPROVED")}>
+                                <MenuItem onClick={() => approveOrder()}>
                                     Approve
                                 </MenuItem>
                             }

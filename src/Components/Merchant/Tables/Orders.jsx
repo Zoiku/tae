@@ -76,7 +76,7 @@ const steps = [
     },
     {
         label: "Delivered",
-        description: "The order has been delivered",
+        description: "The order is being delivered",
     },
 ];
 

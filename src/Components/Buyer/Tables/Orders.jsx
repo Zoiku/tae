@@ -82,7 +82,7 @@ const steps = [
     },
     {
         label: "Delivered",
-        description: "Your order is pending delivery",
+        description: "Your order is being delivery",
     },
 ];
 
