@@ -221,6 +221,21 @@ export default class AdminService {
     };
   }
 
+  async approveMerchant(id) {
+    let errors = [];
+    const url = `/merchant/enable/${id}`;
+
+    try {
+      await AxiosInstance().patch(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
+
   async approveOrder(id) {
     let errors = [];
     const url = `/order/confirm/${id}`;

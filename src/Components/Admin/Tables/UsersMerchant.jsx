@@ -38,6 +38,7 @@ const UsersMerchant = () => {
     }
 
     const [refreshTable, setRefreshTable] = useState(false);
+    // eslint-disable-next-line
     const [state, dispatch] = useReducer(formReducer, INITIAL_STATE);
     const rootDispatch = useDispatch();
     const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -60,26 +61,28 @@ const UsersMerchant = () => {
         setAnchorEl(null);
     };
 
-    const handleToggleActivate = async (email, status) => {
-        dispatch({ type: SEND_REQUEST });
-        const adminService = new AdminService();
-        try {
-            const { errors } = await adminService.toggleActivate(email, status);
-            if (errors.length > 0) {
+    const handleApproveMerchant = async () => {
+        if (selectedUser) {
+            dispatch({ type: SEND_REQUEST });
+            const adminService = new AdminService();
+            try {
+                const { errors } = await adminService.approveMerchant(selectedUserId);
+                if (errors.length > 0) {
+                    dispatch({ type: REQUEST_FAILED });
+                    handleFailedActivate("Could not process request, please try again", 3000);
+                } else {
+                    dispatch({ type: REQUEST_SUCCESSFUL });
+                    setRefreshTable(prev => !prev);
+                    rootDispatch(clearAlerts());
+                }
+            } catch (error) {
                 dispatch({ type: REQUEST_FAILED });
-                handleFailedToggleActivate("Could not process request, please try again", 3000);
-            } else {
-                dispatch({ type: REQUEST_SUCCESSFUL });
-                setRefreshTable(prev => !prev);
-                rootDispatch(clearAlerts());
+                handleFailedActivate("Could not process request, please try again", 3000);
             }
-        } catch (error) {
-            dispatch({ type: REQUEST_FAILED });
-            handleFailedToggleActivate("Could not process request, please try again", 3000);
         }
     }
 
-    const handleFailedToggleActivate = (message, timeOut) => {
+    const handleFailedActivate = (message, timeOut) => {
         const payload = {
             severity: "error",
             message,
@@ -112,7 +115,7 @@ const UsersMerchant = () => {
         { field: "email", headerName: "Email", width: 70 },
         { field: "businessType", headerName: "Business Type", width: 70 },
         { field: "status", headerName: "Status", width: 90, renderCell: ({ row }) => row.status ? "Verified" : "Unverified" },
-        { field: "activated", headerName: "Activated", width: 90, renderCell: ({ row }) => <IOSSwitch disabled={state.requestState.loading} onChange={() => handleToggleActivate(row.email, row.activated)} checked={row.activated} /> },
+        { field: "activated", headerName: "Activated", width: 90, renderCell: ({ row }) => <IOSSwitch checked={row.activated} /> },
         { field: "more", headerName: "", width: 30, renderCell: ({ row }) => <div className="simple-center-div"><More id={row.id} /></div> },
     ];
 
@@ -239,7 +242,7 @@ const UsersMerchant = () => {
                         <div className="modal-body">
                             {list()}
                         </div>
-                        
+
                     </Box>
                 </Modal>
             </div>
@@ -257,6 +260,13 @@ const UsersMerchant = () => {
                     <MenuItem onClick={toggleDrawer(true)}>
                         View
                     </MenuItem>
+                    {
+                        selectedUser &&
+                        !selectedUser.activated &&
+                        <MenuItem onClick={handleApproveMerchant}>
+                            Approve User
+                        </MenuItem>
+                    }
                     <MenuItem>
                         Flag User
                     </MenuItem>
