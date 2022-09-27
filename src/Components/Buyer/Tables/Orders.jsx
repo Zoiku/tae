@@ -459,15 +459,15 @@ const Orders = () => {
                 if (errors.length === 0) {
                     const filteredData = data.data.data;
                     Promise.all(filteredData.map(async (order, index) => {
+                        order.id = order._id;
+                        order.index = index + 1;
                         order.quantity = order.request.quotationProducts[0].specification.quantity;
                         order.terms = order.request.buyerQuotationIncoterm.label;
                         order.containerSize = order.request.quotationProducts[0].product.supportedShippingContainers[0].label;
                         order.product = order.request.quotationProducts[0].product.name;
                         order.createdOn = new Date(order.createdOn).toUTCString().slice(0, 16);
                         order.expiryDate = new Date(order?.request?.expiryDate).toUTCString().slice(0, 25);
-                        order.details = (await (await buyerService.getOrder(order._id)).data.data.data[0].merchant);
-                        order.id = order._id;
-                        order.index = index + 1;
+                        // order.details = (await (await buyerService.getOrder(order._id)).data.data.data[0].merchant);
                         return 1;
                     }));
 
