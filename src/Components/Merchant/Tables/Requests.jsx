@@ -434,7 +434,7 @@ const Requests = () => {
                         request.containerSize = request.quotationProducts[0].product.supportedShippingContainers[0].label;
                         request.volume = request.quotationProducts[0].product.volume.value;
                         request.volumeUnit = request.quotationProducts[0].product.volume.unit;
-                        request.expiryDate = new Date(request.expiryDate).toUTCString().slice(0, 25);
+                        request.createdOn = new Date(request.createdOn).toUTCString().slice(0, 25);
                         return 1;
                     })
                     setRows(filteredData);
@@ -522,7 +522,7 @@ const Requests = () => {
                                     rows.slice(((5 * page) - 5), ((page * 5) - 1)).map((row, index) =>
                                         <section onClick={() => selectRequest(row.id)} key={index}>
                                             <div>Request Number {row.requestNo}</div>
-                                            <div>{row.expiryDate}</div>
+                                            <div>{row.createdOn}</div>
                                             <div>{row.destination}</div>
                                             <div>Product: {row.product}</div>
                                             <div>Species: {row.species}</div>
@@ -541,5 +541,3 @@ const Requests = () => {
 }
 
 export default Requests;
-
-// count={paginationCount}
