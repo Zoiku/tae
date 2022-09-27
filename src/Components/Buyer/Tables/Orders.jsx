@@ -467,7 +467,7 @@ const Orders = () => {
                         order.product = order.request.quotationProducts[0].product.name;
                         order.createdOn = new Date(order.createdOn).toUTCString().slice(0, 16);
                         order.expiryDate = new Date(order?.request?.expiryDate).toUTCString().slice(0, 25);
-                        order.details = (await (await buyerService.getOrder(order._id)).data.data.data[0]?.merchant);
+                        order.merchant = (await (await buyerService.getOrder(order._id)).data.data.data[0]?.merchant);
                         return 1;
                     }));
 
