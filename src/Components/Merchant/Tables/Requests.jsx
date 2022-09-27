@@ -522,11 +522,9 @@ const Requests = () => {
                                     rows.slice(((5 * page) - 5), ((page * 5) - 1)).map((row, index) =>
                                         <section onClick={() => selectRequest(row.id)} key={index}>
                                             <div>Request Number {row.requestNo}</div>
-                                            <div>{row.createdOn}</div>
                                             <div>{row.destination}</div>
+                                            <div>{row.createdOn}</div>
                                             <div>Product: {row.product}</div>
-                                            <div>Species: {row.species}</div>
-                                            <div>Quantity: {row.quantity}</div>
                                         </section>
                                     )}
                                 <div className="pagination-container">

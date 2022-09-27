@@ -470,9 +470,7 @@ const Orders = () => {
                         order.merchant = (await (await buyerService.getOrder(order._id)).data.data.data[0]?.merchant);
                         return 1;
                     }));
-
                     setRows(filteredData);
-                    console.log(filteredData);
                 }
             } catch (error) { }
             setRowsLoading(false);
