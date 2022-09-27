@@ -104,7 +104,7 @@ const Orders = () => {
     const toggleAcceptTerms = (open) => (_event) => {
         setOpenDrawerPromptConfirm(false);
         setAcceptTerms(open);
-    }
+    };
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const [refreshTable, setRefreshTable] = useState(false);
@@ -458,7 +458,7 @@ const Orders = () => {
                 const { data, errors } = await buyerService.getOrders(abortController.signal);
                 if (errors.length === 0) {
                     const filteredData = data.data.data;
-                    filteredData.map((order, index) => {
+                    Promise.all(filteredData.map(async (order, index) => {
                         order.index = index + 1;
                         order.id = order._id;
                         order.quantity = order.request.quotationProducts[0].specification.quantity;
@@ -467,14 +467,15 @@ const Orders = () => {
                         order.product = order.request.quotationProducts[0].product.name;
                         order.createdOn = new Date(order.createdOn).toUTCString().slice(0, 16);
                         order.expiryDate = new Date(order?.request?.expiryDate).toUTCString().slice(0, 25);
+                        order.merchant = (await (await buyerService.getOrder(order._id)).data.data.data);
                         return 1;
-                    });
+                    }));
                     setRows(filteredData);
+                    console.log(filteredData);
                 }
             } catch (error) { }
             setRowsLoading(false);
         }
-
         fetchData();
         return () => abortController.abort();
     }, [refreshTable]);
