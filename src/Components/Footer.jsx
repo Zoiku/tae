@@ -35,7 +35,7 @@ const Footer = () => {
                     <li><NavLink style={navStyle} to="/legal#payment-tos">Payment Terms</NavLink></li>
                     <li><NavLink style={navStyle} to="/legal#payment-tos">Privacy Policy</NavLink></li>
                     <li><NavLink style={navStyle} to="/legal#cookie-policy">Cookie Policy</NavLink></li>
-                    <li><NavLink style={navStyle} to="/legal#sales-and-purchase-agreement">Sales and Purchase Agreement</NavLink></li>
+                    <li><NavLink style={navStyle} to="/legal#sales-and-purchase-agreement">Sale and Purchase Agreement</NavLink></li>
                 </ul>
             </div>
 
