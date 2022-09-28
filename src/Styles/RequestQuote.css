@@ -199,7 +199,15 @@
   background-color: #fff !important;
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 768px) {
+  .profile-information-body {
+    display: grid;
+    gap: 15px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 540px) {
   .profile-information-body {
     display: grid;
     gap: 15px;
@@ -209,7 +217,9 @@
   .profile-information-body > div:nth-child(even) {
     text-align: left;
   }
+}
 
+@media screen and (max-width: 1000px) {
   .RequestQuote-Page > div:nth-child(3) {
     width: 94%;
   }
