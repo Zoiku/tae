@@ -25,7 +25,7 @@ import log from "../Assets/log.jpg";
 import log1 from "../Assets/log-1.jpg";
 import Modal from '@mui/material/Modal';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { small } from "../Styles/Modal";
+import { standard } from "../Styles/Modal";
 import { Puller } from "../Material/Drawer";
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 
@@ -326,7 +326,7 @@ const RequestQuote = ({ session }) => {
                     aria-describedby="modal-modal-description"
                     className="modal-container"
                 >
-                    <Box sx={small}>
+                    <Box sx={standard}>
                         <div className="modal-title-container">
                             <div>Request Summary</div>
                             <div><CloseRoundedIcon onClick={toggleDrawer(false)} /></div>
@@ -434,7 +434,7 @@ const RequestQuote = ({ session }) => {
                                         <div>
                                             <div>{specification.label}</div>
                                             <div className="select-input-form-with-units">
-                                                <TextField value={state.payload[specification.name] ? state.payload[specification.name] : ''} required onChange={handleChange} size="small" fullWidth type="text" name={specification.name} label={specification.label} variant="outlined" />
+                                                <TextField value={state.payload[specification.name] ? state.payload[specification.name] : ''} inputProps={specification.name !== "quantity" && { pattern: '[0-9+.-]{1,}' }} required onChange={handleChange} size="small" fullWidth type={specification.name === "quantity" && "number"} name={specification.name} label={specification.label} variant="outlined" />
                                                 {
                                                     specification.units &&
                                                     specification.units.length > 0 &&

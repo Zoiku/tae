@@ -81,9 +81,7 @@ const MerchantLayout = ({ session }) => {
 
     const list = () => (
         <Box
-            sx={{ width: "auto", minHeight: "550px" }}
             role="presentation"
-            className="drawer-container"
             component="form"
             onSubmit={handleSubmit}
         >
@@ -97,11 +95,11 @@ const MerchantLayout = ({ session }) => {
                 </div>
 
                 <div className="form-controller-input">
-                    <TextField name="noOfEmployees" onChange={handleChange} fullWidth label="Number of Employees" variant="standard" />
+                    <TextField type="number" name="noOfEmployees" onChange={handleChange} fullWidth label="Number of Employees" variant="standard" />
                 </div>
 
                 <div className="form-controller-input">
-                    <TextField onChange={handleChange} InputProps={{ endAdornment: <div style={{ width: "300px", textAlign: "right", fontSize: "12px", color: "gray" }}>20ft per month</div> }} fullWidth label="Supply Ability" name="supplyAbility" variant="standard" />
+                    <TextField type="number" onChange={handleChange} InputProps={{ endAdornment: <div style={{ width: "300px", textAlign: "right", fontSize: "12px", color: "gray" }}>20ft per month</div> }} fullWidth label="Supply Ability" name="supplyAbility" variant="standard" />
                 </div>
 
                 <div className="form-controller-input">

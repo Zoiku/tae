@@ -1,7 +1,7 @@
 import "../Styles/Nav.css";
 import "../Styles/Hamburger.css";
 import logo from "../Assets/logo.png";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { stack as Menu } from 'react-burger-menu';
 import { useState } from "react";
 import { LoginIcon, MerchantRegistationIcon, HomeIcon, RegisterIcon, LogoutIcon, DashboardIcon } from "./Icons";
@@ -19,6 +19,7 @@ const toLowerCase = (string) => {
 }
 
 const Nav = ({ session }) => {
+    const location = useLocation();
     const rootDispatch = useDispatch();
     const [openMenu, setOpenMenu] = useState(false);
     const navigate = useNavigate();
@@ -38,7 +39,7 @@ const Nav = ({ session }) => {
     };
 
     return (
-        <div className="Nav">
+        <div className={location.pathname.substring(1) === "legal" ? "Nav no-sticky-Nav" : "Nav"}>
             <div className="Mobile-Nav">
                 <div className="Nav-logo-tae-container">
                     <img onClick={handleRedirect} src={logo} alt="" />
@@ -104,7 +105,7 @@ const Nav = ({ session }) => {
                         session.isLogged ?
                             <>
                                 <li className="nav-links"><NavLink style={defaultNavStyle} to={`${toLowerCase(session.user.role)}/dashboard`}>Dashboard</NavLink></li>
-                                <li style={{cursor: "pointer"}} className="nav-links" onClick={handleLogout(false)}>Logout</li>
+                                <li style={{ cursor: "pointer" }} className="nav-links" onClick={handleLogout(false)}>Logout</li>
                             </> :
                             <>
                                 <li className="nav-links"><NavLink style={defaultNavStyle} to="/merchant/register">Become a Merchant</NavLink></li>
