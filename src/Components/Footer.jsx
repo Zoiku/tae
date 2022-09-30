@@ -1,5 +1,6 @@
 import "../Styles/Footer.css";
 import { NavLink } from "react-router-dom";
+import { contactEventTracker } from "./GoogleAnalytics"
 
 const Footer = () => {
     const navStyle = {
@@ -8,10 +9,12 @@ const Footer = () => {
     }
 
     const handleWhatsapp = () => {
+        contactEventTracker('whatsapp');
         window.open("https://wa.me/233508556755?text=Hello there!", "_blank");
     };
 
     const handleMail = () => {
+        contactEventTracker('email');
         window.open("mailto:hello@theafricanexporter.com");
     };
 
