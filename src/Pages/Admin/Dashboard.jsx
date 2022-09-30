@@ -13,11 +13,32 @@ import { useReducer } from "react";
 import { SEND_REQUEST, REQUEST_FAILED, REQUEST_SUCCESSFUL } from "../../Reducers/Actions";
 
 const AdminDashboard = () => {
+    const [merchantBuyerRatio, dispatchMerchantBuyerRatio] = useReducer(formReducer, INITIAL_STATE);
     const [salesChartData, dispatchSales] = useReducer(formReducer, INITIAL_STATE);
     const [categoriesChartData, dispatchCategories] = useReducer(formReducer, INITIAL_STATE);
     const [unactivatedUsers, dispatchUnactivatedUsers] = useReducer(formReducer, INITIAL_STATE);
     const [pendingOrders, dispatchPendingOrders] = useReducer(formReducer, INITIAL_STATE);
     const [deliveredOrders, dispatchDeliveredOrders] = useReducer(formReducer, INITIAL_STATE);
+
+    useEffect(() => {
+        dispatchMerchantBuyerRatio({ type: SEND_REQUEST });
+        const abortController = new AbortController();
+        const fecthData = async () => {
+            const adminService = new AdminService();
+            try {
+                const { errors, data } = await adminService.getMerchantsToBuyerRatio(abortController.signal);
+                if (errors.length === 0) {
+                    dispatchMerchantBuyerRatio({ type: REQUEST_SUCCESSFUL, payload: { value: data } });
+                } else {
+                    dispatchMerchantBuyerRatio({ type: REQUEST_FAILED, error: errors });
+                }
+            } catch (error) { }
+        };
+
+        fecthData();
+        return () => abortController.abort();
+        // eslint-disable-next-line
+    }, []);
 
     useEffect(() => {
         dispatchSales({ type: SEND_REQUEST });
@@ -31,9 +52,7 @@ const AdminDashboard = () => {
                 } else {
                     dispatchSales({ type: REQUEST_FAILED, error: errors });
                 }
-            } catch (error) {
-                dispatchSales({ type: REQUEST_FAILED, error: error });
-            }
+            } catch (error) { }
         };
 
         fecthData();
@@ -134,7 +153,13 @@ const AdminDashboard = () => {
                         <div>A positive merchant to buyers ratio should be at least 0.5</div>
                     </div>
                     <div className="dash-item-value-container">
-                        <div>0.15</div>
+                        <div>
+                            {
+                                !merchantBuyerRatio.requestState.error ?
+                                    merchantBuyerRatio.requestState.loading ? <div className="primary-tae-color"><CircularProgress size="small" color="inherit" /></div> : merchantBuyerRatio.requestState?.data?.value
+                                    : <div className="dash-item-no-data-container">...</div>
+                            }
+                        </div>
                     </div>
                 </div>
                 <Swiper

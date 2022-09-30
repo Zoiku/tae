@@ -206,6 +206,29 @@ export default class AdminService {
     };
   }
 
+  async getMerchantsToBuyerRatio(signal) {
+    let errors = [];
+    let data = null;
+    const merchantsUrl = "/merchants";
+    const buyersUrl = "/buyers";
+    try {
+      const merchants = await AxiosInstance().get(merchantsUrl, {
+        signal
+      });
+      const buyers = await AxiosInstance().get(buyersUrl, {
+        signal
+      });
+      data = (merchants.data.totalCount / buyers.data.totalCount).toFixed(2);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors,
+      data
+    };
+  }
+
   async toggleActivate(email, status) {
     let errors = [];
     const url = `/user/${email}/${!status}`;
