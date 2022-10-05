@@ -19,7 +19,6 @@ import StepContent from '@mui/material/StepContent';
 import Countdown from "../../Countdown";
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import { INPUTING, SEND_REQUEST, REQUEST_SUCCESSFUL, REQUEST_FAILED } from "../../../Reducers/Actions";
@@ -38,6 +37,7 @@ import { Transition } from "../../../Material/Dialog";
 import { GenericSecondary, GenericPrimaryButton } from "../../../Material/Button";
 import { dialogStyle } from "../../../Styles/Dialog";
 import Stack from '@mui/material/Stack';
+import { NavLink } from "react-router-dom";
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -98,6 +98,11 @@ const ProgressBar = ({ status }) => {
         </div>
     )
 };
+
+const navLinkStyle = {
+    fontWeight: 600,
+    color: "var(--tae-orange)",
+}
 
 const Orders = () => {
     const [acceptTerms, setAcceptTerms] = useState(false);
@@ -290,7 +295,7 @@ const Orders = () => {
     );
 
     const listConfirm = () => (
-        selectedOrder &&
+        // selectedOrder &&
         <Box
             role="presentation"
             component="form"
@@ -308,9 +313,29 @@ const Orders = () => {
                                     onChange={handleChange}
                                     required
                                 >
-                                    <FormControlLabel value="Cash against documents (10%) Escrow deposit required" control={<Radio size="small" />} label="Cash against documents (10%) Escrow deposit required" />
-                                    <FormControlLabel value="Letter of credit" control={<Radio size="small" />} label="Letter of credit" />
-                                    <FormControlLabel value="Bank transfer" control={<Radio size="small" />} label="Bank transfer" />
+                                    <div className="radio-group-controller">
+                                        <Radio
+                                            size="small"
+                                            value="Cash against documents (10%) Escrow deposit required"
+                                        />
+                                        <NavLink target="_blank" rel="noopener noreferrer" style={navLinkStyle} to="/about/#payment-options-cash-against-document">Cash against documents (10%) Escrow deposit required</NavLink>
+                                    </div>
+
+                                    <div className="radio-group-controller">
+                                        <Radio
+                                            size="small"
+                                            value="Letter of credit"
+                                        />
+                                        <NavLink target="_blank" rel="noopener noreferrer" style={navLinkStyle} to="/about/#payment-options-letter-of-credit">Letter of credit</NavLink>
+                                    </div>
+
+                                    <div className="radio-group-controller">
+                                        <Radio
+                                            size="small"
+                                            value="Bank transfer"
+                                        />
+                                        <NavLink target="_blank" rel="noopener noreferrer" style={navLinkStyle} to="/about/#payment-options-cash-bank-transfer">Bank transfer</NavLink>
+                                    </div>
                                 </RadioGroup>
                             </FormControl>
                         </div>

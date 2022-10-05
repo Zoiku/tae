@@ -73,6 +73,14 @@ const RequestQuote = ({ session }) => {
 
     const preSubmission = (e) => {
         e.preventDefault();
+
+        if (parsedProduct.name === "Teak Round Logs") {
+            state.payload = {
+                ...state.payload,
+                diameterUnit: "cm"
+            }
+        }
+
         setOpenDrawer(true);
     }
 
