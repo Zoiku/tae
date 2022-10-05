@@ -439,9 +439,8 @@ const Requests = () => {
                     })
                     setRows(filteredData);
                 }
-            } catch (error) {
-                //
-            }
+            } catch (error) { }
+
             setRowsLoading(false);
         }
 
@@ -516,7 +515,8 @@ const Requests = () => {
             <div>
                 {
                     rowsLoading ? <div className="dash-item-loading-container"> <CircularProgress color="inherit" /></div> :
-                        rows ?
+                        rows &&
+                            rows.length > 0 ?
                             <div className="requests-section-container">
                                 {
                                     rows.slice(((5 * page) - 5), ((page * 5) - 1)).map((row, index) =>
