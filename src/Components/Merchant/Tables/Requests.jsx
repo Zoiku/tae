@@ -515,7 +515,7 @@ const Requests = () => {
             </div>
             <div>
                 {
-                    rowsLoading ? <div className="dash-item-loading-container"> <CircularProgress color="inherit" /> </div> :
+                    rowsLoading ? <div className="dash-item-loading-container"> <CircularProgress color="inherit" /></div> :
                         rows ?
                             <div className="requests-section-container">
                                 {
@@ -531,7 +531,8 @@ const Requests = () => {
                                     <Pagination showFirstButton showLastButton onChange={handlePaginationChange} siblingCount={2} boundaryCount={0} count={paginationCount} />
                                 </div>
                             </div>
-                            : <div className="dash-item-no-data-container">No data</div>
+                            :
+                            <div className="dash-item-no-data-container">No data</div>
                 }
             </div>
         </div>
