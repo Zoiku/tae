@@ -101,7 +101,9 @@ const ProgressBar = ({ status }) => {
 
 const navLinkStyle = {
     fontWeight: 600,
-    color: "var(--tae-orange)",
+    color: "black",
+    textDecoration: "underline",
+    cursor: "pointer"
 }
 
 const Orders = () => {
@@ -349,7 +351,7 @@ const Orders = () => {
                     <section className="sales-and-purchase-agreement-container">
                         <div>C. Sales and purchanse agreement</div>
                         <div>
-                            <div style={{ cursor: "pointer" }} onClick={toggleDrawerPromptConfirm(true)}>Click to open sales and purchase agreement</div>
+                            <div style={navLinkStyle} onClick={toggleDrawerPromptConfirm(true)}>Click to open sales and purchase agreement</div>
                             <div>
                                 <SmallSecondary disabled={!acceptTerms} type="submit" loading={state.requestState.loading} variant="contained">Confirm Order</SmallSecondary>
                             </div>
