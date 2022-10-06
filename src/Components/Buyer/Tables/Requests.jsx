@@ -193,6 +193,8 @@ const Requests = () => {
             if (errors.length === 0) {
                 dispatch({ type: REQUEST_SUCCESSFUL });
                 handleSuccessfullRequest("Your request has been reposted successfully", 3000);
+                handleCloseDialogConfirm();
+                setRefreshTable(prev => !prev);
             } else {
                 dispatch({ type: REQUEST_FAILED });
                 handleFailedRequest("Problem processing request, please try again", 5000);
@@ -529,7 +531,7 @@ const Requests = () => {
                     <DialogTitle>{"Agree to repost the request?"}</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-slide-description">
-                            Do you agree to repost this request?
+                            Repost this request?
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
