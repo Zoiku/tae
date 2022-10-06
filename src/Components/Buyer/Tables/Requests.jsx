@@ -528,10 +528,10 @@ const Requests = () => {
                     aria-describedby="alert-dialog-slide-description"
                     sx={dialogStyle}
                 >
-                    <DialogTitle>{"Agree to repost the request?"}</DialogTitle>
+                    <DialogTitle>{"Repost request?"}</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-slide-description">
-                            Repost this request?
+                            Do you agree to repost this request?
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
