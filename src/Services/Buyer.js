@@ -181,4 +181,19 @@ export default class AdminService {
       errors
     };
   }
+
+  async repostRequest(id) {
+    let errors = [];
+    const url = `/buyer/requests/repost/${id}`;
+
+    try {
+      await AxiosInstance().put(url);
+    } catch (error) {
+      errors.push(error);
+    }
+
+    return {
+      errors
+    };
+  }
 }

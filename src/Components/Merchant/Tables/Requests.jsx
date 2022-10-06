@@ -532,7 +532,7 @@ const Requests = () => {
                                 </div>
                             </div>
                             :
-                            <div className="dash-item-no-data-container">No data</div>
+                            <div className="dash-item-no-data-container">You have no requests at this time</div>
                 }
             </div>
         </div>

@@ -23,6 +23,7 @@ import { SEND_REQUEST, REQUEST_FAILED, REQUEST_SUCCESSFUL } from "../../../Reduc
 import Modal from '@mui/material/Modal';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { inAppSmall } from "../../../Styles/Modal";
+import Overlay from "../../../Material/Overlay";
 
 const UsersMerchant = () => {
     const [paging, setPaging] = useState({
@@ -296,7 +297,7 @@ const UsersMerchant = () => {
             </div>
 
             <DataGrid
-                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress }}
+                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress, NoRowsOverlay: () => <Overlay label="Merchants" /> }}
                 className="standard-table"
                 checkboxSelection
                 disableSelectionOnClick
@@ -307,7 +308,6 @@ const UsersMerchant = () => {
                 density="compact"
                 rowsPerPageOptions={[10, 20, 30, 40, 50]}
                 loading={rowsLoading}
-
                 rowCount={paging.totalCount}
                 paginationMode="server"
                 onPageChange={handlePageChange}

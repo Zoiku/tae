@@ -27,6 +27,16 @@ import { setAlert } from "../../../Redux/Features/Alert.js";
 import Modal from '@mui/material/Modal';
 import { inAppStandard, inAppWide } from "../../../Styles/Modal";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import Overlay from "../../../Material/Overlay";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Transition } from "../../../Material/Dialog";
+import { GenericSecondary, GenericPrimaryButton } from "../../../Material/Button";
+import { dialogStyle } from "../../../Styles/Dialog";
+
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
@@ -66,6 +76,14 @@ const Requests = () => {
         setOpenDrawer(false);
         setSelectedRequestId(null);
     }
+
+    const [openDialogConfirm, setOpenDialogConfirm] = useState(false);
+    const handleClickOpenDialogConfirm = () => {
+        setOpenDialogConfirm(true);
+    };
+    const handleCloseDialogConfirm = () => {
+        setOpenDialogConfirm(false);
+    };
 
     const [selectedOffers, setSelectedOffers] = useState(null);
     const handleSelectRequestOffers = (offers) => {
@@ -162,6 +180,22 @@ const Requests = () => {
             } else {
                 dispatch({ type: REQUEST_FAILED });
                 handleFailedRequest("Order could not be processed, please try again", 5000);
+            }
+        } catch (error) { }
+    }
+
+    const handleRepost = async () => {
+        dispatch({ type: SEND_REQUEST });
+        const { id } = selectedRequest;
+        const buyerService = new BuyerService();
+        try {
+            const { errors } = await buyerService.repostRequest(id);
+            if (errors.length === 0) {
+                dispatch({ type: REQUEST_SUCCESSFUL });
+                handleSuccessfullRequest("Your request has been reposted successfully", 3000);
+            } else {
+                dispatch({ type: REQUEST_FAILED });
+                handleFailedRequest("Problem processing request, please try again", 5000);
             }
         } catch (error) { }
     }
@@ -301,9 +335,9 @@ const Requests = () => {
                 {
                     selectedOffers &&
                         selectedOffers.length > 0 ?
-                        selectedOffers.map((offer) => {
+                        selectedOffers.map((offer, index) => {
                             return (
-                                <div className="request-section-offer-container">
+                                <div key={index} className="request-section-offer-container">
                                     <div><img src={IMAGES_TO_DISPLAY[offer.product]} alt="" /></div>
                                     <div className="request-offer-body-container">
                                         <div>
@@ -361,25 +395,25 @@ const Requests = () => {
                                         selectedOffer.incotermRows.length > 0 ?
                                             selectedOffer?.incotermRows.map((incoterm, index) =>
                                                 <tr key={index + 1}>
-                                                    <td><input disabled value={index + 1} /></td>
-                                                    {selectedOffer.terms !== "FOB" && <td><input value={incoterm.diameter} /></td>}
-                                                    <td><input value={incoterm.noOfPieces} /></td>
-                                                    <td><input value={incoterm.price} /></td>
-                                                    <td><input value={incoterm.totalPrice} /></td>
-                                                    {selectedOffer.terms === "CIF" && <td><input disabled value={incoterm.insurance} /></td>}
-                                                    {selectedOffer.terms !== "FOB" && <td><input disabled value={incoterm.costOfFreight} /></td>}
-                                                    <td><input disabled value={incoterm.totalAmount} /></td>
+                                                    <td><input disabled defaultValue={index + 1} /></td>
+                                                    {selectedOffer.terms !== "FOB" && <td><input defaultValue={incoterm.diameter} /></td>}
+                                                    <td><input defaultValue={incoterm.noOfPieces} /></td>
+                                                    <td><input defaultValue={incoterm.price} /></td>
+                                                    <td><input defaultValue={incoterm.totalPrice} /></td>
+                                                    {selectedOffer.terms === "CIF" && <td><input disabled defaultValue={incoterm.insurance} /></td>}
+                                                    {selectedOffer.terms !== "FOB" && <td><input disabled defaultValue={incoterm.costOfFreight} /></td>}
+                                                    <td><input disabled defaultValue={incoterm.totalAmount} /></td>
                                                 </tr>
                                             ) :
                                             <tr>
-                                                <td><input disabled value="--" /></td>
-                                                {selectedOffer.terms !== "FOB" && <td><input disabled value="--" /></td>}
-                                                <td><input disabled name="noOfPieces" value="--" /></td>
+                                                <td><input disabled defaultValue="--" /></td>
+                                                {selectedOffer.terms !== "FOB" && <td><input disabled defaultValue="--" /></td>}
+                                                <td><input disabled name="noOfPieces" defaultValue="--" /></td>
                                                 <td><input disabled name="price" value="--" /></td>
                                                 <td><input disabled name="totalPrice" value="--" /></td>
-                                                {selectedOffer.terms === "CIF" && <td><input disabled value="--" /></td>}
-                                                {selectedOffer.terms !== "FOB" && <td><input disabled value="--" /></td>}
-                                                <td><input disabled value="--" /></td>
+                                                {selectedOffer.terms === "CIF" && <td><input disabled defaultValue="--" /></td>}
+                                                {selectedOffer.terms !== "FOB" && <td><input disabled defaultValue="--" /></td>}
+                                                <td><input disabled defaultValue="--" /></td>
                                             </tr>
                                     }
                                 </tbody>
@@ -404,7 +438,7 @@ const Requests = () => {
                             <div><span>Member Since</span><span>{companyProfile.memberSince}</span></div>
                             <div><span>Year Established</span><span>{companyProfile.yearEstablished}</span></div>
                             <div><span>No of Employees</span><span>{companyProfile.employees}</span></div>
-                            <div><span>Products</span> <span>{companyProfile.subscription.map((product, index) => <span className="special-products-container"><span>{product.product} {companyProfile.subscription.length !== index + 1 && "& "}</span></span>)}</span> </div>
+                            <div><span>Products</span> <span>{companyProfile.subscription.map((product, index) => <span key={index} className="special-products-container"><span>{product.product} {companyProfile.subscription.length !== index + 1 && "& "}</span></span>)}</span> </div>
                             <div><span>Supply Ability</span><span>{companyProfile.supplyAbility}</span></div>
                         </div>
                     }
@@ -484,6 +518,28 @@ const Requests = () => {
     return (
         <div className="Requests-Table">
             <div>
+                <Dialog
+                    open={openDialogConfirm}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    onClose={handleCloseDialogConfirm}
+                    aria-describedby="alert-dialog-slide-description"
+                    sx={dialogStyle}
+                >
+                    <DialogTitle>{"Agree to repost the request?"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            Do you agree to repost this request?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <GenericSecondary variant="text" onClick={handleCloseDialogConfirm}>Disagree</GenericSecondary>
+                        <GenericPrimaryButton variant="contained" loading={state.requestState.loading} onClick={handleRepost}>Agree</GenericPrimaryButton>
+                    </DialogActions>
+                </Dialog>
+            </div>
+
+            <div>
                 <Modal
                     open={openDrawer}
                     onClose={handleCloseDrawer}
@@ -559,6 +615,14 @@ const Requests = () => {
                     <MenuItem onClick={toggleDrawer(true)}>
                         View Request
                     </MenuItem>
+
+                    {
+                        selectedRequest &&
+                        new Date() > new Date(selectedRequest.expiryDate) &&
+                        <MenuItem onClick={handleClickOpenDialogConfirm}>
+                            Repost Request
+                        </MenuItem>
+                    }
                 </Menu>
             </div>
 
@@ -622,7 +686,7 @@ const Requests = () => {
             </div>
 
             <DataGrid
-                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress }}
+                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress, NoRowsOverlay: () => <Overlay label="Requests" /> }}
                 className="standard-table"
                 checkboxSelection
                 disableSelectionOnClick

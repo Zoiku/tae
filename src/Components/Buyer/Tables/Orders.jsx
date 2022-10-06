@@ -38,6 +38,7 @@ import { GenericSecondary, GenericPrimaryButton } from "../../../Material/Button
 import { dialogStyle } from "../../../Styles/Dialog";
 import Stack from '@mui/material/Stack';
 import { NavLink } from "react-router-dom";
+import Overlay from "../../../Material/Overlay";
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -269,7 +270,7 @@ const Orders = () => {
                             <div> <ProgressBar status={selectedOrder.status} /> </div>
                         </div>
                         <div className="order-section-stepper-container">
-                            <Box fullWidth>
+                            <Box>
                                 <Stepper activeStep={ORDER_STATUS_STEPS[selectedOrder.status]} orientation={stepperOrientation}>
                                     {steps.map((step) => (
                                         <Step key={step.label}>
@@ -682,7 +683,7 @@ const Orders = () => {
             </div>
 
             <DataGrid
-                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress }}
+                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress, NoRowsOverlay: () => <Overlay label="Orders" /> }}
                 className="standard-table"
                 checkboxSelection
                 disableSelectionOnClick

@@ -11,6 +11,7 @@ import Countdown from "../../Countdown";
 import { inAppWide } from "../../../Styles/Modal";
 import Modal from '@mui/material/Modal';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import Overlay from "../../../Material/Overlay";
 
 const PRODUCTS = {
     TEAK_SQUARE_LOGS: "Teak Square Logs",
@@ -303,7 +304,7 @@ const Quotations = () => {
             </div>
 
             <DataGrid
-                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress }}
+                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress, NoRowsOverlay: () => <Overlay label="Quotations" /> }}
                 className="standard-table"
                 checkboxSelection
                 disableSelectionOnClick

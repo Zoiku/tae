@@ -20,6 +20,7 @@ import { useDispatch } from "react-redux";
 import Modal from '@mui/material/Modal';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { inAppWider } from "../../../Styles/Modal";
+import Overlay from "../../../Material/Overlay";
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -437,7 +438,7 @@ const Orders = () => {
             </div>
 
             <DataGrid
-                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress }}
+                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress, LinearProgress, NoRowsOverlay: () => <Overlay label="Orders" /> }}
                 className="standard-table"
                 checkboxSelection
                 disableSelectionOnClick

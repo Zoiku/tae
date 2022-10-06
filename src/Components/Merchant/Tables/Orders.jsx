@@ -32,6 +32,7 @@ import { GenericSecondary, GenericPrimaryButton } from "../../../Material/Button
 import { INITIAL_STATE, formReducer } from "../../../Reducers/FormReducer";
 import { REQUEST_FAILED, REQUEST_SUCCESSFUL, SEND_REQUEST } from "../../../Reducers/Actions";
 import { dialogStyle } from "../../../Styles/Dialog";
+import Overlay from "../../../Material/Overlay";
 
 const ORDER_STATUS_LEVELS = {
     RECEIVED: 10,
@@ -436,7 +437,7 @@ const Orders = () => {
             </div>
 
             <DataGrid
-                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress }}
+                components={{ Toolbar: Toolbar, LoadingOverlay: LinearProgress, NoRowsOverlay: () => <Overlay label="Orders" /> }}
                 className="standard-table"
                 checkboxSelection
                 disableSelectionOnClick
